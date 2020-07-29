@@ -19,7 +19,7 @@ export default class CreatePacientTable1596038066725
           },
           {
             name: 'bornDate',
-            type: 'timestamp',
+            type: 'date',
             isNullable: true,
           },
           {

@@ -14,7 +14,7 @@ export default class Pacient {
   @Column()
   name: string;
 
-  @Column('timestamp')
+  @Column('date')
   bornDate: Date;
 
   @Column()
@@ -36,7 +36,7 @@ export default class Pacient {
   street: string;
 
   @Column()
-  addresssNumber: string;
+  addressNumber: string;
 
   @Column()
   cep: string;
