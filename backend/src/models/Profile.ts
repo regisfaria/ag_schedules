@@ -28,9 +28,6 @@ export default class Profile {
   description: string;
 
   @Column()
-  email: string;
-
-  @Column()
   phoneNumber: string;
 
   @Column()
