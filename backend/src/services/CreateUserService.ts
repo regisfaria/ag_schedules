@@ -7,37 +7,37 @@ import AppError from '../errors/AppError';
 
 interface Request {
   name: string;
-  login: string;
+  email: string;
   password: string;
-  privileges: string;
+  type: string;
 }
 
 export default class CreateUserService {
   public async execute({
     name,
-    login,
+    email,
     password,
-    privileges,
+    type,
   }: Request): Promise<User> {
     const usersRepository = getRepository(User);
 
     const loginExists = await usersRepository.findOne({
       where: {
-        login,
+        email,
       },
     });
 
     if (loginExists) {
-      throw new AppError('Login already in use');
+      throw new AppError('E-mail em uso, tente outro e-mail.');
     }
 
     const hashedPassword = await hash(password, 8);
 
     const user = usersRepository.create({
       name,
-      login,
+      email,
       password: hashedPassword,
-      privileges,
+      type,
     });
 
     await usersRepository.save(user);
