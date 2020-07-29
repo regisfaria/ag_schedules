@@ -40,6 +40,14 @@ export default class CreateConsultsTable1596038075052
             type: 'int',
           },
           {
+            name: 'payment',
+            type: 'varchar',
+          },
+          {
+            name: 'status',
+            type: 'varchar',
+          },
+          {
             name: 'createdAt',
             type: 'timestamp',
             default: 'now()',
