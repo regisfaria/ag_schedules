@@ -24,7 +24,10 @@ export default class UpdateUserAvatarServie {
     });
 
     if (!profile) {
-      throw new AppError('Only authenticated users can change avatar.', 401);
+      throw new AppError(
+        'Apenas usuarios logados podem alterar a imagem de perfil.',
+        401,
+      );
     }
 
     if (profile.image) {
