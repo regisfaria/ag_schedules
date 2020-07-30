@@ -21,8 +21,8 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 const AuthProvider: React.FC = ({ children }) => {
   const [data, setData] = useState<AuthState>(() => {
-    const token = localStorage.getItem('@CCDialer:token');
-    const user = localStorage.getItem('@CCDialer:user');
+    const token = localStorage.getItem('@AGSchedules:token');
+    const user = localStorage.getItem('@AGSchedules:user');
 
     if (token && user) {
       return { token, user: JSON.parse(user) };
@@ -39,15 +39,15 @@ const AuthProvider: React.FC = ({ children }) => {
 
     const { token, user } = response.data;
 
-    localStorage.setItem('@CCDialer:token', token);
-    localStorage.setItem('@CCDialer:user', JSON.stringify(user));
+    localStorage.setItem('@AGSchedules:token', token);
+    localStorage.setItem('@AGSchedules:user', JSON.stringify(user));
 
     setData({ token, user });
   }, []);
 
   const signOut = useCallback(() => {
-    localStorage.removeItem('@CCDialer:token');
-    localStorage.removeItem('@CCDialer:user');
+    localStorage.removeItem('@AGSchedules:token');
+    localStorage.removeItem('@AGSchedules:user');
 
     setData({} as AuthState);
   }, []);
