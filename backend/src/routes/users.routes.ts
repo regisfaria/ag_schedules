@@ -3,6 +3,8 @@ import { getRepository } from 'typeorm';
 
 import CreateUserService from '../services/CreateUserService';
 import CreateProfileService from '../services/CreateProfileService';
+import DeleteUserService from '../services/DeleteUserService';
+import DeleteProfileService from '../services/DeleteProfileService';
 
 import User from '../models/User';
 
@@ -20,26 +22,36 @@ usersRouter.get('/', async (request, response) => {
 });
 
 usersRouter.post('/', async (request, response) => {
-  const { name, login, password, privileges } = request.body;
+  const { name, email, password, type } = request.body;
 
   const createUser = new CreateUserService();
 
   const user = await createUser.execute({
     name,
-    login,
+    email,
     password,
-    privileges,
+    type,
   });
 
   const createProfile = new CreateProfileService();
 
   const profile = await createProfile.execute(user);
 
-  return response.json({ user, profile });
+  delete profile.user.password;
+
+  return response.json(profile);
 });
 
-usersRouter.delete('/', async (request, response) => {
-  // TO DO
+usersRouter.delete('/:id', async (request, response) => {
+  const { id } = request.params;
+
+  const deleteProfile = new DeleteProfileService();
+  const deleteUser = new DeleteUserService();
+
+  await deleteProfile.execute(id);
+  await deleteUser.execute(id);
+
+  return response.json(204).send;
 });
 
 export default usersRouter;

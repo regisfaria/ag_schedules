@@ -9,7 +9,7 @@ interface Request {
   name: string;
   email: string;
   password: string;
-  type: string;
+  type: 'admin' | 'agent' | 'specialist';
 }
 
 export default class CreateUserService {
@@ -21,13 +21,13 @@ export default class CreateUserService {
   }: Request): Promise<User> {
     const usersRepository = getRepository(User);
 
-    const loginExists = await usersRepository.findOne({
+    const emailExists = await usersRepository.findOne({
       where: {
         email,
       },
     });
 
-    if (loginExists) {
+    if (emailExists) {
       throw new AppError('E-mail em uso, tente outro e-mail.');
     }
 
