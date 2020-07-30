@@ -5,14 +5,14 @@ import User from '../models/User';
 
 export default class CreateProfileService {
   public async execute(user: User): Promise<Profile> {
-    const profileRepository = getRepository(Profile);
+    const profilesRepository = getRepository(Profile);
 
-    const profile = profileRepository.create({
+    const profile = profilesRepository.create({
       user,
       userId: user.id,
     });
 
-    await profileRepository.save(profile);
+    await profilesRepository.save(profile);
 
     return profile;
   }
