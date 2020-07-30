@@ -7,7 +7,7 @@ import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 
 import CreateConsultService from '../services/CreateConsultService';
 import DeleteConsultService from '../services/DeleteConsultService';
-import ConvertHourToString from '../services/ConvertHourToStringService';
+import ConvertHourToStringService from '../services/ConvertHourToStringService';
 
 const consultsRouter = Router();
 
@@ -18,7 +18,7 @@ consultsRouter.get('/', async (request, response) => {
 
   const unparsedConsults = await consultsRepository.find();
 
-  const convertHourToString = new ConvertHourToString();
+  const convertHourToString = new ConvertHourToStringService();
 
   const consults = convertHourToString.execute(unparsedConsults);
 
