@@ -5,7 +5,9 @@ import cors from 'cors';
 import 'express-async-errors';
 
 import routes from './routes';
+
 import uploadConfig from './config/upload';
+
 import AppError from './errors/AppError';
 
 import './database';
@@ -35,5 +37,6 @@ app.use((err: Error, request: Request, response: Response, _: NextFunction) => {
 });
 
 app.listen(3333, () => {
+  // eslint-disable-next-line no-console
   console.log('🚀 Server started on port 3333!');
 });
