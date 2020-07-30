@@ -7,7 +7,7 @@ import User from '../models/User';
 import AppError from '../errors/AppError';
 
 interface Request {
-  login: string;
+  email: string;
   password: string;
 }
 
@@ -17,17 +17,15 @@ interface Response {
 }
 
 export default class AuthenticateUserService {
-  public async execute({ login, password }: Request): Promise<Response> {
-    const userRepository = getRepository(User);
+  public async execute({ email, password }: Request): Promise<Response> {
+    const usersRepository = getRepository(User);
 
-    const user = await userRepository.findOne({ where: { login } });
+    const user = await usersRepository.findOne({ where: { email } });
 
     if (!user) {
       throw new AppError('Incorrect email/password combination.', 401);
     }
 
-    // user.password - crypted password
-    // password - not crypted password
     const passwordMatched = await compare(password, user.password);
 
     if (!passwordMatched) {
