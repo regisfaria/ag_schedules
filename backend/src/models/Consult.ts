@@ -21,7 +21,7 @@ export default class Consult {
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'specialistId' })
-  user: User;
+  specialist: User;
 
   @Column()
   specialistId: string;
@@ -38,6 +38,8 @@ export default class Consult {
 
   @Column('int')
   hour: number;
+
+  formatedHour: string;
 
   @Column()
   payment: string;
