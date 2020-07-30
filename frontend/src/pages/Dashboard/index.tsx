@@ -1,24 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import Calendar from 'react-calendar';
-import { FiExternalLink, FiUsers } from 'react-icons/fi';
+// import Calendar from 'react-calendar';
 
-import SideMenu from '../../components/SideMenu';
-import SearchBar from '../../components/SearchBar';
+import Menu from '../../components/Menu';
 
-import {
-  IncomingTasks,
-  RecentLeads,
-  CalendarSection,
-  Task,
-  Tag,
-  Lead,
-} from './styles';
+import { Container } from './styles';
 
 const Dashboard: React.FC = () => {
   return (
     <>
-      <SideMenu />
+      <Menu />
+      <Container>
+        <h1>Dashboard</h1>
+      </Container>
     </>
   );
 };

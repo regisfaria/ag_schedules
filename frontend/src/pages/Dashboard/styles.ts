@@ -1,129 +1,32 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
-interface RecentLeadInfoProps {
-  alterColor?: boolean;
-}
+export const Container = styled.div`
+  background: var(--white);
 
-export const IncomingTasks = styled.div`
-  position: absolute;
-  height: 820px;
-  left: 292px;
-  right: 513px;
-  top: 96px;
-  text-align: center;
-  border-radius: 20px;
-
-  background-color: var(--white);
-  box-shadow: 0 1px 1px 1px var(--divider);
-
-  #show-opt {
-    text-decoration: none;
-    font-size: 20px;
-    color: var(--accent-blue);
-    transition: filter 200ms;
-
-    &:hover {
-      color: blur(50%);
-      filter: brightness(70%);
-    }
-  }
-`;
-
-export const Task = styled.div`
-  top: 536px;
-  left: -75px;
+  display: flex;
+  place-content: center;
+  justify-self: center;
+  margin: 0 auto;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  border-radius: 50px;
 
   width: 90%;
-  height: auto;
-  margin: 40px auto;
-  padding: 24px;
-  border-radius: 10px;
-  box-shadow: 0 1px 4px 2px var(--divider);
-  transition: transform 400ms;
+  height: 100vh;
 
-  &:hover {
-    transform: scale(1.05);
+  h1 {
+    font-weight: 500;
+    color: var(--table-black);
   }
 
-  & + div {
-    margin-top: 45px;
-  }
-  a {
-    display: block;
+  @media (max-width: 600px) {
+    margin: 0;
     width: 100%;
-    text-decoration: none;
+    border-radius: 0;
 
-    #title {
-      display: flex;
-      justify-content: space-between;
-      font-size: 16px;
-
-      strong {
-        align-items: center;
-        color: var(--black);
-      }
-
-      span {
-        align-items: center;
-        font-size: 14px;
-        color: var(--gray);
-      }
+    h1 {
+      padding-top: 5px;
     }
-
-    #dates {
-      display: flex;
-      position: relative;
-      font-size: 12px;
-      margin-top: 6px;
-
-      span {
-        color: var(--gray);
-      }
-
-      p {
-        padding-left: 5px;
-        font-size: 12px;
-        color: var(--table-gray);
-      }
-    }
-
-    #info {
-      margin-top: 20px;
-      position: relative;
-      display: flex block;
-
-      img {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-      }
-      margin-left: 0 16px;
-      padding-left: 10px;
-      display: flex;
-
-      p {
-        padding-left: 10px;
-        color: var(--table-gray);
-      }
-    }
-  }
-`;
-
-export const Tag = styled.div`
-  display: flex block;
-  width: 84px;
-  background-color: var(--purple);
-  border-radius: 10px;
-  font-size: 12px;
-  text-align: center;
-  position: absolute;
-  right: -10px;
-
-  span {
-    position: relative;
-    border-radius: 20px;
-    flex: 1;
-    color: var(--white);
   }
 `;
 
@@ -263,96 +166,5 @@ export const CalendarSection = styled.div`
   }
   .react-calendar--selectRange .react-calendar__tile--hover {
     background-color: var(--white);
-  }
-`;
-
-export const RecentLeads = styled.div`
-  position: absolute;
-  width: 445px;
-  height: 380px;
-  right: 38px;
-  top: 536px;
-  border-radius: 20px;
-  text-align: center;
-  justify-content: center;
-
-  background-color: var(--white);
-  box-shadow: 0 1px 1px 1px var(--divider);
-
-  #recent-leads-title {
-    width: 100%;
-    height: 10%;
-    background-color: #fcfcfc;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border-bottom: 1px solid var(--divider);
-
-    strong {
-      font-size: 26px;
-      font-weight: 300;
-      color: var(--table-black);
-    }
-
-    svg {
-      margin-left: 5px;
-      position: relative;
-      top: 2px;
-      color: var(--icon-gray);
-    }
-
-    & + div {
-      margin: 1px 0;
-    }
-  }
-`;
-
-export const Lead = styled.div<RecentLeadInfoProps>`
-  display: flex;
-  justify-content: space-between;
-  height: 10%;
-  width: 100%;
-  background: var(--divider);
-  padding: 0 10px;
-  transition: background-color 0.2s;
-
-  ${props =>
-    props.alterColor &&
-    css`
-      background: var(--white);
-    `}
-
-  align-items: center;
-
-  div {
-    display: flex;
-    flex-direction: row;
-
-    a {
-      text-decoration: none;
-    }
-
-    svg {
-      margin: 0 5px;
-      color: var(--green);
-    }
-
-    strong {
-      font-size: 14px;
-      color: var(--table-black);
-    }
-
-    p {
-      font-size: 12px;
-      color: var(--table-black);
-    }
-  }
-
-  p {
-    font-size: 10px;
-    color: var(--table-black);
-  }
-
-  &:hover {
-    background: var(--accent-blue);
   }
 `;
