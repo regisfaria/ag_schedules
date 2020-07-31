@@ -12,11 +12,20 @@ import {
 
 import { useAuth } from '../../hooks/auth';
 
-import { ShowMenu, Logout, SideMenuBox, MenuOption } from './styles';
+import {
+  ShowMenu,
+  CloseMenu,
+  Logout,
+  SideMenuBox,
+  MenuOption,
+  DropdownButton,
+} from './styles';
 
 const Menu: React.FC = () => {
   const [menuState, setMenuState] = useState(false);
-  const [,] = useState(false);
+  const [consultsButtonState, setConsultsButtonState] = useState(false);
+  const [historyButtonState, setHistoryButtonState] = useState(false);
+  const [registerButtonState, setRegisterButtonState] = useState(false);
 
   const history = useHistory();
   const { signOut } = useAuth();
@@ -31,6 +40,18 @@ const Menu: React.FC = () => {
     history.push('/');
   }, [signOut, history]);
 
+  const handleConsultsButton = useCallback(() => {
+    setConsultsButtonState(!consultsButtonState);
+  }, [consultsButtonState]);
+
+  const handleHistoryButton = useCallback(() => {
+    setHistoryButtonState(!historyButtonState);
+  }, [historyButtonState]);
+
+  const handleRegisterButton = useCallback(() => {
+    setRegisterButtonState(!registerButtonState);
+  }, [registerButtonState]);
+
   return (
     <>
       <ShowMenu>
@@ -40,9 +61,11 @@ const Menu: React.FC = () => {
       </ShowMenu>
 
       <SideMenuBox menuState={menuState}>
-        <button type="button">
-          <FiX size={40} onClick={handleMenuState} />
-        </button>
+        <CloseMenu>
+          <button type="button" onClick={handleMenuState}>
+            <FiX size={40} />
+          </button>
+        </CloseMenu>
 
         <Logout>
           <button type="button" onClick={handleLogOut}>
@@ -58,34 +81,46 @@ const Menu: React.FC = () => {
             </div>
           </Link>
 
-          <button type="button">
-            <FiFileText size={16} />
-            <p>Consultas</p>
-            <div>
-              <Link to="/consults">Criar Consulta</Link>
-              <Link to="/consults/view">Ver Consultas</Link>
-            </div>
-          </button>
+          <DropdownButton menuState={menuState} open={consultsButtonState}>
+            <button type="button" onClick={handleConsultsButton}>
+              <p>
+                <FiFileText size={16} />
+                Consultas
+              </p>
+              <div>
+                <Link to="/consults">Ver Consultas</Link>
+                <Link to="/consults/new">Criar Consulta</Link>
+              </div>
+            </button>
+          </DropdownButton>
 
-          <button type="button">
-            <FiBookOpen size={16} />
-            <p>Historico</p>
-            <div>
-              <Link to="/history/pacients">Pacientes Criados</Link>
-              <Link to="/history/agents">Agentes Criados</Link>
-              <Link to="/history/consults">Consultas Criadas</Link>
-            </div>
-          </button>
+          <DropdownButton menuState={menuState} open={historyButtonState}>
+            <button type="button" onClick={handleHistoryButton}>
+              <p>
+                <FiBookOpen size={16} />
+                Historico
+              </p>
+              <div>
+                <Link to="/history/pacients">Pacientes Criados</Link>
+                <Link to="/history/agents">Agentes Criados</Link>
+                <Link to="/history/consults">Consultas Criadas</Link>
+              </div>
+            </button>
+          </DropdownButton>
 
-          <button type="button">
-            <FiUserPlus size={16} />
-            <p>Registrar</p>
-            <div>
-              <Link to="/register/pacients">Registrar Paciente</Link>
-              <Link to="/register/agent">Registrar Agente</Link>
-              <Link to="/register/specialist">Pacientes Especialista</Link>
-            </div>
-          </button>
+          <DropdownButton menuState={menuState} open={registerButtonState}>
+            <button type="button" onClick={handleRegisterButton}>
+              <p>
+                <FiUserPlus size={16} />
+                Registrar
+              </p>
+              <div>
+                <Link to="/register/pacients">Registrar Paciente</Link>
+                <Link to="/register/agent">Registrar Agente</Link>
+                <Link to="/register/specialist">Pacientes Especialista</Link>
+              </div>
+            </button>
+          </DropdownButton>
         </MenuOption>
       </SideMenuBox>
     </>
