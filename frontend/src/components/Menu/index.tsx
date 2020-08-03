@@ -1,14 +1,16 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import {
   FiLayers,
-  FiFileText,
+  FiFilePlus,
   FiBookOpen,
-  FiUserPlus,
   FiMenu,
   FiX,
   FiLogOut,
 } from 'react-icons/fi';
+import { FaUserMd, FaUserTie, FaUserPlus } from 'react-icons/fa';
+import { RiContactsBook2Line } from 'react-icons/ri';
+import { AiOutlineFileSearch } from 'react-icons/ai';
 
 import { useAuth } from '../../hooks/auth';
 
@@ -19,6 +21,12 @@ import {
   SideMenuBox,
   MenuOption,
   DropdownButton,
+  LinkContainer,
+  AgentLockedLinkContainer,
+  SpecialistLockedLinkContainer,
+  AdminOnlyLinkContainer,
+  DownArrow,
+  UpArrow,
 } from './styles';
 
 const Menu: React.FC = () => {
@@ -26,9 +34,10 @@ const Menu: React.FC = () => {
   const [consultsButtonState, setConsultsButtonState] = useState(false);
   const [historyButtonState, setHistoryButtonState] = useState(false);
   const [registerButtonState, setRegisterButtonState] = useState(false);
+  const [userData, setUserData] = useState<string>();
 
   const history = useHistory();
-  const { signOut } = useAuth();
+  const { signOut, getUserRole } = useAuth();
 
   const handleMenuState = useCallback(() => {
     setMenuState(!menuState);
@@ -51,6 +60,10 @@ const Menu: React.FC = () => {
   const handleRegisterButton = useCallback(() => {
     setRegisterButtonState(!registerButtonState);
   }, [registerButtonState]);
+
+  useEffect(() => {
+    setUserData(getUserRole());
+  }, [getUserRole]);
 
   return (
     <>
@@ -84,12 +97,24 @@ const Menu: React.FC = () => {
           <DropdownButton menuState={menuState} open={consultsButtonState}>
             <button type="button" onClick={handleConsultsButton}>
               <p>
-                <FiFileText size={16} />
                 Consultas
+                <DownArrow size={20} open={consultsButtonState} />
+                <UpArrow size={20} open={consultsButtonState} />
               </p>
               <div>
-                <Link to="/consults">Ver Consultas</Link>
-                <Link to="/consults/new">Criar Consulta</Link>
+                <SpecialistLockedLinkContainer role={userData as string}>
+                  <Link to="/consults/new">
+                    <FiFilePlus />
+                    Criar Consultas
+                  </Link>
+                </SpecialistLockedLinkContainer>
+
+                <LinkContainer>
+                  <Link to="/consults">
+                    <AiOutlineFileSearch />
+                    Ver Consultas
+                  </Link>
+                </LinkContainer>
               </div>
             </button>
           </DropdownButton>
@@ -97,13 +122,39 @@ const Menu: React.FC = () => {
           <DropdownButton menuState={menuState} open={historyButtonState}>
             <button type="button" onClick={handleHistoryButton}>
               <p>
-                <FiBookOpen size={16} />
                 Historico
+                <DownArrow size={20} open={historyButtonState} />
+                <UpArrow size={20} open={historyButtonState} />
               </p>
+
               <div>
-                <Link to="/history/pacients">Pacientes Criados</Link>
-                <Link to="/history/agents">Agentes Criados</Link>
-                <Link to="/history/consults">Consultas Criadas</Link>
+                <LinkContainer>
+                  <Link to="/history/pacients">
+                    <RiContactsBook2Line />
+                    Pacientes Criados
+                  </Link>
+                </LinkContainer>
+
+                <AgentLockedLinkContainer role={userData as string}>
+                  <Link to="/history/agents">
+                    <RiContactsBook2Line />
+                    Agentes Criados
+                  </Link>
+                </AgentLockedLinkContainer>
+
+                <AdminOnlyLinkContainer role={userData as string}>
+                  <Link to="/history/agents">
+                    <RiContactsBook2Line />
+                    Especialistas Criados
+                  </Link>
+                </AdminOnlyLinkContainer>
+
+                <LinkContainer>
+                  <Link to="/history/consults">
+                    <FiBookOpen />
+                    Consultas Criadas
+                  </Link>
+                </LinkContainer>
               </div>
             </button>
           </DropdownButton>
@@ -111,13 +162,29 @@ const Menu: React.FC = () => {
           <DropdownButton menuState={menuState} open={registerButtonState}>
             <button type="button" onClick={handleRegisterButton}>
               <p>
-                <FiUserPlus size={16} />
                 Registrar
+                <DownArrow size={20} open={registerButtonState} />
+                <UpArrow size={20} open={registerButtonState} />
               </p>
+
               <div>
-                <Link to="/register/pacients">Registrar Paciente</Link>
-                <Link to="/register/agent">Registrar Agente</Link>
-                <Link to="/register/specialist">Pacientes Especialista</Link>
+                <LinkContainer>
+                  <Link to="/register/pacients">
+                    <FaUserPlus /> Registrar Paciente
+                  </Link>
+                </LinkContainer>
+
+                <AgentLockedLinkContainer role={userData as string}>
+                  <Link to="/register/agent">
+                    <FaUserTie /> Registrar Agente
+                  </Link>
+                </AgentLockedLinkContainer>
+
+                <AdminOnlyLinkContainer role={userData as string}>
+                  <Link to="/register/specialist">
+                    <FaUserMd /> Registrar Especialista
+                  </Link>
+                </AdminOnlyLinkContainer>
               </div>
             </button>
           </DropdownButton>
