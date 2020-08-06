@@ -12,23 +12,20 @@ export const Container = styled.div<ContainerProps>`
   background: var(--white);
   border-radius: 10px;
   padding: 16px;
+  margin-top: 20px;
+  margin-bottom: 30px;
   width: 28rem;
 
   border: 2px solid var(--white);
-  color: #666360;
+  color: var(--input-placeholder);
 
   display: flex;
   align-items: center;
 
-  & + div {
-    margin-top: 20px;
-    margin-bottom: 30px;
-  }
-
   ${props =>
     props.isErrored &&
     css`
-      border-color: #c53030;
+      border-color: var(--error-red);
     `}
 
   ${props =>
@@ -44,7 +41,6 @@ export const Container = styled.div<ContainerProps>`
       color: var(--green);
     `}
 
-
   input {
     background: transparent;
     flex: 1;
@@ -52,8 +48,13 @@ export const Container = styled.div<ContainerProps>`
     color: var(--black);
 
     &::placeholder {
-      color: #666360;
+      color: var(--input-placeholder);
     }
+
+    ::-webkit-datetime-edit-text { padding: 0 0.3rem; color: var(--input-placeholder); }
+    ::-webkit-datetime-edit-day-field { text-transform: uppercase; color: var(--input-placeholder); }
+    ::-webkit-datetime-edit-month-field { text-transform: uppercase; color: var(--input-placeholder); }
+    ::-webkit-datetime-edit-year-field { text-transform: uppercase; color: var(--input-placeholder); }
   }
 
   svg {
@@ -70,11 +71,11 @@ export const Error = styled(Tooltip)`
   }
 
   span {
-    background: #c53030;
+    background: var(--error-red);
     color: #fff;
 
     &::before {
-      border-color: #c53030 transparent;
+      border-color: var(--error-red) transparent;
     }
   }
 `;
