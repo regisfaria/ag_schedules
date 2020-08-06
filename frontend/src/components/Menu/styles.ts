@@ -56,10 +56,10 @@ export const SideMenuBox = styled.div<MenuProps>`
     props.menuState
       ? css`
           max-width: 500px;
-          transition: max-width 1s ease-in-out;
+          transition: max-width 0.4s ease-in-out;
           button {
             opacity: 1;
-            transition: opacity 1s linear;
+            transition: opacity 0.4s linear;
           }
         `
       : css`
