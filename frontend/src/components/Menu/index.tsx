@@ -87,7 +87,7 @@ const Menu: React.FC = () => {
         </Logout>
 
         <MenuOption menuState={menuState}>
-          <Link to="dashboard">
+          <Link to="/dashboard">
             <div>
               <FiLayers size={16} />
               <p>Dashboard</p>
@@ -169,7 +169,7 @@ const Menu: React.FC = () => {
 
               <div>
                 <LinkContainer>
-                  <Link to="/register/pacients">
+                  <Link to="/register/pacient">
                     <FaUserPlus /> Registrar Paciente
                   </Link>
                 </LinkContainer>
