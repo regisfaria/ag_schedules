@@ -5,13 +5,21 @@ import Route from './Route';
 
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
-import Register from '../pages/Register';
+import RegisterSpecialist from '../pages/RegisterSpecialist';
+import RegisterAgent from '../pages/RegisterAgent';
+import RegisterPacient from '../pages/RegisterPacient';
 
 const Routes: React.FC = () => (
   <Switch>
     <Route path="/" exact component={Login} />
     <Route path="/dashboard" component={Dashboard} isPrivate />
-    <Route path="/register" component={Register} isPrivate />
+    <Route
+      path="/register/specialist"
+      component={RegisterSpecialist}
+      isPrivate
+    />
+    <Route path="/register/agent" component={RegisterAgent} isPrivate />
+    <Route path="/register/pacient" component={RegisterPacient} isPrivate />
   </Switch>
 );
 
