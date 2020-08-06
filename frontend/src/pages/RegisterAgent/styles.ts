@@ -5,6 +5,8 @@ export const Container = styled.div`
   width: 60%;
   margin: 0 auto;
   margin-top: 50px;
+  border-radius: 40px;
+  box-shadow: 0 1px 4px 2px var(--black);
 
   /* cellphone view */
   @media (max-width: 600px) {
@@ -13,6 +15,7 @@ export const Container = styled.div`
 
     border-radius: 0;
     width: 100%;
+    box-shadow: none;
 
     h1 {
       padding-top: 5px;

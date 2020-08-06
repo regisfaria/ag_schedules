@@ -14,7 +14,7 @@ export const LoginWindow = styled.div`
   margin-bottom: 5rem;
 
   background: #dff6fc url(${logoImg}) no-repeat top;
-  box-shadow: 0 1px 1px 2px #d4f4fc;
+  box-shadow: 0 1px 4px 2px var(--black);
 `;
 
 export const Content = styled.div`
