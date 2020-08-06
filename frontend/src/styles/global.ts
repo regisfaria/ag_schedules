@@ -4,6 +4,7 @@ import bgImage from '../assets/bg.jpg';
 export default createGlobalStyle`
   :root {
     --blue: #109CF1;
+    --light-blue: #dff6fc;
     --yellow: #FFb946;
     --red: #F7685B;
     --green: #09644b;
@@ -15,6 +16,8 @@ export default createGlobalStyle`
     --icon-gray: #C2CFE0;
     --white: #f1f1f1;
     --divider: #EBEFF2;
+    --input-placeholder: #666360;
+    --error-red: #c53030;
   }
 
   * {
