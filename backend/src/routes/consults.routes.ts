@@ -26,8 +26,15 @@ consultsRouter.get('/', async (request, response) => {
 });
 
 consultsRouter.post('/', async (request, response) => {
-  const { specialistId, pacientId, date, hour, payment, status } = request.body;
-  const userId = request.user.id;
+  const {
+    userId,
+    specialistId,
+    pacientId,
+    date,
+    hour,
+    payment,
+    status,
+  } = request.body;
 
   const createConsult = new CreateConsultService();
 
