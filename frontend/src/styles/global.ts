@@ -3,6 +3,9 @@ import bgImage from '../assets/bg.jpg';
 
 export default createGlobalStyle`
   :root {
+    font-size: 60%;
+
+
     --blue: #109CF1;
     --light-blue: #dff6fc;
     --yellow: #FFb946;
