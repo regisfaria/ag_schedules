@@ -7,8 +7,6 @@ export const Container = styled.div`
   place-content: center;
   justify-self: center;
   margin: 0 auto;
-  margin-top: 15px;
-  margin-bottom: 15px;
   border-radius: 50px;
   box-shadow: 0 1px 4px 2px var(--black);
 
