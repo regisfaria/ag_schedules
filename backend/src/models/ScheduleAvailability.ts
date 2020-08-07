@@ -11,7 +11,7 @@ import {
 import User from './User';
 
 @Entity('schedules_availability')
-export default class Consult {
+export default class ScheduleAvailability {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
