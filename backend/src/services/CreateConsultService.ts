@@ -40,13 +40,11 @@ class CreateConsultService {
     if (consultAlreadyScheduled) {
       throw new AppError('Ja existe uma consulta marcada neste horario');
     }
-
-    const currentUser = await usersRepository.findOne(userId);
     const pacient = await pacientsRepository.findOne(pacientId);
     const specialist = await usersRepository.findOne(specialistId);
 
     const consult = consultsRepository.create({
-      createdBy: currentUser?.name,
+      createdBy: userId,
       specialist,
       specialistId,
       pacient,
