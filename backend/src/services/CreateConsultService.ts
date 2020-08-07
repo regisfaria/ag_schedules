@@ -1,5 +1,4 @@
 import { getRepository } from 'typeorm';
-import AppError from '../errors/AppError';
 
 import Consult from '../models/Consult';
 import User from '../models/User';
@@ -33,13 +32,6 @@ class CreateConsultService {
 
     const parsedHour = Number(unparsedHour) * 60 + Number(unparsedMinutes);
 
-    const consultAlreadyScheduled = await consultsRepository.findOne({
-      where: { hour: parsedHour },
-    });
-
-    if (consultAlreadyScheduled) {
-      throw new AppError('Ja existe uma consulta marcada neste horario');
-    }
     const pacient = await pacientsRepository.findOne(pacientId);
     const specialist = await usersRepository.findOne(specialistId);
 
