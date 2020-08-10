@@ -25,6 +25,38 @@ consultsRouter.get('/', async (request, response) => {
   return response.json(consults);
 });
 
+consultsRouter.get('/:specialistId', async (request, response) => {
+  const specialistId = request.params;
+
+  const consultsRepository = getRepository(Consult);
+
+  const consults = await consultsRepository.find({
+    where: specialistId,
+  });
+
+  return response.json(consults);
+});
+
+consultsRouter.get('/:specialistId/date', async (request, response) => {
+  const { specialistId } = request.params;
+  const { day, month, year } = request.body;
+
+  const consultsRepository = getRepository(Consult);
+
+  const parseDay = String(day).padStart(2, '0');
+  const parseMonth = String(month).padStart(2, '0');
+
+  const findDate = `${year}-${parseMonth}-${parseDay}`;
+
+  const consults = await consultsRepository.find({
+    where: { specialistId, date: findDate },
+  });
+
+  console.log(specialistId);
+
+  return response.json(consults);
+});
+
 consultsRouter.post('/', async (request, response) => {
   const {
     userId,
