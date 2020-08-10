@@ -1,33 +1,41 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  background: var(--light-blue);
-
   display: flex;
-  place-content: center;
-  justify-self: center;
-  margin: 0 auto;
-  margin-top: 15px;
-  margin-bottom: 15px;
-  border-radius: 50px;
-  box-shadow: 0 1px 4px 2px var(--black);
+  align-items: center;
+  justify-content: center;
 
-  width: 90%;
   height: 100vh;
 
-  h1 {
-    font-weight: 500;
-    color: var(--table-black);
-  }
+  width: 100%;
 
-  @media (max-width: 600px) {
-    margin: 0;
+  div {
+    background: var(--light-blue);
+
     width: 100%;
-    border-radius: 0;
-    box-shadow: none;
+    height: 100%;
 
     h1 {
-      padding-top: 5px;
+      padding-top: 0.65rem;
+      font-weight: 500px;
+      color: var(--table-black);
+      text-align: center;
+    }
+  }
+
+  @media (min-width: 600px) {
+    div {
+      width: 90%;
+      height: 90%;
+
+      border-radius: 20px;
+      box-shadow: 0 1px 4px 2px var(--black);
+
+      h1 {
+        font-weight: 500px;
+        color: var(--table-black);
+        text-align: center;
+      }
     }
   }
 `;

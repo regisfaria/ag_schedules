@@ -8,6 +8,7 @@ import Dashboard from '../pages/Dashboard';
 import RegisterSpecialist from '../pages/RegisterSpecialist';
 import RegisterAgent from '../pages/RegisterAgent';
 import RegisterPacient from '../pages/RegisterPacient';
+import Profile from '../pages/Profile';
 
 const Routes: React.FC = () => (
   <Switch>
@@ -20,6 +21,8 @@ const Routes: React.FC = () => (
     />
     <Route path="/register/agent" component={RegisterAgent} isPrivate />
     <Route path="/register/pacient" component={RegisterPacient} isPrivate />
+
+    <Route path="/profile" component={Profile} isPrivate />
   </Switch>
 );
 
