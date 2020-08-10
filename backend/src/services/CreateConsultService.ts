@@ -4,6 +4,8 @@ import Consult from '../models/Consult';
 import User from '../models/User';
 import Pacient from '../models/Pacient';
 
+import ConvertStringHourToInt from '../utils/ConvertStringHourToInt';
+
 interface Request {
   userId: string;
   specialistId: string;
@@ -28,9 +30,7 @@ class CreateConsultService {
     const usersRepository = getRepository(User);
     const pacientsRepository = getRepository(Pacient);
 
-    const [unparsedHour, unparsedMinutes] = hour.split(':');
-
-    const parsedHour = Number(unparsedHour) * 60 + Number(unparsedMinutes);
+    const parsedHour = ConvertStringHourToInt(hour);
 
     const pacient = await pacientsRepository.findOne(pacientId);
     const specialist = await usersRepository.findOne(specialistId);
