@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { getRepository } from 'typeorm';
 
 import CreateScheduleAvailabilityService from '../services/CreateScheduleAvailabilityService';
+import CreateRestTimeService from '../services/CreateRestTimeService';
+import CreateHolidayService from '../services/CreateHolidayService';
 
 import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 
@@ -20,6 +22,33 @@ schedulesRouter.post('/', async (request, response) => {
   );
 
   return response.json(scheduleAvailability);
+});
+
+schedulesRouter.post('/rest', async (request, response) => {
+  const { scheduleAvailabilityId, startTime, endTime } = request.body;
+
+  const createRestTime = new CreateRestTimeService();
+
+  const restTime = await createRestTime.execute({
+    scheduleAvailabilityId,
+    startTime,
+    endTime,
+  });
+
+  return response.json(restTime);
+});
+
+schedulesRouter.post('/holiday', async (request, response) => {
+  const { scheduleAvailabilityId, day } = request.body;
+
+  const createHoliday = new CreateHolidayService();
+
+  const holiday = await createHoliday.execute({
+    scheduleAvailabilityId,
+    day,
+  });
+
+  return response.json(holiday);
 });
 
 schedulesRouter.get('/', async (request, response) => {
