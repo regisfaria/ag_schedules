@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm';
-import { parseISO, isBefore} from 'date-fns';
+import { parseISO, isBefore } from 'date-fns';
 
 import Consult from '../models/Consult';
 import User from '../models/User';
@@ -7,7 +7,7 @@ import Pacient from '../models/Pacient';
 import AppError from '../errors/AppError';
 
 import ConvertStringHourToInt from '../utils/ConvertStringHourToInt';
-import ConvertDateAndHourtoDate from '../utils/ConvertDateAndHourstoDate'
+import ConvertDateAndHourtoDate from '../utils/ConvertDateAndHourstoDate';
 
 interface Request {
   userId: string;
@@ -37,24 +37,25 @@ class CreateConsultService {
 
     const pacient = await pacientsRepository.findOne(pacientId);
     const specialist = await usersRepository.findOne(specialistId);
+    const currentUser = await usersRepository.findOne(userId);
 
     // Check if pacient and specialist exist
-    if(!pacient){
+    if (!pacient) {
       throw new AppError('Paciente Invalido');
     }
 
-    if(!specialist){
+    if (!specialist) {
       throw new AppError('Especialista Invalido');
     }
 
     // Check if pacient and specialist are different
-    if(pacientId === specialistId){
+    if (pacientId === specialistId) {
       throw new AppError('Você não pode criar uma consulta para você mesmo!');
     }
 
     // Check if date is before today
-    const dateParseIso = String(date)
-    const dateFormated = ConvertDateAndHourtoDate(dateParseIso, hour)
+    const dateParseIso = String(date);
+    const dateFormated = ConvertDateAndHourtoDate(dateParseIso, hour);
 
     if (isBefore(dateFormated, Date.now())) {
       throw new AppError('Você não pode criar uma consulta no passado');
@@ -62,15 +63,15 @@ class CreateConsultService {
 
     // Check if specialist has a consult in the same date and hour
     const consultInTheSameHour = await consultsRepository.findOne({
-      where:{
+      where: {
         specialistId,
         date,
-        hour: parsedHour
-      }
-    })
+        hour: parsedHour,
+      },
+    });
 
-    if(consultInTheSameHour){
-      throw new AppError('Horario Indisponivel')
+    if (consultInTheSameHour) {
+      throw new AppError('Horario Indisponivel');
     }
 
     // checks whether the consult is before or after another consult. Remember: All consults has one hour long
@@ -82,7 +83,8 @@ class CreateConsultService {
     }) */
 
     const consult = consultsRepository.create({
-      createdBy: userId,
+      user: currentUser,
+      createdById: userId,
       specialist,
       specialistId,
       pacient,
