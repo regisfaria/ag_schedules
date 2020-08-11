@@ -16,8 +16,12 @@ export default class Consult {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'createdById' })
+  user: User;
+
   @Column()
-  createdBy: string;
+  createdById: string;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'specialistId' })
@@ -28,7 +32,7 @@ export default class Consult {
 
   @ManyToOne(() => Pacient)
   @JoinColumn({ name: 'pacientId' })
-  pacient: User;
+  pacient: Pacient;
 
   @Column()
   pacientId: string;
