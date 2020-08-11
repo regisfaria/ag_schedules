@@ -13,7 +13,7 @@ class CreateScheduleAvailabilityService {
     const days = [0, 1, 2, 3, 4, 5, 6];
 
     const specialistSchedule: ScheduleAvailability[] = [];
-    days.forEach(day => {
+    await days.forEach(day => {
       const scheduleAvailability = schedulesRepository.create({
         specialist,
         specialistId,

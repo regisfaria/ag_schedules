@@ -44,7 +44,8 @@ const RegisterSpecialist: React.FC = () => {
             .oneOf([Yup.ref('email')], 'Os e-mails não são iguais')
             .required('Os e-mails não são iguais')
             .email('Digite um e-mail válido'),
-          password: Yup.string().min(6, 'No mínimo 6 dígitos'),
+          // TODO!! [ ] - ADJUST MIN PASSWORD CHARACTERS
+          password: Yup.string().min(2, 'No mínimo 6 dígitos'),
           confirmPassword: Yup.string()
             .oneOf([Yup.ref('password')], 'As senhas não conferem')
             .required('As senhas não conferem'),
@@ -54,7 +55,8 @@ const RegisterSpecialist: React.FC = () => {
           abortEarly: false,
         });
 
-        await api.post('/users', data);
+        const user = await api.post('/users', data);
+        await api.post('/schedules', { specialistId: user.data.id });
 
         history.push('/dashboard');
 

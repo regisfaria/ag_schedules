@@ -21,6 +21,18 @@ usersRouter.get('/', async (request, response) => {
   return response.json(users);
 });
 
+usersRouter.get('/:id', async (request, response) => {
+  const { id } = request.params;
+
+  const userRepository = getRepository(User);
+
+  const user = await userRepository.findOne(id);
+
+  delete user?.password;
+
+  return response.json(user);
+});
+
 usersRouter.post('/', async (request, response) => {
   const { name, email, password, type } = request.body;
 
@@ -34,12 +46,11 @@ usersRouter.post('/', async (request, response) => {
   });
 
   const createProfile = new CreateProfileService();
+  await createProfile.execute(user);
 
-  const profile = await createProfile.execute(user);
+  delete user.password;
 
-  delete profile.user.password;
-
-  return response.json(profile);
+  return response.json(user);
 });
 
 usersRouter.delete('/:id', async (request, response) => {
