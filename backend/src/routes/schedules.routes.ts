@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getRepository, getCustomRepository } from 'typeorm';
+import { getRepository } from 'typeorm';
 
 import CreateScheduleAvailabilityService from '../services/CreateScheduleAvailabilityService';
 
@@ -23,7 +23,7 @@ schedulesRouter.post('/', async (request, response) => {
 });
 
 schedulesRouter.get('/', async (request, response) => {
-  const schedulesRepository = getCustomRepository(ScheduleAvailability);
+  const schedulesRepository = getRepository(ScheduleAvailability);
 
   const schedules = await schedulesRepository.find();
 
