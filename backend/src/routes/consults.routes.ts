@@ -52,8 +52,6 @@ consultsRouter.get('/:specialistId/date', async (request, response) => {
     where: { specialistId, date: findDate },
   });
 
-  console.log(specialistId);
-
   return response.json(consults);
 });
 

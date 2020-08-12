@@ -35,4 +35,15 @@ profilesRouter.patch(
   },
 );
 
+/* profilesRouter.put('/update', async (request, response) => {
+  // This user id, is reference by authenticate
+  const user_id = request.user.id;
+  const {} = request.body;
+
+
+  const userRepository = getRepository(Profile);
+
+  return response.send();
+});
+ */
 export default profilesRouter;
