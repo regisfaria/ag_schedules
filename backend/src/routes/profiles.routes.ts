@@ -6,6 +6,7 @@ import uploadConfig from '../config/upload';
 import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 import UpdateUserImageService from '../services/UpdateUserImageService';
 import Profile from '../models/Profile';
+import UpdateProfileService from '../services/UpdateProfileService';
 
 const profilesRouter = Router();
 const upload = multer(uploadConfig);
@@ -35,15 +36,34 @@ profilesRouter.patch(
   },
 );
 
-/* profilesRouter.put('/update', async (request, response) => {
+profilesRouter.put('/update', async (request, response) => {
   // This user id, is reference by authenticate
-  const user_id = request.user.id;
-  const {} = request.body;
+  const userId = request.user.id;
 
+  const {
+    description,
+    phoneNumber,
+    city,
+    state,
+    street,
+    cep,
+    addressNumber,
+  } = request.body;
 
-  const userRepository = getRepository(Profile);
+  const updateProfile = new UpdateProfileService();
 
-  return response.send();
+  const profile = await updateProfile.execute({
+    userId,
+    description,
+    phoneNumber,
+    city,
+    state,
+    street,
+    cep,
+    addressNumber,
+  });
+
+  return response.json(profile);
 });
- */
+
 export default profilesRouter;
