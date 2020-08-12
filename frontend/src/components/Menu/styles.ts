@@ -51,6 +51,7 @@ export const SideMenuBox = styled.div<MenuProps>`
   bottom: 0px;
   background-color: var(--white);
   box-shadow: 1px 0 10px 0px var(--black);
+  z-index: 10;
 
   ${props =>
     props.menuState

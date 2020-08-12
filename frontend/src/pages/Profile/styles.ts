@@ -8,9 +8,9 @@ export const Container = styled.div`
 
   width: 100%;
 
-  @media (min-width: 810px) {
+  /* @media (min-width: 810px) {
     height: 100vh;
-  }
+  } */
 `;
 
 export const Header = styled.div`
@@ -18,14 +18,21 @@ export const Header = styled.div`
   align-items: center;
   justify-content: center;
 
+  background: blue;
+
+  width: 100%;
+
+  height: 15.625rem;
+
   img {
+    margin-top: 15.625rem;
     height: 13rem;
     border-radius: 50%;
+    z-index: 1;
   }
 
-  @media (min-width: 430px) {
+  @media (min-width: 600px) {
     img {
-      margin-top: 8rem;
       height: 15rem;
       border-radius: 50%;
     }
@@ -33,71 +40,45 @@ export const Header = styled.div`
 `;
 
 export const Main = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
+  height: 100%;
   width: 100%;
 
-  background: var(--light-blue);
+  padding-top: 50px;
 
   form {
-    input {
-      width: 90% !important;
+    display: grid;
+    grid-gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 400px));
+    align-items: center;
+    justify-content: center;
+
+    div {
+      span {
+        font-size: 1.3rem;
+      }
+      input {
+        margin-bottom: 90px;
+      }
     }
   }
+
+  background: red;
+  /* background: var(--light-blue); */
 
   button {
     width: 15rem;
   }
 
-  @media (min-width: 810px) {
-    width: 90%;
-
-    margin-top: 15px;
-
-    height: 600px;
-
-    border-radius: 10px;
-    box-shadow: 0 1px 4px 2px var(--black);
-
-    overflow-x: hidden;
-    overflow-y: scroll;
-
-    ::-webkit-scrollbar {
-      width: 20px;
-    }
-
-    /* Track */
-    ::-webkit-scrollbar-track {
-      box-shadow: inset 0 0 5px grey;
-      border-radius: 10px;
-    }
-
-    /* Handle */
-    ::-webkit-scrollbar-thumb {
-      background: red;
-      border-radius: 10px;
-    }
-
-    /* Handle on hover */
-    ::-webkit-scrollbar-thumb:hover {
-      background: #b30000;
-    }
-
-    form {
-      margin-top: 4rem;
-      display: flex;
-      flex-direction: row;
-      align-items: flex-start;
-      justify-content: space-around;
-      width: 100%;
-    }
+  @media (min-width: 510px) {
+    font-size: 40%;
   }
 `;
 
 export const ButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   button {
     width: 20rem;
     margin-bottom: 1rem;
