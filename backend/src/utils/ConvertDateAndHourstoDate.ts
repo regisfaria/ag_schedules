@@ -1,6 +1,6 @@
 // This function get the date and hour like as string, and corvert both to typeof Date
 
-function ConvertStringHourToInt(stringDate: string,stringHour: string): Date {
+function ConvertStringHourToInt(stringDate: string, stringHour: string): Date {
   const [unparsedYear, unparsedMonth, unparsedDay] = stringDate.split('-');
 
   const [unparsedHour, unparsedMinutes] = stringHour.split(':');
@@ -12,13 +12,17 @@ function ConvertStringHourToInt(stringDate: string,stringHour: string): Date {
 
   const parsedDay = Number(unparsedDay);
 
-  const parsedHour = Number(unparsedHour)  ;
+  const parsedHour = Number(unparsedHour);
 
   const parsedMinutes = Number(unparsedMinutes);
 
-  const dateFormated = new Date(parsedYear, parsedMonth , parsedDay, parsedHour , parsedMinutes);
-
-  console.log(dateFormated);
+  const dateFormated = new Date(
+    parsedYear,
+    parsedMonth,
+    parsedDay,
+    parsedHour,
+    parsedMinutes,
+  );
 
   return dateFormated;
 }

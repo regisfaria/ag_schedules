@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm';
-import { parseISO, isBefore } from 'date-fns';
+import { isBefore } from 'date-fns';
 
 import Consult from '../models/Consult';
 import User from '../models/User';
@@ -73,14 +73,6 @@ class CreateConsultService {
     if (consultInTheSameHour) {
       throw new AppError('Horario Indisponivel');
     }
-
-    // checks whether the consult is before or after another consult. Remember: All consults has one hour long
-    /* const consultBetweenInThisHour = await consultsRepository.find({
-      where:{
-        specialistId,
-        date,
-      }
-    }) */
 
     const consult = consultsRepository.create({
       user: currentUser,
