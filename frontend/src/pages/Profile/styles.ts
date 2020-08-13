@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import { shade } from 'polished';
 
 import imgProfile from '../../assets/imgProfile.jpg';
 
@@ -38,6 +39,12 @@ export const Header = styled.div`
     img {
       height: 15rem;
       border-radius: 50%;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    img {
+      margin-right: 20px;
     }
   }
 `;
@@ -106,6 +113,7 @@ export const ButtonEditContainer = styled.div<ButtonForEditProps>`
       display: none;
     `}
 `;
+
 export const ButtonSaveAndCancelContainer = styled.div<ButtonForEditProps>`
   display: none;
   align-items: center;
@@ -121,6 +129,10 @@ export const ButtonSaveAndCancelContainer = styled.div<ButtonForEditProps>`
     & + button {
       background: var(--error-red);
       margin-left: 100px;
+
+      &:hover {
+        background: ${shade(0.2, '#c53030')};
+      }
     }
   }
   ${props =>

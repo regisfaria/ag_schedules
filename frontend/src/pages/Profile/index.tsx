@@ -1,7 +1,6 @@
 import React, { useEffect, useState, ChangeEvent, useCallback } from 'react';
 import { Form } from '@unform/web';
 import axios from 'axios';
-import { Link, useHistory } from 'react-router-dom';
 
 import Menu from '../../components/Menu';
 import Input from '../../components/Input';
@@ -9,7 +8,7 @@ import Button from '../../components/Button';
 import Select from '../../components/Select';
 import TextArea from '../../components/TextArea';
 
-import { useToast } from '../../hooks/toast';
+/* import { useToast } from '../../hooks/toast'; */
 
 import {
   Container,
@@ -35,9 +34,7 @@ interface StatesInfo {
 }
 
 const Profile: React.FC = () => {
-  const { addToast } = useToast();
-
-  const history = useHistory();
+  /* const { addToast } = useToast(); */
 
   const [editProfile, setEditProfile] = useState(true);
   const [cancelEditProfile, setCancelEditProfile] = useState(false);
@@ -91,8 +88,6 @@ const Profile: React.FC = () => {
     setSelectedCity(city);
   }
 
-  console.log(editProfile);
-
   const handleEditProfile = useCallback(() => {
     setEditProfile(false);
     setCancelEditProfile(true);
@@ -118,11 +113,27 @@ const Profile: React.FC = () => {
             <section>
               <Input name="name" type="text" text="Nome:&nbsp;" disabled />
 
-              <Input name="email" type="text" text="Email:&nbsp;" />
+              <Input
+                name="email"
+                type="text"
+                text="Email:&nbsp;"
+                id="InputDisable"
+                disabled
+              />
 
-              <Input name="fone" type="text" text="Telefone:&nbsp;" />
+              <Input
+                name="fone"
+                type="text"
+                text="Telefone:&nbsp;"
+                disabled={editProfile}
+              />
 
-              <Input name="cep" type="text" text="CEP:&nbsp;" />
+              <Input
+                name="cep"
+                type="text"
+                text="CEP:&nbsp;"
+                disabled={editProfile}
+              />
             </section>
 
             <section>
@@ -131,6 +142,7 @@ const Profile: React.FC = () => {
                 value={selectedUf}
                 name="uf"
                 id="uf"
+                disabled={editProfile}
               >
                 <option value="" selected hidden>
                   Estado
@@ -147,6 +159,7 @@ const Profile: React.FC = () => {
                 value={selectedCity}
                 name="city"
                 id="city"
+                disabled={editProfile}
               >
                 <option value="" selected hidden>
                   Cidade
@@ -158,18 +171,28 @@ const Profile: React.FC = () => {
                 ))}
               </Select>
 
-              <Input name="street" type="text" text="Rua:&nbsp;" />
+              <Input
+                name="street"
+                type="text"
+                text="Rua:&nbsp;"
+                disabled={editProfile}
+              />
 
               <Input
                 name="addressNumber"
                 type="text"
                 text="Número/Complemento:&nbsp;"
+                disabled={editProfile}
               />
             </section>
           </Form>
           <Form onSubmit={() => {}}>
             <TextAreaContainer>
-              <TextArea name="descrição" placeholder="Descrição:&nbsp;" />
+              <TextArea
+                name="descrição"
+                placeholder="Descrição:&nbsp;"
+                disabled={editProfile}
+              />
             </TextAreaContainer>
           </Form>
 
