@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, /* useEffect, */ useState } from 'react';
+import React, { useCallback, useRef, useEffect, useState } from 'react';
 
 import { FiArrowLeft, FiDollarSign } from 'react-icons/fi';
 
@@ -7,7 +7,7 @@ import { Form } from '@unform/web';
 import * as Yup from 'yup';
 import { Link /* useHistory */ } from 'react-router-dom';
 
-// import api from '../../services/api';
+import api from '../../services/api';
 
 import { useToast } from '../../hooks/toast';
 
@@ -16,7 +16,7 @@ import getValidationErrors from '../../utils/getValidationErrors';
 import Select from '../../components/Select';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
-import ConsultSpecialistDatePicker from '../../components/ConsultSpecialistDatePicker';
+import ConsultEnrolment from '../../components/ConsultEnrolment';
 
 import { Container, Content } from './styles';
 
@@ -43,6 +43,9 @@ const RegisterConsult: React.FC = () => {
         const schema = Yup.object().shape({
           pacient: Yup.string().required('Paciente obrigatório'),
           specialist: Yup.string().required('Especialista obrigatório'),
+          consultDate: Yup.date().required(
+            'Data e Hora da consulta obrigatórias',
+          ),
           payment: Yup.string().required('Pagamento obrigatório'),
           status: Yup.string().required('Status obrigatório'),
         });
@@ -88,10 +91,10 @@ const RegisterConsult: React.FC = () => {
 
       <Container>
         <Content>
-          <Form ref={formRef} onSubmit={printData}>
+          <Form ref={formRef} onSubmit={handleSubmit}>
             <h1>Criar consulta</h1>
 
-            <ConsultSpecialistDatePicker />
+            <ConsultEnrolment />
 
             <Select name="payment" icon={FiDollarSign}>
               <option value="" selected hidden>

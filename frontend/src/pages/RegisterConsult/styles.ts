@@ -21,12 +21,13 @@ export const Content = styled.div`
   place-content: center;
   justify-self: center;
 
-  h1 {
-    align-self: center;
-    text-align: center;
-  }
-
   form {
+    h1 {
+      align-self: center;
+      text-align: center;
+      margin-bottom: 1em;
+    }
+
     align-self: center;
 
     #consultStatus {
