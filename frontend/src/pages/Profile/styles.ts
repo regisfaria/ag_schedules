@@ -1,16 +1,20 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import { shade } from 'polished';
+
+import imgProfile from '../../assets/imgProfile.jpg';
+
+interface ButtonForEditProps {
+  cancel: boolean;
+}
 
 export const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
   width: 100%;
 
-  @media (min-width: 810px) {
+  overflow-x: hidden;
+
+  /* @media (min-width: 810px) {
     height: 100vh;
-  }
+  } */
 `;
 
 export const Header = styled.div`
@@ -18,88 +22,143 @@ export const Header = styled.div`
   align-items: center;
   justify-content: center;
 
+  background: url(${imgProfile});
+
+  height: 15.625rem;
+
+  width: 100vw;
+
   img {
+    margin-top: 15.625rem;
     height: 13rem;
     border-radius: 50%;
+    z-index: 1;
   }
 
-  @media (min-width: 430px) {
+  @media (min-width: 600px) {
     img {
-      margin-top: 8rem;
       height: 15rem;
       border-radius: 50%;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    img {
+      margin-right: 20px;
     }
   }
 `;
 
 export const Main = styled.div`
+  width: 100%;
+
+  padding-top: 80px;
+
+  /* background: red; */
+  background: var(--light-blue);
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  width: 100%;
-
-  background: var(--light-blue);
-
   form {
-    input {
-      width: 90% !important;
-    }
-  }
+    width: 100%;
 
-  button {
-    width: 15rem;
-  }
-
-  @media (min-width: 810px) {
-    width: 90%;
-
-    margin-top: 15px;
-
-    height: 600px;
-
-    border-radius: 10px;
-    box-shadow: 0 1px 4px 2px var(--black);
-
-    overflow-x: hidden;
-    overflow-y: scroll;
-
-    ::-webkit-scrollbar {
-      width: 20px;
-    }
-
-    /* Track */
-    ::-webkit-scrollbar-track {
-      box-shadow: inset 0 0 5px grey;
-      border-radius: 10px;
-    }
-
-    /* Handle */
-    ::-webkit-scrollbar-thumb {
-      background: red;
-      border-radius: 10px;
-    }
-
-    /* Handle on hover */
-    ::-webkit-scrollbar-thumb:hover {
-      background: #b30000;
-    }
-
-    form {
-      margin-top: 4rem;
-      display: flex;
-      flex-direction: row;
-      align-items: flex-start;
-      justify-content: space-around;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    section {
       width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      div {
+        width: 90%;
+        max-width: 900px;
+
+        input {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  @media (min-width: 1024px) {
+    form {
+      flex-direction: row;
     }
   }
 `;
 
-export const ButtonContainer = styled.div`
+export const ButtonEditContainer = styled.div<ButtonForEditProps>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
   button {
-    width: 20rem;
+    width: 90%;
+    max-width: 200px;
+
     margin-bottom: 1rem;
+  }
+
+  ${props =>
+    props.cancel &&
+    css`
+      display: none;
+    `}
+`;
+
+export const ButtonSaveAndCancelContainer = styled.div<ButtonForEditProps>`
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
+  button {
+    width: 90%;
+    max-width: 200px;
+
+    margin-bottom: 1rem;
+
+    & + button {
+      background: var(--error-red);
+      margin-left: 100px;
+
+      &:hover {
+        background: ${shade(0.2, '#c53030')};
+      }
+    }
+  }
+  ${props =>
+    props.cancel &&
+    css`
+      display: flex;
+    `}
+`;
+
+export const TextAreaContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
+  div {
+    width: 90%;
+    height: 300px;
+    max-width: 2200px;
+
+    margin-bottom: 1rem;
+  }
+
+  @media (min-width: 1024px) {
+    div {
+      width: 95%;
+    }
   }
 `;
