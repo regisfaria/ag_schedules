@@ -21,18 +21,6 @@ usersRouter.get('/', async (request, response) => {
   return response.json(users);
 });
 
-usersRouter.get('/:id', async (request, response) => {
-  const { id } = request.params;
-
-  const userRepository = getRepository(User);
-
-  const user = await userRepository.findOne(id);
-
-  delete user?.password;
-
-  return response.json(user);
-});
-
 usersRouter.get('/specialists', async (request, response) => {
   const userRepository = getRepository(User);
 
