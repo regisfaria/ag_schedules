@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, /* useEffect, */ useState } from 'react';
 
 import { FiArrowLeft, FiDollarSign } from 'react-icons/fi';
 
@@ -16,7 +16,7 @@ import getValidationErrors from '../../utils/getValidationErrors';
 import Select from '../../components/Select';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
-import DatePicker from '../../components/DatePicker';
+import ConsultSpecialistDatePicker from '../../components/ConsultSpecialistDatePicker';
 
 import { Container, Content } from './styles';
 
@@ -31,6 +31,7 @@ interface ConsultFormData {
 
 const RegisterConsult: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
+
   const { addToast } = useToast();
   // const history = useHistory();
 
@@ -77,16 +78,20 @@ const RegisterConsult: React.FC = () => {
     [addToast],
   );
 
+  const printData = useCallback((data: ConsultFormData) => {
+    console.log(data);
+  }, []);
+
   return (
     <>
       <Menu />
 
       <Container>
         <Content>
-          <Form ref={formRef} onSubmit={handleSubmit}>
+          <Form ref={formRef} onSubmit={printData}>
             <h1>Criar consulta</h1>
 
-            <DatePicker name="consultDate" text="Data e Horario:" />
+            <ConsultSpecialistDatePicker />
 
             <Select name="payment" icon={FiDollarSign}>
               <option value="" selected hidden>
@@ -99,7 +104,7 @@ const RegisterConsult: React.FC = () => {
             <Input
               type="text"
               name="status"
-              text="Status:&nbsp;"
+              text="Status:"
               value="Em aberto"
               id="consultStatus"
               contentEditable={false}
