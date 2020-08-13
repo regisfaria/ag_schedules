@@ -14,7 +14,7 @@ export const Container = styled.div<ContainerProps>`
   padding: 16px;
   margin-top: 20px;
   margin-bottom: 30px;
-  width: 28rem;
+  width: 100%;
 
   border: 2px solid var(--white);
   color: var(--input-placeholder);
