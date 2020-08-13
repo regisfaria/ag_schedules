@@ -179,7 +179,7 @@ export const MenuOption = styled.div<MenuProps>`
   }
 `;
 
-const disappear = keyframes`
+/* const disappear = keyframes`
   from {
     opacity: 1;
     transform: translateY(0);
@@ -188,7 +188,7 @@ const disappear = keyframes`
     opacity: 0;
     transform: translateY(-25px);
   }
-`;
+`; */
 
 export const DropdownButton = styled.div<DropdownButtonProps>`
   position: relative;

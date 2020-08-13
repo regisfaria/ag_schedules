@@ -1,15 +1,108 @@
-import React, { useRef } from 'react';
-import { FormHandles } from '@unform/core';
+import React, { useEffect, useState, ChangeEvent, useCallback } from 'react';
 import { Form } from '@unform/web';
+import axios from 'axios';
+import { Link, useHistory } from 'react-router-dom';
 
 import Menu from '../../components/Menu';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+import Select from '../../components/Select';
+import TextArea from '../../components/TextArea';
 
-import { Container, Header, Main, ButtonContainer } from './styles';
+import { useToast } from '../../hooks/toast';
+
+import {
+  Container,
+  Header,
+  Main,
+  ButtonEditContainer,
+  TextAreaContainer,
+  ButtonSaveAndCancelContainer,
+} from './styles';
+
+interface IBGEUFResponse {
+  sigla: string;
+  nome: string;
+}
+
+interface IBGECityResponse {
+  nome: string;
+}
+
+interface StatesInfo {
+  uf: string;
+  name: string;
+}
 
 const Profile: React.FC = () => {
-  const formRef = useRef<FormHandles>(null);
+  const { addToast } = useToast();
+
+  const history = useHistory();
+
+  const [editProfile, setEditProfile] = useState(true);
+  const [cancelEditProfile, setCancelEditProfile] = useState(false);
+
+  const [states, setStates] = useState<StatesInfo[]>([{} as StatesInfo]);
+  const [cities, setCities] = useState<string[]>([]);
+  const [selectedCity, setSelectedCity] = useState('0');
+  const [selectedUf, setSelectedUF] = useState('0');
+
+  useEffect(() => {
+    axios
+      .get<IBGEUFResponse[]>(
+        'https://servicodados.ibge.gov.br/api/v1/localidades/estados',
+      )
+      .then(response => {
+        const statesInfo = response.data.map(ufs => {
+          const uf = ufs.sigla;
+          const name = ufs.nome;
+
+          const stateInformation = { uf, name } as StatesInfo;
+
+          return stateInformation;
+        });
+
+        setStates(statesInfo);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (selectedUf === '') {
+      return;
+    }
+    axios
+      .get<IBGECityResponse[]>(
+        `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUf}/municipios`,
+      )
+      .then(response => {
+        const ufCities = response.data.map(city => city.nome);
+
+        setCities(ufCities);
+      });
+  }, [selectedUf]);
+
+  function handleSelectedUf(event: ChangeEvent<HTMLSelectElement>) {
+    const selectUf = event.target.value;
+    setSelectedUF(selectUf);
+  }
+
+  function handleSelectedCity(event: ChangeEvent<HTMLSelectElement>) {
+    const city = event.target.value;
+    setSelectedCity(city);
+  }
+
+  console.log(editProfile);
+
+  const handleEditProfile = useCallback(() => {
+    setEditProfile(false);
+    setCancelEditProfile(true);
+  }, []);
+
+  const handleCancelEditProfile = useCallback(() => {
+    setEditProfile(true);
+    setCancelEditProfile(false);
+  }, []);
+
   return (
     <>
       <Menu />
@@ -22,56 +115,76 @@ const Profile: React.FC = () => {
         </Header>
         <Main>
           <Form onSubmit={() => {}}>
-            <div>
-              <span>Nome</span>
-              <Input name="name" type="text" placeholder="Nome" disabled />
-            </div>
+            <section>
+              <Input name="name" type="text" text="Nome:&nbsp;" disabled />
 
-            <div>
-              <span>E-mail</span>
-              <Input name="email" type="text" placeholder="Nome" />
-            </div>
+              <Input name="email" type="text" text="Email:&nbsp;" />
 
-            <div>
-              <span>Telefone</span>
-              <Input name="fone" type="text" placeholder="Nome" />
-            </div>
+              <Input name="fone" type="text" text="Telefone:&nbsp;" />
 
-            <div>
-              <span>CEP</span>
-              <Input name="andress" type="text" placeholder="cep" />
-            </div>
-            <div>
-              <span>Estado</span>
-              <Input name="andress" type="text" placeholder="Nome" />
-            </div>
-            <div>
-              <span>Cidade</span>
-              <Input name="andress" type="text" placeholder="Nome" />
-            </div>
+              <Input name="cep" type="text" text="CEP:&nbsp;" />
+            </section>
 
-            <div>
-              <span>Rua</span>
-              <Input name="andress" type="text" placeholder="Nome" />
-            </div>
+            <section>
+              <Select
+                onChange={handleSelectedUf}
+                value={selectedUf}
+                name="uf"
+                id="uf"
+              >
+                <option value="" selected hidden>
+                  Estado
+                </option>
+                {states.map(state => (
+                  <option key={state.uf} value={state.uf}>
+                    {state.name}
+                  </option>
+                ))}
+              </Select>
 
-            <div>
-              <span>Número/Complemento</span>
+              <Select
+                onChange={handleSelectedCity}
+                value={selectedCity}
+                name="city"
+                id="city"
+              >
+                <option value="" selected hidden>
+                  Cidade
+                </option>
+                {cities.map(city => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </Select>
+
+              <Input name="street" type="text" text="Rua:&nbsp;" />
+
               <Input
                 name="addressNumber"
                 type="text"
-                placeholder="Número/Complemento"
+                text="Número/Complemento:&nbsp;"
               />
-            </div>
-
-            <div>
-              <span>Descrição</span>
-              <Input name="number" type="text" placeholder="Nome" />
-            </div>
+            </section>
           </Form>
-          <ButtonContainer>
-            <Button>Editar</Button>
-          </ButtonContainer>
+          <Form onSubmit={() => {}}>
+            <TextAreaContainer>
+              <TextArea name="descrição" placeholder="Descrição:&nbsp;" />
+            </TextAreaContainer>
+          </Form>
+
+          <ButtonEditContainer cancel={Boolean(cancelEditProfile)}>
+            <Button type="button" onClick={handleEditProfile}>
+              Editar
+            </Button>
+          </ButtonEditContainer>
+
+          <ButtonSaveAndCancelContainer cancel={Boolean(cancelEditProfile)}>
+            <Button>Salvar</Button>
+            <Button type="button" onClick={handleCancelEditProfile}>
+              Cancelar
+            </Button>
+          </ButtonSaveAndCancelContainer>
         </Main>
       </Container>
     </>
