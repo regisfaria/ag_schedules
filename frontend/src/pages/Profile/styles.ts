@@ -69,19 +69,27 @@ export const Main = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    section {
+
+    main {
       width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
 
-      div {
-        width: 90%;
-        max-width: 900px;
+      section {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        div {
+          width: 90%;
+          max-width: 900px;
 
-        input {
-          width: 100%;
+          input {
+            width: 100%;
+          }
         }
       }
     }
@@ -89,7 +97,9 @@ export const Main = styled.div`
 
   @media (min-width: 1024px) {
     form {
-      flex-direction: row;
+      main {
+        flex-direction: row;
+      }
     }
   }
 `;
