@@ -21,16 +21,32 @@ usersRouter.get('/', async (request, response) => {
   return response.json(users);
 });
 
-usersRouter.get('/:id', async (request, response) => {
-  const { id } = request.params;
-
+usersRouter.get('/specialists', async (request, response) => {
   const userRepository = getRepository(User);
 
-  const user = await userRepository.findOne(id);
+  const users = await userRepository.find({
+    where: { type: 'specialist' },
+  });
 
-  delete user?.password;
+  // eslint-disable-next-line no-param-reassign
+  users.forEach(user => delete user.password);
 
-  return response.json(user);
+  return response.json(users);
+});
+
+usersRouter.get('/agents', async (request, response) => {
+  const userRepository = getRepository(User);
+
+  const users = await userRepository.find({
+    where: {
+      type: 'agent',
+    },
+  });
+
+  // eslint-disable-next-line no-param-reassign
+  users.forEach(user => delete user.password);
+
+  return response.json(users);
 });
 
 usersRouter.post('/', async (request, response) => {

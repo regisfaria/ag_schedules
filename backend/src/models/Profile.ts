@@ -31,7 +31,19 @@ export default class Profile {
   phoneNumber: string;
 
   @Column()
-  address: string;
+  city: string;
+
+  @Column()
+  state: string;
+
+  @Column()
+  street: string;
+
+  @Column()
+  addressNumber: string;
+
+  @Column()
+  cep: string;
 
   @CreateDateColumn()
   createdAt: Date;
