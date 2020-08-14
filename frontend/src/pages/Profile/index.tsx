@@ -32,12 +32,11 @@ interface StatesInfo {
   uf: string;
   name: string;
 }
+let controlEdit = true;
 
 const Profile: React.FC = () => {
   /* const { addToast } = useToast(); */
-
-  const [editProfile, setEditProfile] = useState(true);
-  const [cancelEditProfile, setCancelEditProfile] = useState(false);
+  const [editProfile, setEditProfile] = useState(!controlEdit);
 
   const [states, setStates] = useState<StatesInfo[]>([{} as StatesInfo]);
   const [cities, setCities] = useState<string[]>([]);
@@ -89,13 +88,8 @@ const Profile: React.FC = () => {
   }
 
   const handleEditProfile = useCallback(() => {
-    setEditProfile(false);
-    setCancelEditProfile(true);
-  }, []);
-
-  const handleCancelEditProfile = useCallback(() => {
-    setEditProfile(true);
-    setCancelEditProfile(false);
+    controlEdit = !controlEdit;
+    setEditProfile(!controlEdit);
   }, []);
 
   return (
@@ -110,101 +104,102 @@ const Profile: React.FC = () => {
         </Header>
         <Main>
           <Form onSubmit={() => {}}>
-            <section>
-              <Input name="name" type="text" text="Nome:&nbsp;" disabled />
+            <main>
+              <section>
+                <Input name="name" type="text" text="Nome:&nbsp;" disabled />
 
-              <Input
-                name="email"
-                type="text"
-                text="Email:&nbsp;"
-                id="InputDisable"
-                disabled
-              />
+                <Input
+                  name="email"
+                  type="text"
+                  text="Email:&nbsp;"
+                  id="InputDisable"
+                  disabled
+                />
 
-              <Input
-                name="fone"
-                type="text"
-                text="Telefone:&nbsp;"
-                disabled={editProfile}
-              />
+                <Input
+                  name="fone"
+                  type="text"
+                  text="Telefone:&nbsp;"
+                  disabled={!editProfile}
+                />
 
-              <Input
-                name="cep"
-                type="text"
-                text="CEP:&nbsp;"
-                disabled={editProfile}
-              />
-            </section>
+                <Input
+                  name="cep"
+                  type="text"
+                  text="CEP:&nbsp;"
+                  disabled={!editProfile}
+                />
+              </section>
 
-            <section>
-              <Select
-                onChange={handleSelectedUf}
-                value={selectedUf}
-                name="uf"
-                id="uf"
-                disabled={editProfile}
-              >
-                <option value="" selected hidden>
-                  Estado
-                </option>
-                {states.map(state => (
-                  <option key={state.uf} value={state.uf}>
-                    {state.name}
+              <section>
+                <Select
+                  onChange={handleSelectedUf}
+                  value={selectedUf}
+                  name="uf"
+                  id="uf"
+                  disabled={!editProfile}
+                >
+                  <option value="" selected hidden>
+                    Estado
                   </option>
-                ))}
-              </Select>
+                  {states.map(state => (
+                    <option key={state.uf} value={state.uf}>
+                      {state.name}
+                    </option>
+                  ))}
+                </Select>
 
-              <Select
-                onChange={handleSelectedCity}
-                value={selectedCity}
-                name="city"
-                id="city"
-                disabled={editProfile}
-              >
-                <option value="" selected hidden>
-                  Cidade
-                </option>
-                {cities.map(city => (
-                  <option key={city} value={city}>
-                    {city}
+                <Select
+                  onChange={handleSelectedCity}
+                  value={selectedCity}
+                  name="city"
+                  id="city"
+                  disabled={!editProfile}
+                >
+                  <option value="" selected hidden>
+                    Cidade
                   </option>
-                ))}
-              </Select>
+                  {cities.map(city => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
+                </Select>
 
-              <Input
-                name="street"
-                type="text"
-                text="Rua:&nbsp;"
-                disabled={editProfile}
-              />
+                <Input
+                  name="street"
+                  type="text"
+                  text="Rua:&nbsp;"
+                  disabled={!editProfile}
+                />
 
-              <Input
-                name="addressNumber"
-                type="text"
-                text="Número/Complemento:&nbsp;"
-                disabled={editProfile}
-              />
-            </section>
-          </Form>
-          <Form onSubmit={() => {}}>
+                <Input
+                  name="addressNumber"
+                  type="text"
+                  text="Número/Complemento:&nbsp;"
+                  disabled={!editProfile}
+                />
+              </section>
+            </main>
+
             <TextAreaContainer>
               <TextArea
                 name="descrição"
                 placeholder="Descrição:&nbsp;"
-                disabled={editProfile}
+                disabled={!editProfile}
               />
             </TextAreaContainer>
           </Form>
 
-          <ButtonEditContainer cancel={Boolean(cancelEditProfile)}>
+          <ButtonEditContainer cancel={Boolean(editProfile)}>
             <Button type="button" onClick={handleEditProfile}>
               Editar
             </Button>
           </ButtonEditContainer>
 
-          <ButtonSaveAndCancelContainer cancel={Boolean(cancelEditProfile)}>
+          <ButtonSaveAndCancelContainer cancel={Boolean(editProfile)}>
             <Button>Salvar</Button>
-            <Button type="button" onClick={handleCancelEditProfile}>
+            <Button type="button" onClick={handleEditProfile}>
               Cancelar
             </Button>
           </ButtonSaveAndCancelContainer>
