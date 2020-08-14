@@ -41,7 +41,7 @@ const ConsultEnrolment: React.FC = () => {
   const [date, setDate] = useState(defaultValue || null);
   const [pacients, setPacients] = useState<PacientResponse[]>([]);
   const [specialists, setSpecialists] = useState<SpecialistResponse[]>([]);
-  const [selectedSpecialist, setSelectedSpecialist] = useState('');
+  const [selectedSpecialistId, setSelectedSpecialistId] = useState('');
 
   useEffect(() => {
     registerField({
@@ -72,7 +72,7 @@ const ConsultEnrolment: React.FC = () => {
     (event: ChangeEvent<HTMLSelectElement>) => {
       const selectSpecialistId = event.target.value;
       console.log(selectSpecialistId);
-      setSelectedSpecialist(selectSpecialistId);
+      setSelectedSpecialistId(selectSpecialistId);
     },
     [],
   );
