@@ -16,6 +16,8 @@ export const Container = styled.div<ContainerProps>`
   margin-bottom: 30px;
   width: 100%;
 
+  font: 16px Poppins, sans-serifa;
+
   border: 2px solid var(--white);
   color: var(--input-placeholder);
 
