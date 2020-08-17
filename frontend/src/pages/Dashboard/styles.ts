@@ -22,22 +22,6 @@ export const Container = styled.div`
       text-align: center;
     }
   }
-
-  @media (min-width: 600px) {
-    div {
-      width: 90%;
-      height: 90%;
-
-      border-radius: 20px;
-      box-shadow: 0 1px 4px 2px var(--black);
-
-      h1 {
-        font-weight: 500px;
-        color: var(--table-black);
-        text-align: center;
-      }
-    }
-  }
 `;
 
 // export const CalendarSection = styled.div`

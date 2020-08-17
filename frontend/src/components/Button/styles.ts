@@ -2,15 +2,19 @@ import styled from 'styled-components';
 import { shade } from 'polished';
 
 export const Container = styled.button`
+  height: 5rem;
+  width: 90%;
+  max-width: 20rem;
+
   background: #09644b;
-  height: 54px;
   border: 0px;
   border-radius: 10px;
-  padding: 0 16px;
-  margin-top: 16px;
-  width: 100%;
   color: var(--white);
   font-weight: 700;
+
+  padding: 0 1.6rem;
+  margin-bottom: 1rem;
+
   transition: background-color 0.2s;
 
   &:hover {

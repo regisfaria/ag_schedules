@@ -1,45 +1,25 @@
 import styled, { keyframes } from 'styled-components';
 import { shade } from 'polished';
 
+import doctorImg from '../../assets/doctor.svg';
+
 export const Container = styled.div`
-  width: 60%;
-  margin: 0 auto;
-  margin-top: 50px;
-  border-radius: 40px;
-  box-shadow: 0 1px 4px 2px var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  /* cellphone view */
-  @media (max-width: 600px) {
-    margin: 0;
-    margin-top: 0;
-
-    border-radius: 0;
-    width: 100%;
-    box-shadow: none;
-
-    h1 {
-      padding-top: 5px;
-    }
-  }
-`;
-
-export const Content = styled.div`
+  height: 100vh;
   width: 100%;
 
-  display: flex;
-  align-items: stretch;
+  background-image: url(${doctorImg});
+  /* background-position: center; */
+  background-position: right bottom;
+  background-repeat: no-repeat;
+  background-size: 50rem;
+  background-color: var(--light-blue);
 
-  background: var(--light-blue);
-
-  place-content: center;
-  justify-self: center;
-  border-radius: 50px;
-
-  /* cellphone view */
-  @media (max-width: 600px) {
-    border-radius: 0;
-    margin-bottom: 0;
-    height: 100vh;
+  @media only screen and (max-width: 450px) and (min-height: 500px) and (max-height: 680px) {
+    height: 100%;
   }
 `;
 
@@ -57,29 +37,22 @@ const appearFromLeft = keyframes`
 export const AnimatedContent = styled.div`
   display: flex;
   flex-direction: column;
-
-  place-content: center;
   align-items: center;
-  justify-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+  max-height: 90rem;
 
   animation: ${appearFromLeft} 1s;
 
   form {
-    margin: 40px 0 20px 0;
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
-    text-align: center;
-
-    h1 {
-      margin-top: 10px;
-      margin-bottom: 26px;
-      font-weight: 500;
-      color: var(--table-black);
-    }
-
-    #userType {
-      text-align: center;
-    }
+    width: 90%;
   }
 
   > a {
@@ -87,8 +60,7 @@ export const AnimatedContent = styled.div`
     transition: color 0.2s;
     text-decoration: none;
 
-    margin-top: 24px;
-    margin-bottom: 30px;
+    margin: 1rem;
 
     display: flex;
     align-items: center;
@@ -99,16 +71,6 @@ export const AnimatedContent = styled.div`
 
     &:hover {
       color: ${shade(0.2, '#09644b')};
-    }
-  }
-
-  /* cellphone view */
-  @media (max-width: 600px) {
-    border-radius: 0;
-    margin-bottom: 0;
-
-    form {
-      margin: 0;
     }
   }
 `;

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import ImgContent from '../../assets/bg.jpg';
 
 export const LoginWindow = styled.div`
   display: flex;
@@ -8,6 +9,8 @@ export const LoginWindow = styled.div`
 
   width: 100%;
   height: 100vh;
+
+  background: url(${ImgContent});
 `;
 
 export const Content = styled.div`
@@ -21,8 +24,8 @@ export const Content = styled.div`
 
   img {
     width: 95%;
-    max-width: 350px;
-    margin: 20px 0 20px 0;
+    max-width: 35rem;
+    margin: 2rem 0 0 0;
   }
 
   background: var(--light-blue);
@@ -36,16 +39,17 @@ export const Content = styled.div`
     align-items: center;
     justify-content: center;
 
+    width: 90%;
+
     strong {
       text-align: center;
       font-size: 18px;
       color: var(--table-black);
-      margin: 15px;
+      margin: 1rem;
     }
 
     div {
       margin-top: 0;
-      width: 90%;
 
       input {
         width: 100%;

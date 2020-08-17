@@ -8,13 +8,32 @@ interface ButtonForEditProps {
 }
 
 export const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
   width: 100%;
 
   overflow-x: hidden;
 
-  /* @media (min-width: 810px) {
-    height: 100vh;
-  } */
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 80px;
+
+    width: 90%;
+  }
+
+  @media (min-width: 1024px) {
+    form {
+      main {
+        flex-direction: row;
+      }
+    }
+  }
 `;
 
 export const Header = styled.div`
@@ -41,67 +60,6 @@ export const Header = styled.div`
       border-radius: 50%;
     }
   }
-
-  @media (min-width: 1024px) {
-    img {
-      margin-right: 20px;
-    }
-  }
-`;
-
-export const Main = styled.div`
-  width: 100%;
-
-  padding-top: 80px;
-
-  /* background: red; */
-  background: var(--light-blue);
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  form {
-    width: 100%;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    main {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-
-      section {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        div {
-          width: 90%;
-          max-width: 900px;
-
-          input {
-            width: 100%;
-          }
-        }
-      }
-    }
-  }
-
-  @media (min-width: 1024px) {
-    form {
-      main {
-        flex-direction: row;
-      }
-    }
-  }
 `;
 
 export const ButtonEditContainer = styled.div<ButtonForEditProps>`
@@ -109,13 +67,6 @@ export const ButtonEditContainer = styled.div<ButtonForEditProps>`
   align-items: center;
   justify-content: center;
   width: 100%;
-
-  button {
-    width: 90%;
-    max-width: 200px;
-
-    margin-bottom: 1rem;
-  }
 
   ${props =>
     props.cancel &&
@@ -127,18 +78,14 @@ export const ButtonEditContainer = styled.div<ButtonForEditProps>`
 export const ButtonSaveAndCancelContainer = styled.div<ButtonForEditProps>`
   display: none;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
   width: 100%;
 
   button {
-    width: 90%;
-    max-width: 200px;
-
-    margin-bottom: 1rem;
-
+    max-width: 10rem;
+    padding: 0;
     & + button {
       background: var(--error-red);
-      margin-left: 100px;
 
       &:hover {
         background: ${shade(0.2, '#c53030')};
@@ -150,6 +97,23 @@ export const ButtonSaveAndCancelContainer = styled.div<ButtonForEditProps>`
     css`
       display: flex;
     `}
+
+  @media (min-width: 460px) {
+    button {
+      max-width: 15rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    justify-content: center;
+    button {
+      max-width: 20rem;
+
+      & + button {
+        margin-left: 10rem;
+      }
+    }
+  }
 `;
 
 export const TextAreaContainer = styled.div`
@@ -157,18 +121,4 @@ export const TextAreaContainer = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-
-  div {
-    width: 90%;
-    height: 300px;
-    max-width: 2200px;
-
-    margin-bottom: 1rem;
-  }
-
-  @media (min-width: 1024px) {
-    div {
-      width: 95%;
-    }
-  }
 `;
