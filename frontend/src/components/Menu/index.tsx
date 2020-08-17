@@ -11,6 +11,7 @@ import {
 import { FaUserMd, FaUserTie, FaUserPlus } from 'react-icons/fa';
 import { RiContactsBook2Line } from 'react-icons/ri';
 import { AiOutlineFileSearch } from 'react-icons/ai';
+import { BsPersonFill } from 'react-icons/bs';
 
 import { useAuth } from '../../hooks/auth';
 
@@ -87,6 +88,12 @@ const Menu: React.FC = () => {
         </Logout>
 
         <MenuOption menuState={menuState}>
+          <Link to="/profile">
+            <div>
+              <BsPersonFill size={16} />
+              <p>Perfil</p>
+            </div>
+          </Link>
           <Link to="/dashboard">
             <div>
               <FiLayers size={16} />

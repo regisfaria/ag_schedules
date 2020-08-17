@@ -15,9 +15,11 @@ import getValidationErrors from '../../utils/getValidationErrors';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
-import { Container, Content, AnimatedContent } from './styles';
+import { Container, AnimatedContent } from './styles';
 
 import Menu from '../../components/Menu';
+import Section from '../../components/Section';
+import PageHeader from '../../components/PageHeader';
 
 interface SignUpFormData {
   name: string;
@@ -88,11 +90,11 @@ const RegisterAgent: React.FC = () => {
       <Menu />
 
       <Container>
-        <Content>
-          <AnimatedContent>
-            <Form ref={formRef} onSubmit={handleSubmit}>
-              <h1>Cadastre um Agente</h1>
+        <AnimatedContent>
+          <PageHeader title="Cadastre um Agente" />
 
+          <Form ref={formRef} onSubmit={handleSubmit}>
+            <Section>
               <Input name="name" icon={FiUser} type="text" placeholder="Nome" />
               <Input
                 name="email"
@@ -128,15 +130,15 @@ const RegisterAgent: React.FC = () => {
                 contentEditable={false}
                 disabled
               />
+            </Section>
 
-              <Button type="submit">Cadastrar</Button>
-            </Form>
+            <Button type="submit">Cadastrar</Button>
+          </Form>
 
-            <Link to="/dashboard">
-              <FiArrowLeft /> Voltar para o Dashboard
-            </Link>
-          </AnimatedContent>
-        </Content>
+          <Link to="/dashboard">
+            <FiArrowLeft /> Voltar para o Dashboard
+          </Link>
+        </AnimatedContent>
       </Container>
     </>
   );
