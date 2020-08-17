@@ -31,6 +31,16 @@ export default class CreateUserTable1595939243928
             name: 'type',
             type: 'varchar',
           },
+          {
+            name: 'active',
+            type: 'boolean',
+          },
+          {
+            name: 'deletedAt',
+            type: 'timestamp',
+            isNullable: true,
+            default: null,
+          },
         ],
       }),
     );

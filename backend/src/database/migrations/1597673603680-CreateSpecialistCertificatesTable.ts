@@ -5,12 +5,12 @@ import {
   TableForeignKey,
 } from 'typeorm';
 
-export default class CreateProfileTable1595939256528
+export default class CreateSpecialistCertificatesTable1597673603680
   implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'profiles',
+        name: 'certificates',
         columns: [
           {
             name: 'id',
@@ -20,28 +20,12 @@ export default class CreateProfileTable1595939256528
             default: 'uuid_generate_v4()',
           },
           {
-            name: 'userId',
+            name: 'specialistProfileId',
             type: 'uuid',
           },
           {
-            name: 'image',
+            name: 'certificate',
             type: 'varchar',
-            isNullable: true,
-          },
-          {
-            name: 'description',
-            type: 'varchar',
-            isNullable: true,
-          },
-          {
-            name: 'phoneNumber',
-            type: 'varchar',
-            isNullable: true,
-          },
-          {
-            name: 'address',
-            type: 'varchar',
-            isNullable: true,
           },
           {
             name: 'createdAt',
@@ -53,26 +37,31 @@ export default class CreateProfileTable1595939256528
             type: 'timestamp',
             default: 'now()',
           },
+          {
+            name: 'deletedAt',
+            type: 'timestamp',
+            isNullable: true,
+            default: null,
+          },
         ],
       }),
     );
 
     await queryRunner.createForeignKey(
-      'profiles',
+      'certificates',
       new TableForeignKey({
-        name: 'UserProfile',
-        columnNames: ['userId'],
+        name: 'SpecialistCertificates',
+        columnNames: ['specialistProfileId'],
         referencedColumnNames: ['id'],
-        referencedTableName: 'users',
-        onDelete: 'SET NULL',
+        referencedTableName: 'specialist_profiles',
         onUpdate: 'CASCADE',
       }),
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropForeignKey('profiles', 'UserProfile');
+    await queryRunner.dropForeignKey('certificates', 'SpecialistCertificates');
 
-    await queryRunner.dropTable('profile');
+    await queryRunner.dropTable('certificates');
   }
 }

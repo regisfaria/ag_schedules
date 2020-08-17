@@ -62,12 +62,11 @@ usersRouter.post('/', async (request, response) => {
   });
 
   const createProfile = new CreateProfileService();
+  await createProfile.execute(user);
 
-  const profile = await createProfile.execute(user);
+  delete user.password;
 
-  delete profile.user.password;
-
-  return response.json(profile);
+  return response.json(user);
 });
 
 usersRouter.delete('/:id', async (request, response) => {

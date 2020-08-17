@@ -5,12 +5,12 @@ import {
   TableForeignKey,
 } from 'typeorm';
 
-export default class CreateRestTimeTable1596823630152
+export default class CreateHolidaysTable1597083884227
   implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'rest_times',
+        name: 'holidays',
         columns: [
           {
             name: 'id',
@@ -24,12 +24,8 @@ export default class CreateRestTimeTable1596823630152
             type: 'uuid',
           },
           {
-            name: 'startTime',
-            type: 'int',
-          },
-          {
-            name: 'endTime',
-            type: 'int',
+            name: 'day',
+            type: 'date',
           },
           {
             name: 'createdAt',
@@ -52,9 +48,9 @@ export default class CreateRestTimeTable1596823630152
     );
 
     await queryRunner.createForeignKey(
-      'rest_times',
+      'holidays',
       new TableForeignKey({
-        name: 'ScheduledRestTime',
+        name: 'ScheduledHolidays',
         columnNames: ['scheduleAvailabilityId'],
         referencedColumnNames: ['id'],
         referencedTableName: 'schedules_availability',
@@ -64,8 +60,8 @@ export default class CreateRestTimeTable1596823630152
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropForeignKey('rest_times', 'ScheduledRestTime');
+    await queryRunner.dropForeignKey('holidays', 'ScheduledHolidays');
 
-    await queryRunner.dropTable('rest_times');
+    await queryRunner.dropTable('holidays');
   }
 }

@@ -5,12 +5,12 @@ import {
   TableForeignKey,
 } from 'typeorm';
 
-export default class CreateRestTimeTable1596823630152
+export default class CreateConsultAttachmentsTable1597683048668
   implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'rest_times',
+        name: 'consult_attachments',
         columns: [
           {
             name: 'id',
@@ -20,16 +20,12 @@ export default class CreateRestTimeTable1596823630152
             default: 'uuid_generate_v4()',
           },
           {
-            name: 'scheduleAvailabilityId',
+            name: 'consultId',
             type: 'uuid',
           },
           {
-            name: 'startTime',
-            type: 'int',
-          },
-          {
-            name: 'endTime',
-            type: 'int',
+            name: 'attachment',
+            type: 'varchar',
           },
           {
             name: 'createdAt',
@@ -52,20 +48,23 @@ export default class CreateRestTimeTable1596823630152
     );
 
     await queryRunner.createForeignKey(
-      'rest_times',
+      'consult_attachments',
       new TableForeignKey({
-        name: 'ScheduledRestTime',
-        columnNames: ['scheduleAvailabilityId'],
+        name: 'ConsultAttachment',
+        columnNames: ['consultId'],
         referencedColumnNames: ['id'],
-        referencedTableName: 'schedules_availability',
+        referencedTableName: 'consults',
         onUpdate: 'CASCADE',
       }),
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropForeignKey('rest_times', 'ScheduledRestTime');
+    await queryRunner.dropForeignKey(
+      'consult_attachments',
+      'ConsultAttachment',
+    );
 
-    await queryRunner.dropTable('rest_times');
+    await queryRunner.dropTable('consult_attachments');
   }
 }
