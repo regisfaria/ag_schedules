@@ -41,6 +41,12 @@ export default class CreateRestTimeTable1596823630152
             type: 'timestamp',
             default: 'now()',
           },
+          {
+            name: 'deletedAt',
+            type: 'timestamp',
+            isNullable: true,
+            default: null,
+          },
         ],
       }),
     );
@@ -52,7 +58,6 @@ export default class CreateRestTimeTable1596823630152
         columnNames: ['scheduleAvailabilityId'],
         referencedColumnNames: ['id'],
         referencedTableName: 'schedules_availability',
-        onDelete: 'SET NULL',
         onUpdate: 'CASCADE',
       }),
     );

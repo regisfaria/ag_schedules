@@ -45,6 +45,12 @@ export default class CreateScheduleAvailabilityTable1596722891712
             type: 'timestamp',
             default: 'now()',
           },
+          {
+            name: 'deletedAt',
+            type: 'timestamp',
+            isNullable: true,
+            default: null,
+          },
         ],
       }),
     );
@@ -56,7 +62,6 @@ export default class CreateScheduleAvailabilityTable1596722891712
         columnNames: ['specialistId'],
         referencedColumnNames: ['id'],
         referencedTableName: 'users',
-        onDelete: 'SET NULL',
         onUpdate: 'CASCADE',
       }),
     );
