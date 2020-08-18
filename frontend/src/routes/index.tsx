@@ -8,12 +8,14 @@ import Dashboard from '../pages/Dashboard';
 import RegisterSpecialist from '../pages/RegisterSpecialist';
 import RegisterSupervisor from '../pages/RegisterSupervisor';
 import RegisterPacient from '../pages/RegisterPacient';
+import RegisterConsult from '../pages/RegisterConsult';
 import Profile from '../pages/Profile';
 
 const Routes: React.FC = () => (
   <Switch>
     <Route path="/" exact component={Login} />
     <Route path="/dashboard" component={Dashboard} isPrivate />
+    <Route path="/consults/create" component={RegisterConsult} isPrivate />
     <Route
       path="/register/specialist"
       component={RegisterSpecialist}

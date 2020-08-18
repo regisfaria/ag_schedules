@@ -110,7 +110,7 @@ const Menu: React.FC = () => {
               </p>
               <div>
                 <SpecialistLockedLinkContainer role={userData as string}>
-                  <Link to="/consults/new">
+                  <Link to="/consults/create">
                     <FiFilePlus />
                     Criar Consultas
                   </Link>
