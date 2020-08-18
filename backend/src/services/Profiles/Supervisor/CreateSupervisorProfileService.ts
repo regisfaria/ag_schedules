@@ -16,6 +16,10 @@ export default class CreateSupervisorProfileService {
       throw new AppError('Nenhum usuario com este ID foi encontrado.');
     }
 
+    if (user.type !== 'supervisor') {
+      throw new AppError('O usuario precisa ser um supervisor.');
+    }
+
     const supervisorProfile = supervisorProfilesRepository.create({
       user,
       userId,

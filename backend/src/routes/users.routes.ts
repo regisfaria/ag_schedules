@@ -2,12 +2,17 @@
 import { Router } from 'express';
 import { getRepository } from 'typeorm';
 
+import ensureAuthenticated from '../middlewares/ensureAuthenticated';
+
 import CreateUserService from '../services/Users/CreateUserService';
+// // Para criar usuarios do tipo ADMIN, descomente abaixo
+// import CreateAdminUserService from '../services/Users/CreateAdminUserService';
 import DeleteUserService from '../services/Users/DeleteUserService';
 
 import User from '../models/User';
 
 const usersRouter = Router();
+usersRouter.use(ensureAuthenticated);
 
 usersRouter.get('/', async (request, response) => {
   const userRepository = getRepository(User);
@@ -64,6 +69,25 @@ usersRouter.post('/', async (request, response) => {
 
   return response.json(user);
 });
+
+// // Para criar usuarios do tipo ADMIN, descomente
+// usersRouter.post('/admin', async (request, response) => {
+//   const { name, email, password, type } = request.body;
+
+//   const createAdminUser = new CreateAdminUserService();
+
+//   const user = await createAdminUser.execute({
+//     name,
+//     email,
+//     password,
+//     type,
+//     active: true,
+//   });
+
+//   delete user.password;
+
+//   return response.json(user);
+// });
 
 usersRouter.delete('/:id', async (request, response) => {
   const { id } = request.params;

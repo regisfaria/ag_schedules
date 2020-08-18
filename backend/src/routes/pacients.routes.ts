@@ -20,8 +20,8 @@ pacientsRouter.get('/', async (request, response) => {
   return response.json(pacient);
 });
 
-pacientsRouter.get('/supervisor/:id', async (request, response) => {
-  const { supervisorId } = request.params;
+pacientsRouter.get('/supervisor', async (request, response) => {
+  const supervisorId = request.user.id;
 
   const pacientsRepository = getRepository(Pacient);
 

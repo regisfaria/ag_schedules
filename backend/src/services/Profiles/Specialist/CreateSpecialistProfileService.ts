@@ -16,6 +16,10 @@ export default class CreateSpecialistProfileService {
       throw new AppError('Nenhum usuario com este ID foi encontrado.');
     }
 
+    if (user.type !== 'specialist') {
+      throw new AppError('O usuario precisa ser um especialista.');
+    }
+
     const specialistProfile = specialistProfilesRepository.create({
       user,
       userId,

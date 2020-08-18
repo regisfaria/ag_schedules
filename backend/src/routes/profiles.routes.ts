@@ -89,7 +89,7 @@ profilesRouter.patch(
   },
 );
 
-profilesRouter.put('/specialist/update', async (request, response) => {
+profilesRouter.put('/specialist', async (request, response) => {
   // This user id, is reference by authenticate
   const userId = request.user.id;
 
@@ -119,7 +119,7 @@ profilesRouter.put('/specialist/update', async (request, response) => {
   return response.json(specialistProfile);
 });
 
-profilesRouter.put('/supervisor/update', async (request, response) => {
+profilesRouter.put('/supervisor', async (request, response) => {
   // This user id, is reference by authenticate
   const userId = request.user.id;
 
