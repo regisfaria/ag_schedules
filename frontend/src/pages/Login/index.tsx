@@ -13,6 +13,8 @@ import getValidationErrors from '../../utils/getValidationErrors';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
+import logoImg from '../../assets/logo.png';
+
 interface LoginForm {
   email: string;
   password: string;
@@ -69,8 +71,9 @@ const Login: React.FC = () => {
   return (
     <LoginWindow>
       <Content>
+        <img src={logoImg} alt="Logo" />
         <Form ref={formRef} onSubmit={handleSubmit}>
-          <h1>Faça o Login para entrar</h1>
+          <strong>Faça o Login para entrar</strong>
 
           <Input name="email" icon={FiMail} placeholder="E-mail" />
 

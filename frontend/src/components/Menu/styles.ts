@@ -51,6 +51,7 @@ export const SideMenuBox = styled.div<MenuProps>`
   bottom: 0px;
   background-color: var(--white);
   box-shadow: 1px 0 10px 0px var(--black);
+  z-index: 10;
 
   ${props =>
     props.menuState
@@ -178,7 +179,7 @@ export const MenuOption = styled.div<MenuProps>`
   }
 `;
 
-const disappear = keyframes`
+/* const disappear = keyframes`
   from {
     opacity: 1;
     transform: translateY(0);
@@ -187,7 +188,7 @@ const disappear = keyframes`
     opacity: 0;
     transform: translateY(-25px);
   }
-`;
+`; */
 
 export const DropdownButton = styled.div<DropdownButtonProps>`
   position: relative;

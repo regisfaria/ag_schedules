@@ -5,8 +5,8 @@ import Pacient from '../models/Pacient';
 
 import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 
-import CreatePacientService from '../services/CreatePacientService';
-import DeletePacientService from '../services/DeletePacientService';
+import CreatePacientService from '../services/Pacients/CreatePacientService';
+import DeletePacientService from '../services/Pacients/DeletePacientService';
 
 const pacientsRouter = Router();
 
@@ -18,6 +18,16 @@ pacientsRouter.get('/', async (request, response) => {
   const pacient = await pacientsRepository.find();
 
   return response.json(pacient);
+});
+
+pacientsRouter.get('/supervisor', async (request, response) => {
+  const supervisorId = request.user.id;
+
+  const pacientsRepository = getRepository(Pacient);
+
+  const pacients = await pacientsRepository.find({ where: { supervisorId } });
+
+  return response.json(pacients);
 });
 
 pacientsRouter.post('/', async (request, response) => {
@@ -35,9 +45,12 @@ pacientsRouter.post('/', async (request, response) => {
     description,
   } = request.body;
 
+  const supervisorId = request.user.id;
+
   const createPacient = new CreatePacientService();
 
   const pacient = await createPacient.execute({
+    supervisorId,
     name,
     bornDate,
     cpf,

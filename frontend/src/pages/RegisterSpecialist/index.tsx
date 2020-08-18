@@ -15,9 +15,11 @@ import getValidationErrors from '../../utils/getValidationErrors';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
-import { Container, Content, AnimatedContent } from './styles';
+import { Container, AnimatedContent } from './styles';
 
 import Menu from '../../components/Menu';
+import Section from '../../components/Section';
+import PageHeader from '../../components/PageHeader';
 
 interface SignUpFormData {
   name: string;
@@ -56,7 +58,8 @@ const RegisterSpecialist: React.FC = () => {
         });
 
         const user = await api.post('/users', data);
-        await api.post('/schedules', { specialistId: user.data.id });
+        await api.post('/profiles/specialist', { userId: user.data.id });
+        // await api.post('/schedules', { specialistId: user.data.id });
 
         history.push('/dashboard');
 
@@ -90,11 +93,11 @@ const RegisterSpecialist: React.FC = () => {
       <Menu />
 
       <Container>
-        <Content>
-          <AnimatedContent>
-            <Form ref={formRef} onSubmit={handleSubmit}>
-              <h1>Cadastre um Especialista</h1>
+        <AnimatedContent>
+          <PageHeader title="Cadastre um Especialista" />
 
+          <Form ref={formRef} onSubmit={handleSubmit}>
+            <Section>
               <Input name="name" icon={FiUser} type="text" placeholder="Nome" />
               <Input
                 name="email"
@@ -130,15 +133,15 @@ const RegisterSpecialist: React.FC = () => {
                 contentEditable={false}
                 disabled
               />
+            </Section>
 
-              <Button type="submit">Cadastrar</Button>
-            </Form>
+            <Button type="submit">Cadastrar</Button>
+          </Form>
 
-            <Link to="/dashboard">
-              <FiArrowLeft /> Voltar para o Dashboard
-            </Link>
-          </AnimatedContent>
-        </Content>
+          <Link to="/dashboard">
+            <FiArrowLeft /> Voltar para o Dashboard
+          </Link>
+        </AnimatedContent>
       </Container>
     </>
   );

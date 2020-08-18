@@ -1,4 +1,9 @@
-import { MigrationInterface, QueryRunner, Table } from 'typeorm';
+import {
+  MigrationInterface,
+  QueryRunner,
+  Table,
+  TableForeignKey,
+} from 'typeorm';
 
 export default class CreatePacientTable1596038066725
   implements MigrationInterface {
@@ -12,6 +17,10 @@ export default class CreatePacientTable1596038066725
             type: 'uuid',
             isPrimary: true,
             default: 'uuid_generate_v4()',
+          },
+          {
+            name: 'supervisorId',
+            type: 'uuid',
           },
           {
             name: 'name',
@@ -75,12 +84,31 @@ export default class CreatePacientTable1596038066725
             type: 'timestamp',
             default: 'now()',
           },
+          {
+            name: 'deletedAt',
+            type: 'timestamp',
+            isNullable: true,
+            default: null,
+          },
         ],
+      }),
+    );
+
+    await queryRunner.createForeignKey(
+      'pacients',
+      new TableForeignKey({
+        name: 'PacientSupervisor',
+        columnNames: ['supervisorId'],
+        referencedColumnNames: ['id'],
+        referencedTableName: 'users',
+        onUpdate: 'CASCADE',
       }),
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropForeignKey('pacients', 'PacientSupervisor');
+
     await queryRunner.dropTable('pacients');
   }
 }
