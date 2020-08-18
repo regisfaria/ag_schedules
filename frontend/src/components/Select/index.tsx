@@ -14,9 +14,15 @@ import { Container, Error } from './styles';
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   name: string;
   icon?: React.ComponentType<IconBaseProps>;
+  text?: string;
 }
 
-const Select: React.FC<SelectProps> = ({ name, icon: Icon, ...props }) => {
+const Select: React.FC<SelectProps> = ({
+  name,
+  icon: Icon,
+  text,
+  ...props
+}) => {
   const selectRef = useRef<HTMLSelectElement>(null);
 
   const [isFocused, setIsFocused] = useState(false);
@@ -47,6 +53,7 @@ const Select: React.FC<SelectProps> = ({ name, icon: Icon, ...props }) => {
   return (
     <Container isErrored={!!error} isFilled={isFilled} isFocused={isFocused}>
       {Icon && <Icon size={20} />}
+      {text && <span>{text}</span>}
 
       <select
         onFocus={handleInputFocus}
