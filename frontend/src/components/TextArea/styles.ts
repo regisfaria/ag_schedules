@@ -9,23 +9,28 @@ interface ContainerProps {
 }
 
 export const Container = styled.div<ContainerProps>`
+  display: flex;
+  align-items: center;
+
   background: var(--white);
   border-radius: 10px;
-  padding: 16px;
-  margin-top: 20px;
-  margin-bottom: 30px;
+  padding: 1.6rem;
+  margin-bottom: 2rem;
+
+  height: 30rem;
+
   width: 100%;
+  max-width: 140rem;
 
   font: 16px Poppins, sans-serifa;
 
   border: 2px solid var(--white);
   color: var(--input-placeholder);
 
-  display: flex;
-  align-items: center;
+
 
   & + div {
-    margin-top: 16px;
+    margin-top: 1.6rem;
   }
 
   ${props =>
@@ -59,11 +64,6 @@ export const Container = styled.div<ContainerProps>`
     &::placeholder {
       color: var(--input-placeholder);
     }
-
-    ::-webkit-datetime-edit-text { padding: 0 0.3rem; color: var(--input-placeholder); }
-    ::-webkit-datetime-edit-day-field { text-transform: uppercase; color: var(--input-placeholder); }
-    ::-webkit-datetime-edit-month-field { text-transform: uppercase; color: var(--input-placeholder); }
-    ::-webkit-datetime-edit-year-field { text-transform: uppercase; color: var(--input-placeholder); }
   }
 
   svg {

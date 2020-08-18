@@ -1,9 +1,8 @@
 import { createGlobalStyle } from 'styled-components';
-import bgImage from '../assets/bg.jpg';
 
 export default createGlobalStyle`
   :root {
-    font-size: 60%;
+    font-size: 62.5%;
 
 
     --blue: #109CF1;
@@ -31,7 +30,7 @@ export default createGlobalStyle`
   }
 
   body {
-    background: #E5E5E5 url(${bgImage});
+    background: #e1ebe1 ;
     -webkit-font-smoothing: antialiased;
   }
 

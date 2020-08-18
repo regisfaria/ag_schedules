@@ -7,13 +7,15 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 import Select from '../../components/Select';
 import TextArea from '../../components/TextArea';
+import Main from '../../components/Main';
+import Section from '../../components/Section';
+import PageHeader from '../../components/PageHeader';
 
 /* import { useToast } from '../../hooks/toast'; */
 
 import {
   Container,
   Header,
-  Main,
   ButtonEditContainer,
   TextAreaContainer,
   ButtonSaveAndCancelContainer,
@@ -102,95 +104,92 @@ const Profile: React.FC = () => {
             alt="ProfileImage"
           />
         </Header>
-        <Main>
-          <Form onSubmit={() => {}}>
-            <main>
-              <section>
-                <Input name="name" type="text" text="Nome:&nbsp;" disabled />
+        <Form onSubmit={() => {}}>
+          <Main>
+            <Section>
+              <Input name="name" type="text" text="Nome:&nbsp;" disabled />
 
-                <Input
-                  name="email"
-                  type="text"
-                  text="Email:&nbsp;"
-                  id="InputDisable"
-                  disabled
-                />
+              <Input
+                name="email"
+                type="text"
+                text="Email:&nbsp;"
+                id="InputDisable"
+                disabled
+              />
 
-                <Input
-                  name="fone"
-                  type="text"
-                  text="Telefone:&nbsp;"
-                  disabled={!editProfile}
-                />
-
-                <Input
-                  name="cep"
-                  type="text"
-                  text="CEP:&nbsp;"
-                  disabled={!editProfile}
-                />
-              </section>
-
-              <section>
-                <Select
-                  onChange={handleSelectedUf}
-                  value={selectedUf}
-                  name="uf"
-                  id="uf"
-                  disabled={!editProfile}
-                >
-                  <option value="" selected hidden>
-                    Estado
-                  </option>
-                  {states.map(state => (
-                    <option key={state.uf} value={state.uf}>
-                      {state.name}
-                    </option>
-                  ))}
-                </Select>
-
-                <Select
-                  onChange={handleSelectedCity}
-                  value={selectedCity}
-                  name="city"
-                  id="city"
-                  disabled={!editProfile}
-                >
-                  <option value="" selected hidden>
-                    Cidade
-                  </option>
-                  {cities.map(city => (
-                    <option key={city} value={city}>
-                      {city}
-                    </option>
-                  ))}
-                </Select>
-
-                <Input
-                  name="street"
-                  type="text"
-                  text="Rua:&nbsp;"
-                  disabled={!editProfile}
-                />
-
-                <Input
-                  name="addressNumber"
-                  type="text"
-                  text="Número/Complemento:&nbsp;"
-                  disabled={!editProfile}
-                />
-              </section>
-            </main>
-
-            <TextAreaContainer>
-              <TextArea
-                name="descrição"
-                placeholder="Descrição:&nbsp;"
+              <Input
+                name="fone"
+                type="text"
+                text="Telefone:&nbsp;"
                 disabled={!editProfile}
               />
-            </TextAreaContainer>
-          </Form>
 
+              <Input
+                name="cep"
+                type="text"
+                text="CEP:&nbsp;"
+                disabled={!editProfile}
+              />
+            </Section>
+
+            <Section>
+              <Select
+                onChange={handleSelectedUf}
+                value={selectedUf}
+                name="uf"
+                id="uf"
+                disabled={!editProfile}
+              >
+                <option value="" selected hidden>
+                  Estado
+                </option>
+                {states.map(state => (
+                  <option key={state.uf} value={state.uf}>
+                    {state.name}
+                  </option>
+                ))}
+              </Select>
+
+              <Select
+                onChange={handleSelectedCity}
+                value={selectedCity}
+                name="city"
+                id="city"
+                disabled={!editProfile}
+              >
+                <option value="" selected hidden>
+                  Cidade
+                </option>
+                {cities.map(city => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </Select>
+
+              <Input
+                name="street"
+                type="text"
+                text="Rua:&nbsp;"
+                disabled={!editProfile}
+              />
+
+              <Input
+                name="addressNumber"
+                type="text"
+                text="Número/Complemento:&nbsp;"
+                disabled={!editProfile}
+              />
+            </Section>
+          </Main>
+
+          <TextAreaContainer>
+            <TextArea
+              name="descrição"
+              placeholder="Descrição:&nbsp;"
+              disabled={!editProfile}
+            />
+          </TextAreaContainer>
           <ButtonEditContainer cancel={Boolean(editProfile)}>
             <Button type="button" onClick={handleEditProfile}>
               Editar
@@ -203,7 +202,7 @@ const Profile: React.FC = () => {
               Cancelar
             </Button>
           </ButtonSaveAndCancelContainer>
-        </Main>
+        </Form>
       </Container>
     </>
   );

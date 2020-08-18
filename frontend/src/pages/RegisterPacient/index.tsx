@@ -9,13 +9,14 @@ import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
 import { Link, useHistory } from 'react-router-dom';
+import axios from 'axios';
 
+// Import Icons
 import { FiArrowLeft, FiPhone, FiUser } from 'react-icons/fi';
 import { MdDescription } from 'react-icons/md';
 import { FaTransgender } from 'react-icons/fa';
 import { AiOutlineFieldNumber } from 'react-icons/ai';
 
-import axios from 'axios';
 import api from '../../services/api';
 
 import { useToast } from '../../hooks/toast';
@@ -25,8 +26,12 @@ import getValidationErrors from '../../utils/getValidationErrors';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import Select from '../../components/Select';
+import TextArea from '../../components/TextArea';
+import Main from '../../components/Main';
+import Section from '../../components/Section';
+import PageHeader from '../../components/PageHeader';
 
-import { Container, Content, AnimatedContent } from './styles';
+import { Container, AnimatedContent } from './styles';
 
 import Menu from '../../components/Menu';
 
@@ -155,100 +160,91 @@ const RegisterPacient: React.FC = () => {
       <Menu />
 
       <Container>
-        <Content>
-          <AnimatedContent>
-            <Form ref={formRef} onSubmit={handleSubmit}>
-              <h1>Cadastre um Paciente</h1>
-              <div id="register-text-container">
-                <span>
-                  Os campos precedidos por &quot;*&quot; são obrigatórios
-                </span>
-              </div>
-              <Input
-                name="name"
-                icon={FiUser}
-                type="text"
-                placeholder="*Nome"
-              />
-              <Input
-                name="bornDate"
-                type="date"
-                text="Data de Nascimento:&nbsp;"
-              />
-              <Input
-                name="cpf"
-                icon={AiOutlineFieldNumber}
-                type="text"
-                placeholder="*CPF"
-              />
-              <Select name="gender" icon={FaTransgender}>
-                <option value="" selected hidden>
-                  *Sexo
-                </option>
-                <option value="Masculino">Masculino</option>
-                <option value="Feminino">Feminino</option>
-                <option value="Outro">Outro</option>
-              </Select>
-              <Input
-                name="phoneNumber"
-                type="text"
-                icon={FiPhone}
-                placeholder="*Telefone para contato"
-              />
-              <Input
-                name="description"
-                type="text"
-                icon={MdDescription}
-                placeholder="Descrição do paciente"
-              />
+        <AnimatedContent>
+          <PageHeader
+            title="Cadastre um Paciente"
+            subTitle='Os campos precedidos por "*" são obrigatórios'
+          />
 
-              <div id="register-text-container">
-                <h3>Endereço</h3>
-              </div>
-
-              <Select
-                onChange={handleSelectedUf}
-                value={selectedUf}
-                name="uf"
-                id="uf"
-              >
-                <option value="" selected hidden>
-                  Estado
-                </option>
-                {states.map(state => (
-                  <option key={state.uf} value={state.uf}>
-                    {state.name}
+          <Form ref={formRef} onSubmit={handleSubmit}>
+            <Main>
+              <Section title="Dados Pessoais">
+                <Input
+                  name="name"
+                  icon={FiUser}
+                  type="text"
+                  placeholder="*Nome"
+                />
+                <Input name="bornDate" type="date" text="Nascimento:&nbsp;" />
+                <Input
+                  name="cpf"
+                  icon={AiOutlineFieldNumber}
+                  type="text"
+                  placeholder="*CPF"
+                />
+                <Select name="gender" icon={FaTransgender}>
+                  <option value="" selected hidden>
+                    *Sexo
                   </option>
-                ))}
-              </Select>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Feminino">Feminino</option>
+                  <option value="Outro">Outro</option>
+                </Select>
 
-              <Select
-                onChange={handleSelectedCity}
-                value={selectedCity}
-                name="city"
-                id="city"
-              >
-                <option value="" selected hidden>
-                  Cidade
-                </option>
-                {cities.map(city => (
-                  <option key={city} value={city}>
-                    {city}
+                <Input
+                  name="phoneNumber"
+                  type="text"
+                  icon={FiPhone}
+                  placeholder="*Telefone para contato"
+                />
+              </Section>
+
+              <Section title="Endereço">
+                <Select
+                  onChange={handleSelectedUf}
+                  value={selectedUf}
+                  name="uf"
+                  id="uf"
+                >
+                  <option value="" selected hidden>
+                    Estado
                   </option>
-                ))}
-              </Select>
+                  {states.map(state => (
+                    <option key={state.uf} value={state.uf}>
+                      {state.name}
+                    </option>
+                  ))}
+                </Select>
 
-              <Input name="street" type="text" placeholder="Rua" />
-              <Input name="addressNumber" type="text" placeholder="Numero" />
-              <Input name="cep" type="text" placeholder="CEP" />
-              <Button type="submit">Cadastrar</Button>
-            </Form>
+                <Select
+                  onChange={handleSelectedCity}
+                  value={selectedCity}
+                  name="city"
+                  id="city"
+                >
+                  <option value="" selected hidden>
+                    Cidade
+                  </option>
+                  {cities.map(city => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
+                </Select>
 
-            <Link to="/dashboard">
-              <FiArrowLeft /> Voltar para o Dashboard
-            </Link>
-          </AnimatedContent>
-        </Content>
+                <Input name="street" type="text" placeholder="Rua" />
+                <Input name="addressNumber" type="text" placeholder="Numero" />
+                <Input name="cep" type="text" placeholder="CEP" />
+              </Section>
+            </Main>
+
+            <Button type="submit">Cadastrar</Button>
+          </Form>
+
+          <Link to="/dashboard">
+            <FiArrowLeft /> Voltar para o Dashboard
+          </Link>
+        </AnimatedContent>
       </Container>
     </>
   );
