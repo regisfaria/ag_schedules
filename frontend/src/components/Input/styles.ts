@@ -16,6 +16,8 @@ export const Container = styled.div<ContainerProps>`
   margin-bottom: 2rem;
 
   width: 100%;
+  max-width: 70rem;
+
 
   height: 5rem;
 
@@ -44,11 +46,18 @@ export const Container = styled.div<ContainerProps>`
       color: var(--green);
     `}
 
+    span {
+      font-size: 1.2rem;
+    }
+
   input {
     background: transparent;
     flex: 1;
     border: none;
     color: var(--black);
+
+    width: 100%;
+    font-size: 1.4rem;
 
 
     &::placeholder {
@@ -63,6 +72,13 @@ export const Container = styled.div<ContainerProps>`
 
   svg {
     margin-right: 16px;
+  }
+
+  @media (min-width: 425px) {
+
+      span {
+        font-size: 1.4rem;
+      }
   }
 `;
 
