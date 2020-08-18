@@ -11,10 +11,13 @@ interface ContainerProps {
 export const Container = styled.div<ContainerProps>`
   background: var(--white);
   border-radius: 10px;
-  padding: 16px;
-  margin-top: 20px;
-  margin-bottom: 30px;
+  padding: 1.6rem;
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+
   width: 100%;
+
+  height: 5rem;
 
   border: 2px solid var(--white);
   color: var(--input-placeholder);
@@ -46,6 +49,7 @@ export const Container = styled.div<ContainerProps>`
     flex: 1;
     border: none;
     color: var(--black);
+
 
     &::placeholder {
       color: var(--input-placeholder);

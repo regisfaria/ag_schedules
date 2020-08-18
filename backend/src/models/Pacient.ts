@@ -4,12 +4,24 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+
+import User from './User';
 
 @Entity('pacients')
 export default class Pacient {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'supervisorId' })
+  supervisor: User;
+
+  @Column()
+  supervisorId: string;
 
   @Column()
   name: string;
@@ -49,4 +61,7 @@ export default class Pacient {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

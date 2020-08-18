@@ -1,21 +1,24 @@
+/* eslint-disable no-param-reassign */
 import { Router } from 'express';
 import { getRepository } from 'typeorm';
 
-import CreateUserService from '../services/CreateUserService';
-import CreateProfileService from '../services/CreateProfileService';
-import DeleteUserService from '../services/DeleteUserService';
-import DeleteProfileService from '../services/DeleteProfileService';
+import ensureAuthenticated from '../middlewares/ensureAuthenticated';
+
+import CreateUserService from '../services/Users/CreateUserService';
+// // Para criar usuarios do tipo ADMIN, descomente abaixo
+// import CreateAdminUserService from '../services/Users/CreateAdminUserService';
+import DeleteUserService from '../services/Users/DeleteUserService';
 
 import User from '../models/User';
 
 const usersRouter = Router();
+usersRouter.use(ensureAuthenticated);
 
 usersRouter.get('/', async (request, response) => {
   const userRepository = getRepository(User);
 
   const users = await userRepository.find();
 
-  // eslint-disable-next-line no-param-reassign
   users.forEach(user => delete user.password);
 
   return response.json(users);
@@ -28,22 +31,20 @@ usersRouter.get('/specialists', async (request, response) => {
     where: { type: 'specialist' },
   });
 
-  // eslint-disable-next-line no-param-reassign
   users.forEach(user => delete user.password);
 
   return response.json(users);
 });
 
-usersRouter.get('/agents', async (request, response) => {
+usersRouter.get('/supervisors', async (request, response) => {
   const userRepository = getRepository(User);
 
   const users = await userRepository.find({
     where: {
-      type: 'agent',
+      type: 'supervisor',
     },
   });
 
-  // eslint-disable-next-line no-param-reassign
   users.forEach(user => delete user.password);
 
   return response.json(users);
@@ -51,31 +52,48 @@ usersRouter.get('/agents', async (request, response) => {
 
 usersRouter.post('/', async (request, response) => {
   const { name, email, password, type } = request.body;
+  const currentUserId = request.user.id;
 
   const createUser = new CreateUserService();
 
   const user = await createUser.execute({
+    currentUserId,
     name,
     email,
     password,
     type,
+    active: true,
   });
-
-  const createProfile = new CreateProfileService();
-  await createProfile.execute(user);
 
   delete user.password;
 
   return response.json(user);
 });
 
+// // Para criar usuarios do tipo ADMIN, descomente
+// usersRouter.post('/admin', async (request, response) => {
+//   const { name, email, password, type } = request.body;
+
+//   const createAdminUser = new CreateAdminUserService();
+
+//   const user = await createAdminUser.execute({
+//     name,
+//     email,
+//     password,
+//     type,
+//     active: true,
+//   });
+
+//   delete user.password;
+
+//   return response.json(user);
+// });
+
 usersRouter.delete('/:id', async (request, response) => {
   const { id } = request.params;
 
-  const deleteProfile = new DeleteProfileService();
   const deleteUser = new DeleteUserService();
 
-  await deleteProfile.execute(id);
   await deleteUser.execute(id);
 
   return response.json(204).send;

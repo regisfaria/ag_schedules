@@ -20,8 +20,8 @@ export default class CreateConsultsTable1596038075052
             default: 'uuid_generate_v4()',
           },
           {
-            name: 'createdBy',
-            type: 'varchar',
+            name: 'createdById',
+            type: 'uuid',
           },
           {
             name: 'specialistId',
@@ -57,7 +57,24 @@ export default class CreateConsultsTable1596038075052
             type: 'timestamp',
             default: 'now()',
           },
+          {
+            name: 'deletedAt',
+            type: 'timestamp',
+            isNullable: true,
+            default: null,
+          },
         ],
+      }),
+    );
+
+    await queryRunner.createForeignKey(
+      'consults',
+      new TableForeignKey({
+        name: 'ConsultCreatedBy',
+        columnNames: ['createdById'],
+        referencedColumnNames: ['id'],
+        referencedTableName: 'users',
+        onUpdate: 'CASCADE',
       }),
     );
 
@@ -68,7 +85,6 @@ export default class CreateConsultsTable1596038075052
         columnNames: ['specialistId'],
         referencedColumnNames: ['id'],
         referencedTableName: 'users',
-        onDelete: 'SET NULL',
         onUpdate: 'CASCADE',
       }),
     );
@@ -80,13 +96,14 @@ export default class CreateConsultsTable1596038075052
         columnNames: ['pacientId'],
         referencedColumnNames: ['id'],
         referencedTableName: 'pacients',
-        onDelete: 'SET NULL',
         onUpdate: 'CASCADE',
       }),
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropForeignKey('consults', 'ConsultCreatedBy');
+
     await queryRunner.dropForeignKey('consults', 'PacientConsult');
 
     await queryRunner.dropForeignKey('consults', 'SpecialistResponsable');
