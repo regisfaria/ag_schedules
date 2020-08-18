@@ -56,7 +56,9 @@ const RegisterSpecialist: React.FC = () => {
           abortEarly: false,
         });
 
-        await api.post('/users', data);
+        const user = await api.post('/users', data);
+        await api.post('/profiles/specialist', { userId: user.data.id });
+        // await api.post('/schedules', { specialistId: user.data.id });
 
         history.push('/dashboard');
 

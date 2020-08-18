@@ -1,4 +1,9 @@
-import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
+import {
+  PrimaryGeneratedColumn,
+  Column,
+  Entity,
+  DeleteDateColumn,
+} from 'typeorm';
 
 @Entity('users')
 export default class User {
@@ -16,4 +21,10 @@ export default class User {
 
   @Column()
   type: string;
+
+  @Column('boolean')
+  active: boolean;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

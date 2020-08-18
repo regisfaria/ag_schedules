@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm';
 
-import User from '../models/User';
-import ScheduleAvailability from '../models/ScheduleAvailability';
+import User from '../../models/User';
+import ScheduleAvailability from '../../models/ScheduleAvailability';
 
 class CreateScheduleAvailabilityService {
   public async execute(specialistId: string): Promise<ScheduleAvailability[]> {

@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { getRepository } from 'typeorm';
 
-import CreateScheduleAvailabilityService from '../services/CreateScheduleAvailabilityService';
-import CreateRestTimeService from '../services/CreateRestTimeService';
-import CreateHolidayService from '../services/CreateHolidayService';
+import ScheduleAvailability from '../models/ScheduleAvailability';
+
+import CreateScheduleAvailabilityService from '../services/Schedules/CreateScheduleAvailabilityService';
+import CreateRestTimeService from '../services/RestTimes/CreateRestTimeService';
+import CreateHolidayService from '../services/Holidays/CreateHolidayService';
 
 import ensureAuthenticated from '../middlewares/ensureAuthenticated';
-
-import ScheduleAvailability from '../models/ScheduleAvailability';
 
 const schedulesRouter = Router();
 

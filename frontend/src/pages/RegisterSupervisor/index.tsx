@@ -27,7 +27,7 @@ interface SignUpFormData {
   password: string;
 }
 
-const RegisterAgent: React.FC = () => {
+const RegisterSupervisor: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const { addToast } = useToast();
   const history = useHistory();
@@ -56,7 +56,8 @@ const RegisterAgent: React.FC = () => {
           abortEarly: false,
         });
 
-        await api.post('/users', data);
+        const user = await api.post('/users', data);
+        await api.post('/profiles/supervisor', { userId: user.data.id });
 
         history.push('/dashboard');
 
@@ -91,7 +92,7 @@ const RegisterAgent: React.FC = () => {
 
       <Container>
         <AnimatedContent>
-          <PageHeader title="Cadastre um Agente" />
+          <PageHeader title="Cadastre um Supervisor" />
 
           <Form ref={formRef} onSubmit={handleSubmit}>
             <Section>
@@ -125,7 +126,7 @@ const RegisterAgent: React.FC = () => {
                 type="text"
                 name="type"
                 icon={FaUserTie}
-                value="agent"
+                value="supervisor"
                 id="userType"
                 contentEditable={false}
                 disabled
@@ -144,4 +145,4 @@ const RegisterAgent: React.FC = () => {
   );
 };
 
-export default RegisterAgent;
+export default RegisterSupervisor;

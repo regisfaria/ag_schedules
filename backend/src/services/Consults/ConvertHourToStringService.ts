@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import Consult from '../models/Consult';
+import Consult from '../../models/Consult';
 
 class ConvertHourToStringService {
   public execute(consults: Consult[]): Consult[] {
