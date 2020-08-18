@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm';
-import AppError from '../errors/AppError';
+import AppError from '../../errors/AppError';
 
-import User from '../models/User';
+import User from '../../models/User';
 
 class DeleteUserService {
   public async execute(id: string): Promise<void> {

@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm';
-import AppError from '../errors/AppError';
+import AppError from '../../errors/AppError';
 
-import Consult from '../models/Consult';
+import Consult from '../../models/Consult';
 
 class DeleteConsultService {
   public async execute(id: string): Promise<void> {

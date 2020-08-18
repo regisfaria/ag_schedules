@@ -5,9 +5,9 @@ import Consult from '../models/Consult';
 
 import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 
-import CreateConsultService from '../services/CreateConsultService';
-import DeleteConsultService from '../services/DeleteConsultService';
-import ConvertHourToStringService from '../services/ConvertHourToStringService';
+import CreateConsultService from '../services/Consults/CreateConsultService';
+import DeleteConsultService from '../services/Consults/DeleteConsultService';
+import ConvertHourToStringService from '../services/Consults/ConvertHourToStringService';
 
 const consultsRouter = Router();
 

@@ -1,39 +1,33 @@
 import {
   Entity,
-  Column,
   PrimaryGeneratedColumn,
+  Column,
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-  ManyToOne,
+  OneToOne,
   JoinColumn,
 } from 'typeorm';
 
 import User from './User';
 
-@Entity('pacients')
-export default class Pacient {
+@Entity('supervisor_profiles')
+export default class SupervisorProfile {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'supervisorId' })
-  supervisor: User;
+  @OneToOne(() => User)
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
   @Column()
-  supervisorId: string;
+  userId: string;
 
   @Column()
-  name: string;
-
-  @Column('date')
-  bornDate: Date;
+  image: string;
 
   @Column()
-  cpf: string;
-
-  @Column()
-  gender: string;
+  description: string;
 
   @Column()
   phoneNumber: string;
@@ -52,9 +46,6 @@ export default class Pacient {
 
   @Column()
   cep: string;
-
-  @Column()
-  description: string;
 
   @CreateDateColumn()
   createdAt: Date;

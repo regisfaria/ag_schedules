@@ -4,13 +4,15 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
   OneToOne,
   JoinColumn,
 } from 'typeorm';
+
 import User from './User';
 
-@Entity('profiles')
-export default class Profile {
+@Entity('specialist_profiles')
+export default class SpecialistProfile {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -50,4 +52,7 @@ export default class Profile {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

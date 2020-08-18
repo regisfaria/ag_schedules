@@ -1,13 +1,13 @@
 import { getRepository } from 'typeorm';
 import { isBefore } from 'date-fns';
 
-import Consult from '../models/Consult';
-import User from '../models/User';
-import Pacient from '../models/Pacient';
-import AppError from '../errors/AppError';
+import Consult from '../../models/Consult';
+import User from '../../models/User';
+import Pacient from '../../models/Pacient';
+import AppError from '../../errors/AppError';
 
-import ConvertStringHourToInt from '../utils/ConvertStringHourToInt';
-import ConvertDateAndHourtoDate from '../utils/ConvertDateAndHourstoDate';
+import ConvertStringHourToInt from '../../utils/ConvertStringHourToInt';
+import ConvertDateAndHourtoDate from '../../utils/ConvertDateAndHourstoDate';
 
 interface Request {
   userId: string;
@@ -38,6 +38,13 @@ class CreateConsultService {
     const pacient = await pacientsRepository.findOne(pacientId);
     const specialist = await usersRepository.findOne(specialistId);
     const currentUser = await usersRepository.findOne(userId);
+
+    if (currentUser?.type !== 'supervisor') {
+      throw new AppError(
+        'Apenas usuarios do tipo supervisor podem criar consultas',
+        401,
+      );
+    }
 
     // Check if pacient and specialist exist
     if (!pacient) {
