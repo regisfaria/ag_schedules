@@ -5,12 +5,12 @@ import {
   TableForeignKey,
 } from 'typeorm';
 
-export default class CreateHolidaysTable1597083884227
+export default class CreateScheduleAvailabilityTable1596722891712
   implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'holidays',
+        name: 'schedules_availability',
         columns: [
           {
             name: 'id',
@@ -20,12 +20,20 @@ export default class CreateHolidaysTable1597083884227
             default: 'uuid_generate_v4()',
           },
           {
-            name: 'scheduleAvailabilityId',
+            name: 'specialistId',
             type: 'uuid',
           },
           {
             name: 'day',
-            type: 'date',
+            type: 'int',
+          },
+          {
+            name: 'openTime',
+            type: 'int',
+          },
+          {
+            name: 'closeTime',
+            type: 'int',
           },
           {
             name: 'createdAt',
@@ -47,20 +55,23 @@ export default class CreateHolidaysTable1597083884227
     );
 
     await queryRunner.createForeignKey(
-      'holidays',
+      'schedules_availability',
       new TableForeignKey({
-        name: 'ScheduledHolidays',
-        columnNames: ['scheduleAvailabilityId'],
+        name: 'UserSchedulesAvailability',
+        columnNames: ['specialistId'],
         referencedColumnNames: ['id'],
-        referencedTableName: 'schedules_availability',
+        referencedTableName: 'users',
         onUpdate: 'CASCADE',
       }),
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropForeignKey('holidays', 'ScheduledHolidays');
+    await queryRunner.dropForeignKey(
+      'schedules_availability',
+      'UserSchedulesAvailability',
+    );
 
-    await queryRunner.dropTable('holidays');
+    await queryRunner.dropTable('schedules_availability');
   }
 }
