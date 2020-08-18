@@ -1,9 +1,9 @@
 import { getRepository } from 'typeorm';
 
-import RestTime from '../models/RestTime';
-import ScheduleAvailability from '../models/ScheduleAvailability';
+import RestTime from '../../models/RestTime';
+import ScheduleAvailability from '../../models/ScheduleAvailability';
 
-import ConvertStringHourToInt from '../utils/ConvertStringHourToInt';
+import ConvertStringHourToInt from '../../utils/ConvertStringHourToInt';
 
 interface Request {
   scheduleAvailabilityId: string;

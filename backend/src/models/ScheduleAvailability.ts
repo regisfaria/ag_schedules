@@ -9,22 +9,28 @@ import {
   JoinColumn,
 } from 'typeorm';
 
-import ScheduleAvailability from './ScheduleAvailability';
+import User from './User';
 
-@Entity('holidays')
-export default class Holiday {
+@Entity('schedules_availability')
+export default class ScheduleAvailability {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => ScheduleAvailability)
-  @JoinColumn({ name: 'scheduleAvailabilityId' })
-  scheduleAvailability: ScheduleAvailability;
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'specialistId' })
+  specialist: User;
 
   @Column()
-  scheduleAvailabilityId: string;
+  specialistId: string;
 
-  @Column('date')
-  day: Date;
+  @Column('int')
+  day: number;
+
+  @Column('int')
+  openTime: number;
+
+  @Column('int')
+  closeTime: number;
 
   @CreateDateColumn()
   createdAt: Date;

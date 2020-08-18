@@ -11,8 +11,8 @@ import {
 
 import ScheduleAvailability from './ScheduleAvailability';
 
-@Entity('holidays')
-export default class Holiday {
+@Entity('rest_times')
+export default class RestTime {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -23,8 +23,11 @@ export default class Holiday {
   @Column()
   scheduleAvailabilityId: string;
 
-  @Column('date')
-  day: Date;
+  @Column('int')
+  startTime: number;
+
+  @Column('int')
+  endTime: number;
 
   @CreateDateColumn()
   createdAt: Date;

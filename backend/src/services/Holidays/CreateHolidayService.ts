@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm';
 
-import Holiday from '../models/Holiday';
-import ScheduleAvailability from '../models/ScheduleAvailability';
+import Holiday from '../../models/Holiday';
+import ScheduleAvailability from '../../models/ScheduleAvailability';
 
 interface Request {
   scheduleAvailabilityId: string;
