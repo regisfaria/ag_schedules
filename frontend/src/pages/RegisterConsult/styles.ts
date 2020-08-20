@@ -1,37 +1,63 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { shade } from 'polished';
 
+import consultImg from '../../assets/consulting.svg';
+
 export const Container = styled.div`
-  width: 100%;
-  height: 100vh;
-
-  background: var(--light-blue);
-
   display: flex;
-  align-items: stretch;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  height: 100vh;
+  width: 100%;
+
+  background-image: url(${consultImg});
+  background-position: right bottom;
+  background-repeat: no-repeat;
+  background-size: 70rem;
+  background-color: var(--light-blue);
+
+  @media only screen and (max-width: 450px) and (min-height: 500px) and (max-height: 680px) {
+    height: 100%;
+  }
 `;
 
-export const Content = styled.div`
+const appearFromLeft = keyframes`
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+`;
+
+export const AnimatedContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
   width: 100%;
 
-  display: flex;
-
-  flex-direction: column;
-
-  place-content: center;
-  justify-self: center;
+  animation: ${appearFromLeft} 1s;
 
   form {
-    h1 {
-      align-self: center;
-      text-align: center;
-      margin-bottom: 1em;
-    }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
-    align-self: center;
+    width: 90%;
 
     #consultStatus {
       text-align: center;
+    }
+
+    button {
+      margin-top: 3rem;
     }
   }
 
@@ -40,19 +66,17 @@ export const Content = styled.div`
     transition: color 0.2s;
     text-decoration: none;
 
-    margin-top: 24px;
-    margin-bottom: 30px;
+    margin: 1rem;
 
     display: flex;
     align-items: center;
-    align-self: center;
 
     svg {
       margin-right: 16px;
     }
 
     &:hover {
-      color: ${shade(0.5, '#09644b')};
+      color: ${shade(0.2, '#09644b')};
     }
   }
 `;

@@ -1,28 +1,41 @@
 import { getRepository } from 'typeorm';
 
 import Holiday from '../../models/Holiday';
-import ScheduleAvailability from '../../models/ScheduleAvailability';
+import User from '../../models/User';
+import AppError from '../../errors/AppError';
 
 interface Request {
-  scheduleAvailabilityId: string;
+  specialistId: string;
   day: Date;
 }
 
 class CreateHolidayService {
-  public async execute({
-    scheduleAvailabilityId,
-    day,
-  }: Request): Promise<Holiday> {
+  public async execute({ specialistId, day }: Request): Promise<Holiday> {
     const holidaysRepository = getRepository(Holiday);
-    const schedulesRepository = getRepository(ScheduleAvailability);
+    const usersRepository = getRepository(User);
 
-    const scheduleAvailability = await schedulesRepository.findOne(
-      scheduleAvailabilityId,
-    );
+    const specialist = await usersRepository.findOne({
+      where: { id: specialistId },
+    });
+
+    if (specialist?.type !== 'specialist') {
+      throw new AppError(
+        'Apenas especialistas podem criar excessoes na agenda.',
+        401,
+      );
+    }
+
+    const holidayAlreadyExists = await holidaysRepository.findOne({
+      where: { day },
+    });
+
+    if (holidayAlreadyExists) {
+      throw new AppError('Voce ja tem uma excessao cadastrada para este dia');
+    }
 
     const holiday = holidaysRepository.create({
-      scheduleAvailability,
-      scheduleAvailabilityId,
+      specialist,
+      specialistId,
       day,
     });
 
