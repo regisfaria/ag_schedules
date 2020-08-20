@@ -7,25 +7,20 @@ import ConvertStringHourToInt from '../../utils/ConvertStringHourToInt';
 import AppError from '../../errors/AppError';
 
 interface Request {
-  userId: string;
-  day: number;
+  scheduleId: string;
   openTime: string;
   closeTime: string;
 }
 
-export default class UpdateUserAvatarServie {
+export default class UpdateScheduleService {
   public async execute({
-    userId,
-    day,
+    scheduleId,
     openTime,
     closeTime,
   }: Request): Promise<ScheduleAvailability> {
     const schedulesRepository = getRepository(ScheduleAvailability);
 
-    const schedule = await schedulesRepository.findOne({
-      where: { userId },
-    });
-
+    const schedule = await schedulesRepository.findOne(scheduleId);
     if (!schedule) {
       throw new AppError('Esse especialista nao tem agenda');
     }
@@ -33,7 +28,6 @@ export default class UpdateUserAvatarServie {
     const parsedOpenTime = ConvertStringHourToInt(openTime);
     const parsedCloseTime = ConvertStringHourToInt(closeTime);
 
-    schedule.day = day;
     schedule.openTime = parsedOpenTime;
     schedule.closeTime = parsedCloseTime;
 
