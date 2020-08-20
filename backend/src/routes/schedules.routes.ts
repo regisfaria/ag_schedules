@@ -4,6 +4,10 @@ import { getRepository } from 'typeorm';
 import ScheduleAvailability from '../models/ScheduleAvailability';
 
 import CreateScheduleAvailabilityService from '../services/Schedules/CreateScheduleAvailabilityService';
+import UpdateScheduleService from '../services/Schedules/UpdateScheduleService';
+import ListAvailableDays from '../services/Schedules/ListAvailableDays';
+import ListAvailableHours from '../services/Schedules/ListAvailableHours';
+
 import CreateRestTimeService from '../services/RestTimes/CreateRestTimeService';
 import CreateHolidayService from '../services/Holidays/CreateHolidayService';
 
@@ -20,6 +24,20 @@ schedulesRouter.post('/', async (request, response) => {
   const scheduleAvailability = await createScheduleAvailability.execute(
     specialistId,
   );
+
+  return response.json(scheduleAvailability);
+});
+
+schedulesRouter.put('/', async (request, response) => {
+  const { scheduleId, openTime, closeTime } = request.body;
+
+  const updateSchedule = new UpdateScheduleService();
+
+  const scheduleAvailability = await updateSchedule.execute({
+    scheduleId,
+    openTime,
+    closeTime,
+  });
 
   return response.json(scheduleAvailability);
 });
@@ -70,5 +88,26 @@ schedulesRouter.get('/:id', async (request, response) => {
 
   return response.json(schedule);
 });
+
+schedulesRouter.get('/availableDays/:id', async (request, response) => {
+  const { id } = request.params;
+
+  const listAvailableDays = new ListAvailableDays();
+
+  const availableDays = await listAvailableDays.execute(id);
+
+  return response.json(availableDays);
+});
+
+// schedulesRouter.get('/availableHours/:id', async (request, response) => {
+//   const { id } = request.params;
+//   const { date } = request.body;
+
+//   const listAvailableHours = new ListAvailableHours();
+
+//   const availableHours = listAvailableHours.execute({ specialistId: id, date });
+
+//   return response.json(availableHours);
+// });
 
 export default schedulesRouter;
