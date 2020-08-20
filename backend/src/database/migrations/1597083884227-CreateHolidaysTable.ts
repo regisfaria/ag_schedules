@@ -40,7 +40,8 @@ export default class CreateHolidaysTable1597083884227
           {
             name: 'deletedAt',
             type: 'timestamp',
-            default: 'null',
+            isNullable: true,
+            default: null,
           },
         ],
       }),
