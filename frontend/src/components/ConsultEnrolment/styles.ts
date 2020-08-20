@@ -10,9 +10,9 @@ interface DateContainerProps {
 export const DateContainer = styled.div<DateContainerProps>`
   background: var(--white);
   border-radius: 10px;
-  padding: 16px;
-  margin-top: 20px;
-  margin-bottom: 30px;
+  padding: 1.6rem;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
   width: 100%;
 
   border: 2px solid var(--white);
@@ -64,7 +64,7 @@ export const DateContainer = styled.div<DateContainerProps>`
     font-size: 1em;
   }
   .react-datepicker__navigation {
-    top: 1em;
+    top: -0.9rem;
     line-height: 1.7em;
     border: 0.45em solid transparent;
   }
@@ -75,13 +75,12 @@ export const DateContainer = styled.div<DateContainerProps>`
     border-left-color: var(--black);
     margin-right: 2rem;
   }
-
   input {
     background: transparent;
     flex: 1;
     border: none;
     color: var(--black);
-    width: inherit;
+    width: 100%;
 
     &::placeholder {
       color: var(--input-placeholder);
