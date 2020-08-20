@@ -34,6 +34,10 @@ interface SpecialistResponse {
   name: string;
 }
 
+interface HolidayResponse {
+  day: Date;
+}
+
 const ConsultEnrolment: React.FC = () => {
   const datepickerRef = useRef(null);
   const { fieldName, registerField, defaultValue, error } = useField(
@@ -43,6 +47,9 @@ const ConsultEnrolment: React.FC = () => {
   const [inputDate, setInputDate] = useState(defaultValue || null);
   const [pacients, setPacients] = useState<PacientResponse[]>([]);
   const [specialists, setSpecialists] = useState<SpecialistResponse[]>([]);
+  const [specialistHolidays, setSpecialistHolidays] = useState<
+    HolidayResponse[]
+  >([]);
   const [specialistAvailableDays, setSpecialistAvailableDays] = useState<
     number[]
   >([]);
@@ -103,6 +110,16 @@ const ConsultEnrolment: React.FC = () => {
         setSpecialistAvailableDays(response.data);
         console.log(response.data);
       });
+  }, [selectedSpecialistId]);
+
+  useEffect(() => {
+    if (selectedSpecialistId === '') {
+      return;
+    }
+    api.get(`/schedules/holiday/${selectedSpecialistId}`).then(response => {
+      setSpecialistHolidays(response.data);
+      console.log(response.data);
+    });
   }, [selectedSpecialistId]);
 
   useEffect(() => {

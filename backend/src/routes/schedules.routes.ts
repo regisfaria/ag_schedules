@@ -11,7 +11,9 @@ import ListAvailableHours from '../services/Schedules/ListAvailableHours';
 import FormatSchedule from '../services/Schedules/FormatSchedule';
 
 import CreateRestTimeService from '../services/RestTimes/CreateRestTimeService';
+
 import CreateHolidayService from '../services/Holidays/CreateHolidayService';
+import FormatHolidayToOnlyDate from '../services/Holidays/FormatHolidayToOnlyDate';
 
 import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 
@@ -132,9 +134,13 @@ schedulesRouter.get('/holiday/:id', async (request, response) => {
 
   const holidaysRepository = getRepository(Holiday);
 
-  const holidays = await holidaysRepository.find({
+  const unparsedHolidays = await holidaysRepository.find({
     where: { specialistId: id },
   });
+
+  const formatHolidayToOnlyDate = new FormatHolidayToOnlyDate();
+
+  const holidays = formatHolidayToOnlyDate.execute(unparsedHolidays);
 
   return response.json(holidays);
 });
