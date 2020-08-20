@@ -10,9 +10,9 @@ interface DateContainerProps {
 export const DateContainer = styled.div<DateContainerProps>`
   background: var(--white);
   border-radius: 10px;
-  padding: 1.6rem;
-  margin-top: 2rem;
-  margin-bottom: 3rem;
+  padding: 1.05rem;
+  margin-top: 0.4rem;
+  margin-bottom: 2rem;
   width: 100%;
 
   border: 2px solid var(--white);
@@ -59,6 +59,9 @@ export const DateContainer = styled.div<DateContainerProps>`
   .react-datepicker__day--today {
     background: var(--green);
   } */
+  .react-datepicker-wrapper {
+    width: 90%;
+  }
 
   .react-datepicker__current-month {
     font-size: 1em;
@@ -80,7 +83,6 @@ export const DateContainer = styled.div<DateContainerProps>`
     flex: 1;
     border: none;
     color: var(--black);
-    width: 100%;
 
     &::placeholder {
       color: var(--input-placeholder);
@@ -88,13 +90,12 @@ export const DateContainer = styled.div<DateContainerProps>`
   }
 
   svg {
-    margin-right: 16px;
+    margin: 0 1.6rem 0 0.5rem;
   }
 `;
 
 export const Error = styled(Tooltip)`
   height: 20px;
-  margin-left: 16px;
 
   svg {
     margin: 0;

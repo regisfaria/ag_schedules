@@ -7,7 +7,7 @@ import React, {
   ChangeEvent,
 } from 'react';
 import ReactDatePicker, { registerLocale } from 'react-datepicker';
-import { getDay } from 'date-fns';
+import { getDay, format } from 'date-fns';
 import pt from 'date-fns/locale/pt-BR';
 
 import { FiCalendar, FiAlertTriangle } from 'react-icons/fi';
@@ -84,14 +84,12 @@ const ConsultEnrolment: React.FC = () => {
   useEffect(() => {
     api.get('/users/specialists').then(response => {
       setSpecialists(response.data);
-      console.log(response.data);
     });
   }, []);
 
   useEffect(() => {
     api.get('/pacients').then(response => {
       setPacients(response.data);
-      console.log(response.data);
     });
   }, []);
 
@@ -108,14 +106,21 @@ const ConsultEnrolment: React.FC = () => {
   }, [selectedSpecialistId]);
 
   useEffect(() => {
+    if (!inputDate) {
+      return;
+    }
     const day = getDay(inputDate);
-    console.log(day);
+    const parsedDate = format(inputDate, 'dd-MM-yyyy');
 
-    // api.get(`/schedule/${selectedSpecialistId}`, ).then(response => {
-    //   setHours(response.data);
-    //   console.log(response.data);
-    // });
-  }, [inputDate]);
+    api
+      .get(
+        `/schedules/availableHours/${selectedSpecialistId}&${day}&${parsedDate}`,
+      )
+      .then(response => {
+        setHours(response.data);
+        console.log(response.data);
+      });
+  }, [inputDate, selectedSpecialistId]);
 
   return (
     <>
@@ -158,6 +163,7 @@ const ConsultEnrolment: React.FC = () => {
             minDate={new Date()}
             placeholderText="Data e Hora da consulta"
             useWeekdaysShort
+            excludeDates={[new Date('2020-08-25')]}
             onChange={setInputDate}
             autoComplete="off"
             filterDate={availableDays}
@@ -166,7 +172,7 @@ const ConsultEnrolment: React.FC = () => {
           <ReactDatePicker
             name="consultDate"
             ref={datepickerRef}
-            placeholderText="Especialista com agenda indisponível"
+            placeholderText="Agenda indisponível"
             onChange={setInputDate}
             readOnly
           />
