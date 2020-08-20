@@ -44,7 +44,8 @@ export default class CreateRestTimeTable1596823630152
           {
             name: 'deletedAt',
             type: 'timestamp',
-            default: 'null',
+            isNullable: true,
+            default: null,
           },
         ],
       }),

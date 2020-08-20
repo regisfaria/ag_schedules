@@ -9,19 +9,19 @@ import {
   JoinColumn,
 } from 'typeorm';
 
-import ScheduleAvailability from './ScheduleAvailability';
+import User from './User';
 
 @Entity('holidays')
 export default class Holiday {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => ScheduleAvailability)
-  @JoinColumn({ name: 'scheduleAvailabilityId' })
-  scheduleAvailability: ScheduleAvailability;
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'specialistId' })
+  specialist: User;
 
   @Column()
-  scheduleAvailabilityId: string;
+  specialistId: string;
 
   @Column('date')
   day: Date;

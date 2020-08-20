@@ -1,3 +1,4 @@
+/* eslint-disable import/no-duplicates */
 import React, {
   useRef,
   useState,
@@ -6,6 +7,7 @@ import React, {
   ChangeEvent,
 } from 'react';
 import ReactDatePicker, { registerLocale } from 'react-datepicker';
+import { getDay, format } from 'date-fns';
 import pt from 'date-fns/locale/pt-BR';
 
 import { FiCalendar, FiAlertTriangle } from 'react-icons/fi';
@@ -38,10 +40,35 @@ const ConsultEnrolment: React.FC = () => {
     'consultDate',
   );
 
-  const [date, setDate] = useState(defaultValue || null);
+  const [inputDate, setInputDate] = useState(defaultValue || null);
   const [pacients, setPacients] = useState<PacientResponse[]>([]);
   const [specialists, setSpecialists] = useState<SpecialistResponse[]>([]);
+  const [specialistAvailableDays, setSpecialistAvailableDays] = useState<
+    number[]
+  >([]);
   const [selectedSpecialistId, setSelectedSpecialistId] = useState('');
+  const [hours, setHours] = useState('');
+
+  const availableDays = useCallback(
+    (date: Date) => {
+      if (selectedSpecialistId === '') {
+        return true;
+      }
+      const day = getDay(date);
+      const isAvailable = specialistAvailableDays.includes(day);
+
+      return isAvailable;
+    },
+    [selectedSpecialistId, specialistAvailableDays],
+  );
+
+  const handleSelectedSpecialist = useCallback(
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      const selectSpecialistId = event.target.value;
+      setSelectedSpecialistId(selectSpecialistId);
+    },
+    [],
+  );
 
   useEffect(() => {
     registerField({
@@ -57,25 +84,43 @@ const ConsultEnrolment: React.FC = () => {
   useEffect(() => {
     api.get('/users/specialists').then(response => {
       setSpecialists(response.data);
-      console.log(response.data);
     });
   }, []);
 
   useEffect(() => {
     api.get('/pacients').then(response => {
       setPacients(response.data);
-      console.log(response.data);
     });
   }, []);
 
-  const handleSelectedSpecialist = useCallback(
-    (event: ChangeEvent<HTMLSelectElement>) => {
-      const selectSpecialistId = event.target.value;
-      console.log(selectSpecialistId);
-      setSelectedSpecialistId(selectSpecialistId);
-    },
-    [],
-  );
+  useEffect(() => {
+    if (selectedSpecialistId === '') {
+      return;
+    }
+    api
+      .get(`/schedules/availableDays/${selectedSpecialistId}`)
+      .then(response => {
+        setSpecialistAvailableDays(response.data);
+        console.log(response.data);
+      });
+  }, [selectedSpecialistId]);
+
+  useEffect(() => {
+    if (!inputDate) {
+      return;
+    }
+    const day = getDay(inputDate);
+    const parsedDate = format(inputDate, 'dd-MM-yyyy');
+
+    api
+      .get(
+        `/schedules/availableHours/${selectedSpecialistId}&${day}&${parsedDate}`,
+      )
+      .then(response => {
+        setHours(response.data);
+        console.log(response.data);
+      });
+  }, [inputDate, selectedSpecialistId]);
 
   return (
     <>
@@ -89,6 +134,7 @@ const ConsultEnrolment: React.FC = () => {
           </option>
         ))}
       </Select>
+
       <Select
         name="specialist"
         onChange={handleSelectedSpecialist}
@@ -103,25 +149,34 @@ const ConsultEnrolment: React.FC = () => {
           </option>
         ))}
       </Select>
+
       <DateContainer isErrored={!!error}>
         <FiCalendar size={20} />
-        <ReactDatePicker
-          name="consultDate"
-          ref={datepickerRef}
-          selected={date}
-          locale="pt"
-          showTimeSelect
-          timeCaption="Hora"
-          timeFormat="p"
-          isClearable
-          minDate={new Date()}
-          timeIntervals={30}
-          placeholderText="Data e Hora da consulta"
-          dateFormat="Pp"
-          useWeekdaysShort
-          onChange={setDate}
-          autoComplete="off"
-        />
+
+        {specialistAvailableDays.length ? (
+          <ReactDatePicker
+            name="consultDate"
+            ref={datepickerRef}
+            selected={inputDate}
+            locale="pt"
+            dateFormat="dd/MM/yyyy"
+            minDate={new Date()}
+            placeholderText="Data e Hora da consulta"
+            useWeekdaysShort
+            excludeDates={[new Date('2020-08-25')]}
+            onChange={setInputDate}
+            autoComplete="off"
+            filterDate={availableDays}
+          />
+        ) : (
+          <ReactDatePicker
+            name="consultDate"
+            ref={datepickerRef}
+            placeholderText="Agenda indisponível"
+            onChange={setInputDate}
+            readOnly
+          />
+        )}
 
         {error && (
           <Error title={error}>
@@ -129,6 +184,21 @@ const ConsultEnrolment: React.FC = () => {
           </Error>
         )}
       </DateContainer>
+
+      {/* <Select
+        name="consultHour"
+        onChange={handleSelectedSpecialist}
+        icon={FaUserMd}
+      >
+        <option value="" selected hidden>
+          Hora da consulta
+        </option>
+        {hours.map(hour => (
+          <option key={hour} value={specialist.id}>
+            {specialist.name}
+          </option>
+        ))}
+      </Select> */}
     </>
   );
 };

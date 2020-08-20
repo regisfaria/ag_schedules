@@ -48,7 +48,8 @@ export default class CreateScheduleAvailabilityTable1596722891712
           {
             name: 'deletedAt',
             type: 'timestamp',
-            default: 'null',
+            isNullable: true,
+            default: null,
           },
         ],
       }),
