@@ -16,9 +16,12 @@ import getValidationErrors from '../../utils/getValidationErrors';
 import Select from '../../components/Select';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+import PageHeader from '../../components/PageHeader';
+import Section from '../../components/Section';
+import Main from '../../components/Main';
 import ConsultEnrolment from '../../components/ConsultEnrolment';
 
-import { Container, Content } from './styles';
+import { Container, AnimatedContent } from './styles';
 
 import Menu from '../../components/Menu';
 
@@ -43,9 +46,7 @@ const RegisterConsult: React.FC = () => {
         const schema = Yup.object().shape({
           pacient: Yup.string().required('Paciente obrigatório'),
           specialist: Yup.string().required('Especialista obrigatório'),
-          consultDate: Yup.date().required(
-            'Data e Hora da consulta obrigatórias',
-          ),
+          consultDate: Yup.date().required('Data da consulta obrigatória'),
           payment: Yup.string().required('Pagamento obrigatório'),
           status: Yup.string().required('Status obrigatório'),
         });
@@ -90,37 +91,41 @@ const RegisterConsult: React.FC = () => {
       <Menu />
 
       <Container>
-        <Content>
+        <AnimatedContent>
+          <PageHeader title="Criar uma Consulta" />
+
           <Form ref={formRef} onSubmit={handleSubmit}>
-            <h1>Criar consulta</h1>
+            <Main>
+              <Section>
+                <ConsultEnrolment />
 
-            <ConsultEnrolment />
+                <Select name="payment" icon={FiDollarSign}>
+                  <option value="" selected hidden>
+                    Pagamento
+                  </option>
+                  <option value="50%">Pago 50%</option>
+                  <option value="100%">Pago 100%</option>
+                </Select>
 
-            <Select name="payment" icon={FiDollarSign}>
-              <option value="" selected hidden>
-                Pagamento
-              </option>
-              <option value="50%">Pago 50%</option>
-              <option value="100%">Pago 100%</option>
-            </Select>
+                <Input
+                  type="text"
+                  name="status"
+                  text="Status:"
+                  value="Em aberto"
+                  id="consultStatus"
+                  contentEditable={false}
+                  disabled
+                />
 
-            <Input
-              type="text"
-              name="status"
-              text="Status:"
-              value="Em aberto"
-              id="consultStatus"
-              contentEditable={false}
-              disabled
-            />
-
-            <Button type="submit">Criar</Button>
+                <Button type="submit">Criar</Button>
+              </Section>
+            </Main>
           </Form>
 
           <Link to="/dashboard">
             <FiArrowLeft /> Voltar para o Dashboard
           </Link>
-        </Content>
+        </AnimatedContent>
       </Container>
     </>
   );
