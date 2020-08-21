@@ -7,10 +7,11 @@ import React, {
   ChangeEvent,
 } from 'react';
 import ReactDatePicker, { registerLocale } from 'react-datepicker';
-import { getDay, format } from 'date-fns';
+import { getDay, format, parseISO } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
 import pt from 'date-fns/locale/pt-BR';
 
-import { FiCalendar, FiAlertTriangle } from 'react-icons/fi';
+import { FiCalendar, FiAlertTriangle, FiClock } from 'react-icons/fi';
 import { FaUser, FaUserMd } from 'react-icons/fa';
 
 import { useField } from '@unform/core';
@@ -47,13 +48,12 @@ const ConsultEnrolment: React.FC = () => {
   const [inputDate, setInputDate] = useState(defaultValue || null);
   const [pacients, setPacients] = useState<PacientResponse[]>([]);
   const [specialists, setSpecialists] = useState<SpecialistResponse[]>([]);
-  const [specialistHolidays, setSpecialistHolidays] = useState<
-    HolidayResponse[]
-  >([]);
+  const [selectedSpecialistId, setSelectedSpecialistId] = useState('');
+  const [specialistHolidays, setSpecialistHolidays] = useState<string[]>([]);
+  const [validHoliday, setValidHolidays] = useState<Date[]>([]);
   const [specialistAvailableDays, setSpecialistAvailableDays] = useState<
     number[]
   >([]);
-  const [selectedSpecialistId, setSelectedSpecialistId] = useState('');
   const [hours, setHours] = useState('');
 
   const availableDays = useCallback(
@@ -95,7 +95,7 @@ const ConsultEnrolment: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    api.get('/pacients').then(response => {
+    api.get('/pacients/supervisor').then(response => {
       setPacients(response.data);
     });
   }, []);
@@ -108,7 +108,6 @@ const ConsultEnrolment: React.FC = () => {
       .get(`/schedules/availableDays/${selectedSpecialistId}`)
       .then(response => {
         setSpecialistAvailableDays(response.data);
-        console.log(response.data);
       });
   }, [selectedSpecialistId]);
 
@@ -118,27 +117,36 @@ const ConsultEnrolment: React.FC = () => {
     }
     api.get(`/schedules/holiday/${selectedSpecialistId}`).then(response => {
       setSpecialistHolidays(response.data);
-      console.log(response.data);
     });
   }, [selectedSpecialistId]);
 
   useEffect(() => {
-    if (!inputDate) {
+    if (!specialistHolidays.length) {
       return;
     }
-    const day = getDay(inputDate);
-    const parsedDate = format(inputDate, 'dd-MM-yyyy');
+    const holidayDates: Date[] = specialistHolidays.map(holiday => {
+      return parseISO(holiday);
+    });
 
-    api
-      .get(
-        `/schedules/availableHours/${selectedSpecialistId}&${day}&${parsedDate}`,
-      )
-      .then(response => {
-        setHours(response.data);
-        console.log(response.data);
-      });
-  }, [inputDate, selectedSpecialistId]);
+    setValidHolidays(holidayDates);
+  }, [specialistHolidays]);
 
+  // useEffect(() => {
+  //   if (!inputDate) {
+  //     return;
+  //   }
+  //   const day = getDay(inputDate);
+  //   const parsedDate = format(inputDate, 'dd-MM-yyyy');
+
+  //   api
+  //     .get(
+  //       `/schedules/availableHours/${selectedSpecialistId}&${day}&${parsedDate}`,
+  //     )
+  //     .then(response => {
+  //       setHours(response.data);
+  //       console.log(response.data);
+  //     });
+  // }, [inputDate, selectedSpecialistId]);
   return (
     <>
       <Select name="pacient" icon={FaUser}>
@@ -178,9 +186,9 @@ const ConsultEnrolment: React.FC = () => {
             locale="pt"
             dateFormat="dd/MM/yyyy"
             minDate={new Date()}
-            placeholderText="Data e Hora da consulta"
+            placeholderText="Data da consulta"
             useWeekdaysShort
-            excludeDates={[new Date('2020-08-25')]}
+            excludeDates={validHoliday}
             onChange={setInputDate}
             autoComplete="off"
             filterDate={availableDays}
@@ -202,20 +210,19 @@ const ConsultEnrolment: React.FC = () => {
         )}
       </DateContainer>
 
-      {/* <Select
-        name="consultHour"
-        onChange={handleSelectedSpecialist}
-        icon={FaUserMd}
-      >
+      {/* refazer abaixo igual o calendario, para mostrar um nao clicavel ou o certo */}
+      <Select name="consultHour" icon={FiClock}>
         <option value="" selected hidden>
-          Hora da consulta
+          {specialistAvailableDays.length
+            ? 'Hora da consulta'
+            : 'Agenda indisponível'}
         </option>
-        {hours.map(hour => (
+        {/* {hours.map(hour => (
           <option key={hour} value={specialist.id}>
             {specialist.name}
           </option>
-        ))}
-      </Select> */}
+        ))} */}
+      </Select>
     </>
   );
 };

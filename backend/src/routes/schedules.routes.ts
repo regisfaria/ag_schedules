@@ -13,7 +13,7 @@ import FormatSchedule from '../services/Schedules/FormatSchedule';
 import CreateRestTimeService from '../services/RestTimes/CreateRestTimeService';
 
 import CreateHolidayService from '../services/Holidays/CreateHolidayService';
-import FormatHolidayToOnlyDate from '../services/Holidays/FormatHolidayToOnlyDate';
+import ListValidHolidays from '../services/Holidays/ListValidHolidays';
 
 import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 
@@ -134,15 +134,15 @@ schedulesRouter.get('/holiday/:id', async (request, response) => {
 
   const holidaysRepository = getRepository(Holiday);
 
-  const unparsedHolidays = await holidaysRepository.find({
+  const holidays = await holidaysRepository.find({
     where: { specialistId: id },
   });
 
-  const formatHolidayToOnlyDate = new FormatHolidayToOnlyDate();
+  const listValidHolidays = new ListValidHolidays();
 
-  const holidays = formatHolidayToOnlyDate.execute(unparsedHolidays);
+  const validHolidays = listValidHolidays.execute(holidays);
 
-  return response.json(holidays);
+  return response.json(validHolidays);
 });
 
 export default schedulesRouter;
