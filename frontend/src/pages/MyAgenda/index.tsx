@@ -3,14 +3,11 @@ import React, {
   useState,
   useEffect,
   useCallback,
-  useMemo,
   ChangeEvent,
 } from 'react';
 import { Form } from '@unform/web';
-import { FormHandles, SubmitHandler } from '@unform/core';
+import { FormHandles } from '@unform/core';
 
-import { setDay } from 'date-fns/esm';
-import Radio from '../../components/RadioButton';
 import {
   Container,
   DaysWeek,
@@ -22,28 +19,29 @@ import {
 
 import PageHeader from '../../components/PageHeader';
 import Menu from '../../components/Menu';
-import Main from '../../components/Main';
 import Select from '../../components/Select';
 import Button from '../../components/Button';
 
 import api from '../../services/api';
 
 import SelectHour from '../../components/SelectHours';
-import { useAuth } from '../../hooks/auth';
 
 interface FormData {
   consultState: string;
-  openTimeHour: string;
-  openTImeMinute: string;
-  closeTimeHour: string;
-  closeTImeMinute: string;
+  openTimeHour: number;
+  timeMinute: number;
+  closeTimeHour: number;
 }
 
 interface Days {
   id: string;
   day: number;
-  openTime: number;
-  closeTime: number;
+  workDay: boolean;
+  formatedOpenHour: number;
+  formatedOpenMinute: number;
+  formatedCloseHour: number;
+  formatedCloseMinute: number;
+  formatedDay: string;
 }
 
 export default function App() {
@@ -53,16 +51,37 @@ export default function App() {
   const [choosenDay, setChoosenDay] = useState<Days>();
   const [workToday, setWorkToday] = useState('');
 
-  function handleSubmit(data: FormData) {
-    console.log(data);
-  }
+  const [inicialTimeHour, setInicialTimeHour] = useState<number>();
+  const [inicialTimeMinute, setInicialTimeMinute] = useState<number>();
+  const [finishTimeMinute, setFinishTimeMinute] = useState<number>();
+  const [finishTimeHour, setFinishTimeHour] = useState<number>();
 
+  const [possibleFinishTimeHour, setPossibleFinishTimeHour] = useState<
+    number[]
+  >([]);
+
+  const [arrayHour, setArrayHour] = useState<number[]>([]);
+
+  const [specialCaseTwentTree, setSpecialCaseTwentTree] = useState(false);
+
+  // Get information by API
   useEffect(() => {
     api
       .get<Days[]>('/schedules/9d2eb621-53f8-42cb-9177-5aabac578c6d')
       .then(response => {
-        setWorkDays(response.data);
+        setWorkDays(
+          response.data.sort(function (a, b) {
+            return a.day - b.day;
+          }),
+        );
       });
+  }, []);
+
+  // Create Array for all inicial hours
+  useEffect(() => {
+    const eachHourArray = Array.from({ length: 24 }, (_, index) => index);
+
+    setArrayHour(eachHourArray);
   }, []);
 
   // verify if the day is a work day or not
@@ -70,23 +89,91 @@ export default function App() {
     if (!choosenDay) {
       return;
     }
-    choosenDay.openTime !== -1 ? setWorkToday('Sim') : setWorkToday('Não');
+
+    if (choosenDay.workDay === true) {
+      setWorkToday('Sim');
+
+      setInicialTimeHour(choosenDay.formatedOpenHour);
+      setInicialTimeMinute(choosenDay.formatedOpenMinute);
+
+      setFinishTimeHour(choosenDay.formatedCloseHour);
+      setFinishTimeMinute(choosenDay.formatedCloseMinute);
+
+      return;
+    }
+
+    setWorkToday('Não');
+
+    setInicialTimeHour(-1);
+    setInicialTimeMinute(-1);
+
+    setFinishTimeHour(-1);
+    setFinishTimeMinute(-1);
   }, [choosenDay]);
 
-  //
-
-  const handleSelectedCity = useCallback(
+  // Function On Change. It set the value at Work Today, when the select is changed
+  const handleSelectOptions = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       setWorkToday(event.target.value);
     },
     [],
   );
 
+  const handleChangeMinute = useCallback(
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      setInicialTimeMinute(Number(event.target.value));
+      setFinishTimeMinute(Number(event.target.value));
+    },
+    [],
+  );
+
+  const handleChangeOpenTimeHour = useCallback(
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      setInicialTimeHour(Number(event.target.value));
+      console.log('mudou');
+      setFinishTimeHour(23);
+      setInicialTimeMinute(0);
+      setFinishTimeMinute(30);
+    },
+    [],
+  );
+
+  // Update the workToday, when we change the day
   useEffect(() => {
-    formRef.current?.setFieldValue('gender', workToday);
+    formRef.current?.setFieldValue('consultState', workToday);
+
+    formRef.current?.setFieldValue('openTimeHour', inicialTimeHour);
+    formRef.current?.setFieldValue('openTimeMin', inicialTimeMinute);
+
+    formRef.current?.setFieldValue('closeTimeHour', finishTimeHour);
+    formRef.current?.setFieldValue('closeTimeMinute', finishTimeMinute);
   }, [workToday, choosenDay]);
 
-  console.log(choosenDay);
+  useEffect(() => {
+    // Inicio dos agendamentos
+    if (!inicialTimeHour) {
+      return;
+    }
+
+    if (inicialTimeHour === 23) {
+      return;
+    }
+
+    const hourStart = inicialTimeHour + 1;
+
+    // Cria um vetor de agendamentos por dia, como o funcionamento vai ate as 17horas, o tamanho do vetor tem que ser de 10 posições
+    const eachHourArray = Array.from(
+      { length: 25 - hourStart },
+      (_, index) => index + hourStart,
+    );
+
+    setPossibleFinishTimeHour(eachHourArray);
+  }, [inicialTimeHour]);
+
+  function handleSubmit(data: FormData) {
+    console.log(choosenDay?.id);
+    console.log(data);
+  }
 
   return (
     <>
@@ -101,10 +188,10 @@ export default function App() {
                 onClick={() => {
                   setChoosenDay(dia);
                 }}
-                workDay={dia.openTime === -1}
+                workDay={!dia.workDay}
                 selectdAY={dia.id === choosenDay?.id}
               >
-                {dia.day}
+                {dia.formatedDay}
               </NewButton>
             );
           })}
@@ -119,19 +206,10 @@ export default function App() {
         <AfterChooseOneDay inicialize={workToday === ''}>
           <div>
             <strong>Realizar Consultas Nesse Dia?</strong>
-            <p>{workToday}</p>
           </div>
 
           <Form ref={formRef} onSubmit={handleSubmit}>
-            {/* <Radio
-              name="consultState"
-              options={[
-                { id: 'Sim', label: 'Sim' },
-                { id: 'Não', label: 'Não' },
-              ]}
-            /> */}
-
-            <Select name="gender" onChange={handleSelectedCity}>
+            <Select name="consultState" onChange={handleSelectOptions}>
               <option value={workToday} selected hidden>
                 {workToday}
               </option>
@@ -144,7 +222,63 @@ export default function App() {
                 title="Horários de Trabalho"
                 subTitle="Marque abaixo os dias que você gostaria de trabalhar"
               />
-              <SelectHour />
+
+              <span>De:</span>
+              <Select name="openTimeHour" onChange={handleChangeOpenTimeHour}>
+                <option value={inicialTimeHour} selected hidden>
+                  {inicialTimeHour === -1
+                    ? 'Horas'
+                    : String(inicialTimeHour).padStart(2, '0')}
+                </option>
+
+                {arrayHour.map(hour => {
+                  return (
+                    <option value={hour}>
+                      {String(hour).padStart(2, '0')}
+                    </option>
+                  );
+                })}
+              </Select>
+
+              <Select name="openTimeMin" onChange={handleChangeMinute}>
+                <option value={inicialTimeMinute} selected hidden>
+                  {inicialTimeMinute === -1
+                    ? 'Min'
+                    : String(inicialTimeMinute).padStart(2, '0')}
+                </option>
+                <option value="00">00</option>
+                <option value="30">30</option>
+              </Select>
+
+              <span>Até:</span>
+              <Select name="closeTimeHour">
+                <option value={finishTimeHour} selected hidden>
+                  {finishTimeHour === -1
+                    ? 'Horas'
+                    : String(finishTimeHour).padStart(2, '0')}
+                </option>
+                {possibleFinishTimeHour.map(hour => {
+                  return (
+                    <option value={hour}>
+                      {String(hour).padStart(2, '0')}
+                    </option>
+                  );
+                })}
+              </Select>
+
+              <Select name="closeTimeMinute" disabled>
+                <option
+                  value={
+                    specialCaseTwentTree ? finishTimeMinute : inicialTimeMinute
+                  }
+                  selected
+                  hidden
+                >
+                  {inicialTimeMinute === -1
+                    ? 'Min'
+                    : String(inicialTimeMinute).padStart(2, '0')}
+                </option>
+              </Select>
             </WookSchedule>
 
             <Button type="submit">Salvar</Button>
