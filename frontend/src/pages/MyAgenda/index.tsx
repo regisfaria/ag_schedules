@@ -84,6 +84,40 @@ export default function App() {
     setArrayHour(eachHourArray);
   }, []);
 
+  useEffect(() => {
+    // Inicio dos agendamentos
+    if (!inicialTimeHour) {
+      return;
+    }
+
+    if (inicialTimeHour === 23) {
+      setFinishTimeHour(23);
+      setInicialTimeMinute(0);
+      setFinishTimeMinute(59);
+      setSpecialCaseTwentTree(true);
+
+      return;
+    }
+
+    if (specialCaseTwentTree) {
+      setSpecialCaseTwentTree(false);
+    }
+
+    if (finishTimeMinute && finishTimeMinute === 59) {
+      setFinishTimeMinute(inicialTimeMinute);
+    }
+
+    const hourStart = inicialTimeHour + 1;
+
+    // Cria um vetor de agendamentos por dia, como o funcionamento vai ate as 17horas, o tamanho do vetor tem que ser de 10 posições
+    const eachHourArray = Array.from(
+      { length: 24 - hourStart },
+      (_, index) => index + hourStart,
+    );
+
+    setPossibleFinishTimeHour(eachHourArray);
+  }, [inicialTimeHour]);
+
   // verify if the day is a work day or not
   useEffect(() => {
     if (!choosenDay) {
@@ -109,7 +143,7 @@ export default function App() {
 
     setFinishTimeHour(-1);
     setFinishTimeMinute(-1);
-  }, [choosenDay]);
+  }, [workDays, choosenDay]);
 
   // Function On Change. It set the value at Work Today, when the select is changed
   const handleSelectOptions = useCallback(
@@ -130,10 +164,6 @@ export default function App() {
   const handleChangeOpenTimeHour = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       setInicialTimeHour(Number(event.target.value));
-      console.log('mudou');
-      setFinishTimeHour(23);
-      setInicialTimeMinute(0);
-      setFinishTimeMinute(30);
     },
     [],
   );
@@ -147,28 +177,14 @@ export default function App() {
 
     formRef.current?.setFieldValue('closeTimeHour', finishTimeHour);
     formRef.current?.setFieldValue('closeTimeMinute', finishTimeMinute);
-  }, [workToday, choosenDay]);
-
-  useEffect(() => {
-    // Inicio dos agendamentos
-    if (!inicialTimeHour) {
-      return;
-    }
-
-    if (inicialTimeHour === 23) {
-      return;
-    }
-
-    const hourStart = inicialTimeHour + 1;
-
-    // Cria um vetor de agendamentos por dia, como o funcionamento vai ate as 17horas, o tamanho do vetor tem que ser de 10 posições
-    const eachHourArray = Array.from(
-      { length: 25 - hourStart },
-      (_, index) => index + hourStart,
-    );
-
-    setPossibleFinishTimeHour(eachHourArray);
-  }, [inicialTimeHour]);
+  }, [
+    workToday,
+    choosenDay,
+    inicialTimeHour,
+    finishTimeHour,
+    inicialTimeMinute,
+    finishTimeMinute,
+  ]);
 
   function handleSubmit(data: FormData) {
     console.log(choosenDay?.id);
@@ -206,6 +222,7 @@ export default function App() {
         <AfterChooseOneDay inicialize={workToday === ''}>
           <div>
             <strong>Realizar Consultas Nesse Dia?</strong>
+            <p>{inicialTimeMinute}</p>
           </div>
 
           <Form ref={formRef} onSubmit={handleSubmit}>
@@ -246,12 +263,16 @@ export default function App() {
                     ? 'Min'
                     : String(inicialTimeMinute).padStart(2, '0')}
                 </option>
-                <option value="00">00</option>
-                <option value="30">30</option>
+                <option value="00" disabled={specialCaseTwentTree}>
+                  00
+                </option>
+                <option value="30" disabled={specialCaseTwentTree}>
+                  30
+                </option>
               </Select>
 
               <span>Até:</span>
-              <Select name="closeTimeHour">
+              <Select name="closeTimeHour" disabled={specialCaseTwentTree}>
                 <option value={finishTimeHour} selected hidden>
                   {finishTimeHour === -1
                     ? 'Horas'
@@ -267,16 +288,8 @@ export default function App() {
               </Select>
 
               <Select name="closeTimeMinute" disabled>
-                <option
-                  value={
-                    specialCaseTwentTree ? finishTimeMinute : inicialTimeMinute
-                  }
-                  selected
-                  hidden
-                >
-                  {inicialTimeMinute === -1
-                    ? 'Min'
-                    : String(inicialTimeMinute).padStart(2, '0')}
+                <option value={finishTimeMinute} selected hidden>
+                  {String(finishTimeMinute).padStart(2, '0')}
                 </option>
               </Select>
             </WookSchedule>
