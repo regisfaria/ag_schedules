@@ -29,6 +29,10 @@ export default class RestTime {
   @Column('int')
   endTime: number;
 
+  formatedStartTime: string;
+
+  formatedEndTime: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
