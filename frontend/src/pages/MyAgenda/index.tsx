@@ -47,22 +47,14 @@ interface Days {
 export default function App() {
   const formRef = useRef<FormHandles>(null);
 
+  // Recebe os dados da api
   const [workDays, setWorkDays] = useState<Days[]>([]);
+
+  // Recebe os dados, quando, um botão é selecionado
   const [choosenDay, setChoosenDay] = useState<Days>();
-  const [workToday, setWorkToday] = useState('');
 
-  const [inicialTimeHour, setInicialTimeHour] = useState<number>();
-  const [inicialTimeMinute, setInicialTimeMinute] = useState<number>();
-  const [finishTimeMinute, setFinishTimeMinute] = useState<number>();
-  const [finishTimeHour, setFinishTimeHour] = useState<number>();
-
-  const [possibleFinishTimeHour, setPossibleFinishTimeHour] = useState<
-    number[]
-  >([]);
-
-  const [arrayHour, setArrayHour] = useState<number[]>([]);
-
-  const [specialCaseTwentTree, setSpecialCaseTwentTree] = useState(false);
+  // Verifica se aquele dia o cara trabalho ou não
+  const [workToday, setWorkToday] = useState(false);
 
   // Get information by API
   useEffect(() => {
@@ -77,47 +69,6 @@ export default function App() {
       });
   }, []);
 
-  // Create Array for all inicial hours
-  useEffect(() => {
-    const eachHourArray = Array.from({ length: 24 }, (_, index) => index);
-
-    setArrayHour(eachHourArray);
-  }, []);
-
-  useEffect(() => {
-    // Inicio dos agendamentos
-    if (!inicialTimeHour) {
-      return;
-    }
-
-    if (inicialTimeHour === 23) {
-      setFinishTimeHour(23);
-      setInicialTimeMinute(0);
-      setFinishTimeMinute(59);
-      setSpecialCaseTwentTree(true);
-
-      return;
-    }
-
-    if (specialCaseTwentTree) {
-      setSpecialCaseTwentTree(false);
-    }
-
-    if (finishTimeMinute && finishTimeMinute === 59) {
-      setFinishTimeMinute(inicialTimeMinute);
-    }
-
-    const hourStart = inicialTimeHour + 1;
-
-    // Cria um vetor de agendamentos por dia, como o funcionamento vai ate as 17horas, o tamanho do vetor tem que ser de 10 posições
-    const eachHourArray = Array.from(
-      { length: 24 - hourStart },
-      (_, index) => index + hourStart,
-    );
-
-    setPossibleFinishTimeHour(eachHourArray);
-  }, [inicialTimeHour]);
-
   // verify if the day is a work day or not
   useEffect(() => {
     if (!choosenDay) {
@@ -125,71 +76,25 @@ export default function App() {
     }
 
     if (choosenDay.workDay === true) {
-      setWorkToday('Sim');
-
-      setInicialTimeHour(choosenDay.formatedOpenHour);
-      setInicialTimeMinute(choosenDay.formatedOpenMinute);
-
-      setFinishTimeHour(choosenDay.formatedCloseHour);
-      setFinishTimeMinute(choosenDay.formatedCloseMinute);
+      setWorkToday(true);
 
       return;
     }
 
-    setWorkToday('Não');
-
-    setInicialTimeHour(-1);
-    setInicialTimeMinute(-1);
-
-    setFinishTimeHour(-1);
-    setFinishTimeMinute(-1);
+    setWorkToday(false);
   }, [workDays, choosenDay]);
 
   // Function On Change. It set the value at Work Today, when the select is changed
-  const handleSelectOptions = useCallback(
-    (event: ChangeEvent<HTMLSelectElement>) => {
-      setWorkToday(event.target.value);
-    },
-    [],
-  );
-
-  const handleChangeMinute = useCallback(
-    (event: ChangeEvent<HTMLSelectElement>) => {
-      setInicialTimeMinute(Number(event.target.value));
-      setFinishTimeMinute(Number(event.target.value));
-    },
-    [],
-  );
-
-  const handleChangeOpenTimeHour = useCallback(
-    (event: ChangeEvent<HTMLSelectElement>) => {
-      setInicialTimeHour(Number(event.target.value));
-    },
-    [],
-  );
+  const handleSelectOptions = useCallback(() => {
+    setWorkToday(!workToday);
+  }, [workToday]);
 
   // Update the workToday, when we change the day
   useEffect(() => {
     formRef.current?.setFieldValue('consultState', workToday);
+  }, [workToday, choosenDay]);
 
-    formRef.current?.setFieldValue('openTimeHour', inicialTimeHour);
-    formRef.current?.setFieldValue('openTimeMin', inicialTimeMinute);
-
-    formRef.current?.setFieldValue('closeTimeHour', finishTimeHour);
-    formRef.current?.setFieldValue('closeTimeMinute', finishTimeMinute);
-  }, [
-    workToday,
-    choosenDay,
-    inicialTimeHour,
-    finishTimeHour,
-    inicialTimeMinute,
-    finishTimeMinute,
-  ]);
-
-  function handleSubmit(data: FormData) {
-    console.log(choosenDay?.id);
-    console.log(data);
-  }
+  console.log(workToday);
 
   return (
     <>
@@ -213,89 +118,41 @@ export default function App() {
           })}
         </DaysWeek>
 
-        <InicializePage inicialize={workToday === ''}>
+        {/*  <InicializePage >
           <div>
             <p>Clique em um dia da semana para começar a editar</p>
           </div>
-        </InicializePage>
+        </InicializePage> */}
 
-        <AfterChooseOneDay inicialize={workToday === ''}>
+        <AfterChooseOneDay>
           <div>
             <strong>Realizar Consultas Nesse Dia?</strong>
-            <p>{inicialTimeMinute}</p>
           </div>
 
-          <Form ref={formRef} onSubmit={handleSubmit}>
-            <Select name="consultState" onChange={handleSelectOptions}>
-              <option value={workToday} selected hidden>
-                {workToday}
-              </option>
-              <option value="Sim">Sim</option>
-              <option value="Não">Não</option>
-            </Select>
+          <select name="consultState" onChange={handleSelectOptions}>
+            <option value="true" selected={workToday}>
+              Sim
+            </option>
+            <option value="false" selected={workToday === false}>
+              Não
+            </option>
+          </select>
 
-            <WookSchedule work={workToday === 'Sim'}>
-              <PageHeader
-                title="Horários de Trabalho"
-                subTitle="Marque abaixo os dias que você gostaria de trabalhar"
+          <Button>Horario de trabalho</Button>
+
+          <Button>Horario de Intervalo</Button>
+
+          <WookSchedule work={workToday}>
+            {choosenDay && (
+              <SelectHour
+                id={choosenDay.id}
+                formatedOpenHour={choosenDay.formatedOpenHour}
+                formatedOpenMinute={choosenDay.formatedOpenMinute}
+                formatedCloseHour={choosenDay.formatedCloseHour}
+                formatedCloseMinute={choosenDay.formatedCloseMinute}
               />
-
-              <span>De:</span>
-              <Select name="openTimeHour" onChange={handleChangeOpenTimeHour}>
-                <option value={inicialTimeHour} selected hidden>
-                  {inicialTimeHour === -1
-                    ? 'Horas'
-                    : String(inicialTimeHour).padStart(2, '0')}
-                </option>
-
-                {arrayHour.map(hour => {
-                  return (
-                    <option value={hour}>
-                      {String(hour).padStart(2, '0')}
-                    </option>
-                  );
-                })}
-              </Select>
-
-              <Select name="openTimeMin" onChange={handleChangeMinute}>
-                <option value={inicialTimeMinute} selected hidden>
-                  {inicialTimeMinute === -1
-                    ? 'Min'
-                    : String(inicialTimeMinute).padStart(2, '0')}
-                </option>
-                <option value="00" disabled={specialCaseTwentTree}>
-                  00
-                </option>
-                <option value="30" disabled={specialCaseTwentTree}>
-                  30
-                </option>
-              </Select>
-
-              <span>Até:</span>
-              <Select name="closeTimeHour" disabled={specialCaseTwentTree}>
-                <option value={finishTimeHour} selected hidden>
-                  {finishTimeHour === -1
-                    ? 'Horas'
-                    : String(finishTimeHour).padStart(2, '0')}
-                </option>
-                {possibleFinishTimeHour.map(hour => {
-                  return (
-                    <option value={hour}>
-                      {String(hour).padStart(2, '0')}
-                    </option>
-                  );
-                })}
-              </Select>
-
-              <Select name="closeTimeMinute" disabled>
-                <option value={finishTimeMinute} selected hidden>
-                  {String(finishTimeMinute).padStart(2, '0')}
-                </option>
-              </Select>
-            </WookSchedule>
-
-            <Button type="submit">Salvar</Button>
-          </Form>
+            )}
+          </WookSchedule>
         </AfterChooseOneDay>
       </Container>
     </>

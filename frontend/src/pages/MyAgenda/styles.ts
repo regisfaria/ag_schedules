@@ -130,7 +130,7 @@ export const WookSchedule = styled.div<SpecialistWorkTodayProps>`
     `}
 `;
 
-export const InicializePage = styled.div<InicializePageProps>`
+export const InicializePage = styled.div`
   display: none;
   flex-direction: row;
   align-items: center;
@@ -144,25 +144,13 @@ export const InicializePage = styled.div<InicializePageProps>`
     font-size: 3rem;
     text-align: center;
   }
-
-  ${props =>
-    props.inicialize &&
-    css`
-      display: flex;
-    `}
 `;
 
-export const AfterChooseOneDay = styled.div<InicializePageProps>`
+export const AfterChooseOneDay = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
 
   height: 100%;
-
-  ${props =>
-    props.inicialize &&
-    css`
-      display: none;
-    `}
 `;
