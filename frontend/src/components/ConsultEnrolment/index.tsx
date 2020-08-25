@@ -18,7 +18,7 @@ import Select from '../Select';
 import Input from '../Input';
 
 import 'react-datepicker/dist/react-datepicker.css';
-import { DateContainer, Error } from './styles';
+import { SpecialistInfo, DateContainer, Error } from './styles';
 
 import api from '../../services/api';
 
@@ -27,6 +27,13 @@ registerLocale('pt', pt);
 interface SpecialistResponse {
   id: string;
   name: string;
+}
+
+interface SpecialistProfileResponse {
+  imageUrl: string;
+  phoneNumber: string;
+  city: string;
+  state: string;
 }
 
 const ConsultEnrolment: React.FC = () => {
@@ -39,6 +46,11 @@ const ConsultEnrolment: React.FC = () => {
   const [inputDate, setInputDate] = useState(defaultValue || null);
   const [specialists, setSpecialists] = useState<SpecialistResponse[]>([]);
   const [selectedSpecialistId, setSelectedSpecialistId] = useState('');
+  const [selectedSpecialistName, setSelectedSpecialistName] = useState('');
+  const [
+    specialistProfile,
+    setSpecialistProfile,
+  ] = useState<SpecialistProfileResponse | null>(null);
   const [specialistHolidays, setSpecialistHolidays] = useState<string[]>([]);
   const [validHoliday, setValidHolidays] = useState<Date[]>([]);
   const [hours, setHours] = useState<string[]>([]);
@@ -62,9 +74,15 @@ const ConsultEnrolment: React.FC = () => {
   const handleSelectedSpecialist = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       const selectSpecialistId = event.target.value;
+      const selectedSpecialist = specialists.find(
+        specialist => event.target.value === specialist.id,
+      );
+      if (selectedSpecialist) {
+        setSelectedSpecialistName(selectedSpecialist.name);
+      }
       setSelectedSpecialistId(selectSpecialistId);
     },
-    [],
+    [specialists],
   );
 
   useEffect(() => {
@@ -105,6 +123,15 @@ const ConsultEnrolment: React.FC = () => {
   }, [selectedSpecialistId]);
 
   useEffect(() => {
+    if (selectedSpecialistId === '') {
+      return;
+    }
+    api.get(`/profiles/specialist/${selectedSpecialistId}`).then(response => {
+      setSpecialistProfile(response.data);
+    });
+  }, [selectedSpecialistId]);
+
+  useEffect(() => {
     if (!specialistHolidays.length) {
       return;
     }
@@ -133,6 +160,19 @@ const ConsultEnrolment: React.FC = () => {
 
   return (
     <>
+      {specialistProfile ? (
+        <SpecialistInfo>
+          <strong>{selectedSpecialistName}</strong>
+          <span>{specialistProfile.phoneNumber}</span>
+          <p>
+            Endereço: {specialistProfile.city}, {specialistProfile.state}
+          </p>
+          <div>
+            <img src={specialistProfile.imageUrl} alt="profilePicture" />
+          </div>
+        </SpecialistInfo>
+      ) : null}
+
       <Select
         name="specialist"
         onChange={handleSelectedSpecialist}

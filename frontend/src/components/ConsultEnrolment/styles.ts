@@ -6,6 +6,10 @@ interface DateContainerProps {
   isErrored: boolean;
 }
 
+export const SpecialistInfo = styled.div`
+  background-color: red;
+`;
+
 export const DateContainer = styled.div<DateContainerProps>`
   background: var(--white);
   border-radius: 10px;
