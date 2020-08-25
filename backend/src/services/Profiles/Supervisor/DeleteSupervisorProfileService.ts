@@ -8,7 +8,7 @@ export default class DeleteSupervisorProfileService {
     const supervisorProfilesRepository = getRepository(SupervisorProfile);
 
     const supervisorProfile = await supervisorProfilesRepository.findOne({
-      where: { userId },
+      where: { id: userId },
     });
 
     if (!supervisorProfile) {

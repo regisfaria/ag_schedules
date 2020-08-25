@@ -23,6 +23,7 @@ export default class CreateSupervisorProfileService {
     const supervisorProfile = supervisorProfilesRepository.create({
       user,
       userId,
+      image: 'standard-profile-picture.png',
     });
 
     await supervisorProfilesRepository.save(supervisorProfile);

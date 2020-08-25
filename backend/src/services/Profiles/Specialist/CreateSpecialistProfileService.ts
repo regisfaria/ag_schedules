@@ -23,6 +23,7 @@ export default class CreateSpecialistProfileService {
     const specialistProfile = specialistProfilesRepository.create({
       user,
       userId,
+      image: 'standard-profile-picture.png',
     });
 
     await specialistProfilesRepository.save(specialistProfile);

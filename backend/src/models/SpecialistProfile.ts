@@ -26,6 +26,8 @@ export default class SpecialistProfile {
   @Column()
   image: string;
 
+  imageUrl: string;
+
   @Column()
   description: string;
 
