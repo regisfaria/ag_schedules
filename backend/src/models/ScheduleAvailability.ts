@@ -29,18 +29,20 @@ export default class ScheduleAvailability {
   @Column('int')
   openTime: number;
 
-  formatedOpenTime: string;
+  formatedOpenHour: number;
+
+  formatedOpenMinute: number;
 
   @Column('int')
   closeTime: number;
 
-  formatedCloseTime: string;
+  formatedCloseHour: number;
+
+  formatedCloseMinute: number;
 
   workDay: boolean;
 
-  mobileFormatedDay: string;
-
-  desktopFormatedDay: string;
+  formatedDay: string;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -1,57 +1,59 @@
-import React, { useEffect, useRef, InputHTMLAttributes } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useField } from '@unform/core';
-import { Container } from './styles';
 
-interface Props extends InputHTMLAttributes<HTMLInputElement> {
-  name: string;
-  options: {
-    id: string;
-    value: string;
-    label: string;
-  }[];
+interface Option {
+  id: string | number;
+  label: string;
 }
 
-const CheckboxInput: React.FC<Props> = ({ name, options, ...rest }) => {
+interface Props {
+  name: string;
+  options: Option[];
+}
+
+type InputProps = JSX.IntrinsicElements['input'] & Props;
+
+const Radio: React.FC<InputProps> = ({ name, options }) => {
   const inputRefs = useRef<HTMLInputElement[]>([]);
-  const { fieldName, registerField, defaultValue = [] } = useField(name);
+  const { fieldName, registerField, defaultValue } = useField(name);
 
   useEffect(() => {
     registerField({
       name: fieldName,
       ref: inputRefs.current,
+      getValue(refs: HTMLInputElement[]) {
+        const checked = refs.find(ref => ref.checked);
 
-      getValue: (refs: HTMLInputElement[]) => {
-        return refs.filter(ref => ref.checked).map(ref => ref.value);
+        return checked ? checked.value : null;
       },
+      setValue(refs: HTMLInputElement[], value) {
+        const item = refs.find(ref => ref.value === value);
 
-      setValue: (refs: HTMLInputElement[], values: string[]) => {
-        refs.forEach(ref => {
-          if (values.includes(ref.id)) {
-            ref.checked = true;
-          }
-        });
+        if (item) {
+          item.checked = true;
+        }
       },
     });
-  }, [defaultValue, fieldName, registerField]);
+  }, [fieldName, registerField]);
 
   return (
-    <Container>
+    <div>
       {options.map((option, index) => (
-        <label htmlFor={option.id} key={option.id}>
+        <label key={option.id}>
           <input
-            ref={ref => {
-              inputRefs.current[index] = ref as HTMLInputElement;
-            }}
+            ref={elRef =>
+              (inputRefs.current[index] = elRef as HTMLInputElement)
+            }
             type="radio"
             name={fieldName}
             value={option.id}
             defaultChecked={defaultValue === option.id}
           />
-          <span>&nbsp;{option.label}</span>
+          <span>{option.label}</span>
         </label>
       ))}
-    </Container>
+    </div>
   );
 };
 
-export default CheckboxInput;
+export default Radio;

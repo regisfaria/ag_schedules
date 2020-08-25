@@ -1,104 +1,158 @@
-import React, { useRef } from 'react';
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+  ChangeEvent,
+} from 'react';
 import { Form } from '@unform/web';
+import { FormHandles } from '@unform/core';
 
-import Radio from '../../components/RadioButton';
 import {
   Container,
   DaysWeek,
   WookSchedule,
   InicializePage,
   AfterChooseOneDay,
+  NewButton,
 } from './styles';
 
 import PageHeader from '../../components/PageHeader';
 import Menu from '../../components/Menu';
-import Main from '../../components/Main';
-import Section from '../../components/Section';
 import Select from '../../components/Select';
 import Button from '../../components/Button';
 
-import SelectHour from '../../components/SelectHours';
+import api from '../../services/api';
 
-interface CheckboxOption {
-  id: string;
-  value: string;
-  label: string;
-}
+import SelectHour from '../../components/SelectHours';
 
 interface FormData {
   consultState: string;
-  openTimeHour: string;
-  openTImeMinute: string;
-  closeTimeHour: string;
-  closeTImeMinute: string;
+  openTimeHour: number;
+  timeMinute: number;
+  closeTimeHour: number;
+}
+
+interface Days {
+  id: string;
+  day: number;
+  workDay: boolean;
+  formatedOpenHour: number;
+  formatedOpenMinute: number;
+  formatedCloseHour: number;
+  formatedCloseMinute: number;
+  formatedDay: string;
 }
 
 export default function App() {
-  const formRef = useRef(null);
+  const formRef = useRef<FormHandles>(null);
 
-  function handleSubmit(data: FormData) {
-    console.log(data);
-  }
+  // Recebe os dados da api
+  const [workDays, setWorkDays] = useState<Days[]>([]);
 
-  const checkboxOptions: CheckboxOption[] = [
-    { id: 'sim', value: 'sim', label: 'Sim' },
-    { id: 'nao', value: 'nao', label: 'Não' },
-  ];
+  // Recebe os dados, quando, um botão é selecionado
+  const [choosenDay, setChoosenDay] = useState<Days>();
+
+  // Verifica se aquele dia o cara trabalho ou não
+  const [workToday, setWorkToday] = useState(false);
+
+  // Get information by API
+  useEffect(() => {
+    api
+      .get<Days[]>('/schedules/9d2eb621-53f8-42cb-9177-5aabac578c6d')
+      .then(response => {
+        setWorkDays(
+          response.data.sort(function (a, b) {
+            return a.day - b.day;
+          }),
+        );
+      });
+  }, []);
+
+  // verify if the day is a work day or not
+  useEffect(() => {
+    if (!choosenDay) {
+      return;
+    }
+
+    if (choosenDay.workDay === true) {
+      setWorkToday(true);
+
+      return;
+    }
+
+    setWorkToday(false);
+  }, [workDays, choosenDay]);
+
+  // Function On Change. It set the value at Work Today, when the select is changed
+  const handleSelectOptions = useCallback(() => {
+    setWorkToday(!workToday);
+  }, [workToday]);
+
+  // Update the workToday, when we change the day
+  useEffect(() => {
+    formRef.current?.setFieldValue('consultState', workToday);
+  }, [workToday, choosenDay]);
+
+  console.log(workToday);
 
   return (
     <>
       <Menu />
 
-      <DaysWeek>
-        <Button>D</Button>
-
-        <Button>2°</Button>
-
-        <Button>3°</Button>
-
-        <Button>4°</Button>
-
-        <Button>5°</Button>
-
-        <Button>6°</Button>
-
-        <Button>S</Button>
-      </DaysWeek>
-
       <Container>
-        {/* <PageHeader
-        title="Meus Horarios"
-        subTitle="Marque abaixo os dias que você gostaria de trabalhar"
-      /> */}
+        <DaysWeek>
+          {workDays.map(dia => {
+            return (
+              <NewButton
+                key={dia.id}
+                onClick={() => {
+                  setChoosenDay(dia);
+                }}
+                workDay={!dia.workDay}
+                selectdAY={dia.id === choosenDay?.id}
+              >
+                {dia.formatedDay}
+              </NewButton>
+            );
+          })}
+        </DaysWeek>
 
-        <InicializePage>
-          <p>Clique em um dia da semana para começar a editar</p>
-        </InicializePage>
+        {/*  <InicializePage >
+          <div>
+            <p>Clique em um dia da semana para começar a editar</p>
+          </div>
+        </InicializePage> */}
 
         <AfterChooseOneDay>
           <div>
             <strong>Realizar Consultas Nesse Dia?</strong>
           </div>
 
-          <Form ref={formRef} onSubmit={handleSubmit}>
-            <Radio name="consultState" options={checkboxOptions} />
+          <select name="consultState" onChange={handleSelectOptions}>
+            <option value="true" selected={workToday}>
+              Sim
+            </option>
+            <option value="false" selected={workToday === false}>
+              Não
+            </option>
+          </select>
 
-            <WookSchedule>
-              <PageHeader
-                title="Horários de Trabalho"
-                subTitle="Marque abaixo os dias que você gostaria de trabalhar"
+          <Button>Horario de trabalho</Button>
+
+          <Button>Horario de Intervalo</Button>
+
+          <WookSchedule work={workToday}>
+            {choosenDay && (
+              <SelectHour
+                id={choosenDay.id}
+                formatedOpenHour={choosenDay.formatedOpenHour}
+                formatedOpenMinute={choosenDay.formatedOpenMinute}
+                formatedCloseHour={choosenDay.formatedCloseHour}
+                formatedCloseMinute={choosenDay.formatedCloseMinute}
               />
-              <SelectHour />
-            </WookSchedule>
-
-            {/* <PageHeader
-          title="Hórarios de Descanso"
-          subTitle="Marque abaixo os dias que você gostaria de trabalhar"
-        />
-        <SelectHour /> */}
-
-            <Button type="submit">Done</Button>
-          </Form>
+            )}
+          </WookSchedule>
         </AfterChooseOneDay>
       </Container>
     </>
