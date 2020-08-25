@@ -17,6 +17,7 @@ import { FaUser, FaUserMd } from 'react-icons/fa';
 import { useField } from '@unform/core';
 
 import Select from '../Select';
+import Input from '../Input';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import { DateContainer, Error } from './styles';
@@ -136,11 +137,11 @@ const ConsultEnrolment: React.FC = () => {
   //     return;
   //   }
   //   const day = getDay(inputDate);
-  //   const parsedDate = format(inputDate, 'dd-MM-yyyy');
+  //   const parsedDate = format(inputDate, 'yyyy-MM-dd');
 
   //   api
   //     .get(
-  //       `/schedules/availableHours/${selectedSpecialistId}&${day}&${parsedDate}`,
+  //       `/schedules/availableHours/${selectedSpecialistId}/${day}/${parsedDate}`,
   //     )
   //     .then(response => {
   //       setHours(response.data);
@@ -197,6 +198,7 @@ const ConsultEnrolment: React.FC = () => {
           <ReactDatePicker
             name="consultDate"
             ref={datepickerRef}
+            disabled
             placeholderText="Agenda indisponível"
             onChange={setInputDate}
             readOnly
@@ -211,18 +213,25 @@ const ConsultEnrolment: React.FC = () => {
       </DateContainer>
 
       {/* refazer abaixo igual o calendario, para mostrar um nao clicavel ou o certo */}
-      <Select name="consultHour" icon={FiClock}>
-        <option value="" selected hidden>
-          {specialistAvailableDays.length
-            ? 'Hora da consulta'
-            : 'Agenda indisponível'}
-        </option>
-        {/* {hours.map(hour => (
+      {specialistAvailableDays.length ? (
+        <Select name="consultHour" icon={FiClock}>
+          <option value="" selected hidden>
+            Hora da consulta
+          </option>
+          {/* {hours.map(hour => (
           <option key={hour} value={specialist.id}>
             {specialist.name}
           </option>
         ))} */}
-      </Select>
+        </Select>
+      ) : (
+        <Input
+          name="consultHour"
+          placeholder="Agenda indisponível"
+          disabled
+          icon={FiClock}
+        />
+      )}
     </>
   );
 };
