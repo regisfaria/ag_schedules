@@ -3,6 +3,7 @@ import { getRepository } from 'typeorm';
 
 import ScheduleAvailability from '../models/ScheduleAvailability';
 import Holiday from '../models/Holiday';
+import RestTime from '../models/RestTime';
 
 import CreateScheduleAvailabilityService from '../services/Schedules/CreateScheduleAvailabilityService';
 import UpdateScheduleService from '../services/Schedules/UpdateScheduleService';
@@ -11,6 +12,7 @@ import ListAvailableHours from '../services/Schedules/ListAvailableHours';
 import FormatSchedule from '../services/Schedules/FormatSchedule';
 
 import CreateRestTimeService from '../services/RestTimes/CreateRestTimeService';
+import FormatRestTimes from '../services/RestTimes/FormatRestTimesService';
 
 import CreateHolidayService from '../services/Holidays/CreateHolidayService';
 import ListValidHolidays from '../services/Holidays/ListValidHolidays';
@@ -98,6 +100,22 @@ schedulesRouter.get('/:id', async (request, response) => {
   return response.json(schedule);
 });
 
+schedulesRouter.get('/rest/:id', async (request, response) => {
+  const { id } = request.params;
+
+  const restTimesRepository = getRepository(RestTime);
+
+  const unparsedRestTimes = await restTimesRepository.findOne({
+    where: { scheduleAvailabilityId: id },
+  });
+
+  const formatRestTimes = new FormatRestTimes();
+
+  const restTimes = formatRestTimes.execute(unparsedRestTimes);
+
+  return response.json(restTimes);
+});
+
 schedulesRouter.get('/availableDays/:id', async (request, response) => {
   const { id } = request.params;
 
@@ -109,23 +127,22 @@ schedulesRouter.get('/availableDays/:id', async (request, response) => {
 });
 
 schedulesRouter.get(
-  '/availableHours/:id&:day&:date',
+  '/availableHours/:id/:day/:date',
   async (request, response) => {
     const { id, day, date } = request.params;
 
     console.log(id, day, date);
 
-    // const listAvailableHours = new ListAvailableHours();
+    const listAvailableHours = new ListAvailableHours();
 
-    // const availableHours = listAvailableHours.execute({
-    //   specialistId: id,
-    //   day,
-    //   date,
-    // });
+    const availableHours = await listAvailableHours.execute({
+      specialistId: id,
+      day,
+      date,
+    });
 
-    // return response.json(availableHours);
-
-    return response.json({ ok: 'a' });
+    return response.json(availableHours);
+    // return response.json({ ok: 'a' });
   },
 );
 
