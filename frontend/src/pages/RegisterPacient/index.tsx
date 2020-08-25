@@ -33,10 +33,11 @@ import { Container, AnimatedContent } from './styles';
 
 import Menu from '../../components/Menu';
 
-interface SignUpFormData {
+interface PacientData {
   name: string;
-  email: string;
-  password: string;
+  cpf: string;
+  phoneNumber: string;
+  gender: string;
 }
 
 interface IBGEUFResponse {
@@ -66,7 +67,7 @@ const RegisterPacient: React.FC = () => {
   const [selectedUf, setSelectedUF] = useState('0');
 
   const handleSubmit = useCallback(
-    async (data: SignUpFormData) => {
+    async (data: PacientData) => {
       try {
         formRef.current?.setErrors({});
 
