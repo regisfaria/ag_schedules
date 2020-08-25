@@ -1,13 +1,28 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import { shade } from 'polished';
 
 import doctorImg from '../../assets/MinhaAgenda.svg';
 
-export const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+interface WorkDayProps {
+  workDay?: boolean;
+  selectdAY?: boolean;
+  inicializePage?: boolean;
+}
 
+interface SpecialistWorkTodayProps {
+  work: boolean;
+}
+
+interface InicializePageProps {
+  inicialize: boolean;
+}
+
+export const Container = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+
+  height: 100vh;
   width: 100%;
 
   background-image: url(${doctorImg});
@@ -53,8 +68,52 @@ export const DaysWeek = styled.header`
   }
 `;
 
-export const WookSchedule = styled.div`
-  display: flex;
+export const NewButton = styled.button<WorkDayProps>`
+  height: 5rem;
+  width: 90%;
+  max-width: 20rem;
+
+  background: red;
+  border: 0px;
+  border-radius: 10px;
+  color: var(--white);
+  font-weight: 700;
+
+  padding: 0 1.6rem;
+  margin-bottom: 1rem;
+
+  transition: background-color 0.2s;
+
+  &:hover {
+    background: ${shade(0.2, '#09644b')};
+  }
+
+  padding: 0;
+  margin: 0;
+  max-width: 5rem;
+  height: 5rem;
+
+  & + button {
+    margin-left: 0.5rem;
+  }
+
+  ${props =>
+    !props.workDay &&
+    css`
+      background: #09644b;
+    `}
+
+  ${props =>
+    props.selectdAY &&
+    css`
+      background: transparent;
+      color: black;
+      border: 1px solid black;
+    `}
+`;
+
+export const WookSchedule = styled.div<SpecialistWorkTodayProps>`
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -63,14 +122,35 @@ export const WookSchedule = styled.div`
   header {
     padding: 3rem 0 3rem 0;
   }
+
+  ${props =>
+    props.work &&
+    css`
+      display: flex;
+    `}
 `;
 
 export const InicializePage = styled.div`
-  font-size: 3rem;
-  text-align: center;
-  max-width: 50rem;
+  display: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+
+  div {
+    width: 90%;
+    max-width: 50rem;
+    font-size: 3rem;
+    text-align: center;
+  }
 `;
 
 export const AfterChooseOneDay = styled.div`
-  display: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  height: 100%;
 `;
