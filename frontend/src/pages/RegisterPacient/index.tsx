@@ -13,7 +13,6 @@ import axios from 'axios';
 
 // Import Icons
 import { FiArrowLeft, FiPhone, FiUser } from 'react-icons/fi';
-/* import { MdDescription } from 'react-icons/md'; */
 import { FaTransgender } from 'react-icons/fa';
 import { AiOutlineFieldNumber } from 'react-icons/ai';
 
@@ -26,7 +25,6 @@ import getValidationErrors from '../../utils/getValidationErrors';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import Select from '../../components/Select';
-/* import TextArea from '../../components/TextArea'; */
 import Main from '../../components/Main';
 import Section from '../../components/Section';
 import PageHeader from '../../components/PageHeader';
