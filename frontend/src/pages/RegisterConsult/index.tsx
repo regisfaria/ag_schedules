@@ -1,11 +1,12 @@
 import React, { useCallback, useRef, useEffect, useState } from 'react';
 
 import { FiArrowLeft, FiDollarSign } from 'react-icons/fi';
+import { FaUser } from 'react-icons/fa';
 
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
-import { Link /* useHistory */ } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import api from '../../services/api';
 
@@ -28,15 +29,25 @@ import Menu from '../../components/Menu';
 interface ConsultFormData {
   pacient: string;
   specialist: string;
+  consultDate: string;
+  consultHour: string;
   payment: string;
   status: string;
+}
+
+interface PacientResponse {
+  id: string;
+  name: string;
+  cpf: string;
 }
 
 const RegisterConsult: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
+  const [pacients, setPacients] = useState<PacientResponse[]>([]);
+
   const { addToast } = useToast();
-  // const history = useHistory();
+  const history = useHistory();
 
   const handleSubmit = useCallback(
     async (data: ConsultFormData) => {
@@ -47,6 +58,7 @@ const RegisterConsult: React.FC = () => {
           pacient: Yup.string().required('Paciente obrigatório'),
           specialist: Yup.string().required('Especialista obrigatório'),
           consultDate: Yup.date().required('Data da consulta obrigatória'),
+          consultHour: Yup.string().required('Hora da consulta obrigatória'),
           payment: Yup.string().required('Pagamento obrigatório'),
           status: Yup.string().required('Status obrigatório'),
         });
@@ -55,7 +67,9 @@ const RegisterConsult: React.FC = () => {
           abortEarly: false,
         });
 
-        // history.push('/dashboard');
+        await api.post('/consults', data);
+
+        history.push('/dashboard');
 
         addToast({
           type: 'success',
@@ -71,6 +85,8 @@ const RegisterConsult: React.FC = () => {
           return;
         }
 
+        console.log(error);
+
         addToast({
           type: 'error',
           title: 'Erro no cadastro',
@@ -79,11 +95,13 @@ const RegisterConsult: React.FC = () => {
         });
       }
     },
-    [addToast],
+    [addToast, history],
   );
 
-  const printData = useCallback((data: ConsultFormData) => {
-    console.log(data);
+  useEffect(() => {
+    api.get('/pacients/supervisor').then(response => {
+      setPacients(response.data);
+    });
   }, []);
 
   return (
@@ -97,6 +115,17 @@ const RegisterConsult: React.FC = () => {
           <Form ref={formRef} onSubmit={handleSubmit}>
             <Main>
               <Section>
+                <Select name="pacient" icon={FaUser}>
+                  <option value="" selected hidden>
+                    Paciente
+                  </option>
+                  {pacients.map(pacient => (
+                    <option key={pacient.id} value={pacient.id}>
+                      {pacient.name} - {pacient.cpf}
+                    </option>
+                  ))}
+                </Select>
+
                 <ConsultEnrolment />
 
                 <Select name="payment" icon={FiDollarSign}>

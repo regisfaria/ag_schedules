@@ -8,54 +8,43 @@ import React, {
 } from 'react';
 import ReactDatePicker, { registerLocale } from 'react-datepicker';
 import { getDay, format, parseISO } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
 import pt from 'date-fns/locale/pt-BR';
+import { useField } from '@unform/core';
 
 import { FiCalendar, FiAlertTriangle, FiClock } from 'react-icons/fi';
-import { FaUser, FaUserMd } from 'react-icons/fa';
-
-import { useField } from '@unform/core';
+import { FaUserMd } from 'react-icons/fa';
 
 import Select from '../Select';
 import Input from '../Input';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import { DateContainer, Error } from './styles';
+
 import api from '../../services/api';
 
 registerLocale('pt', pt);
-
-interface PacientResponse {
-  id: string;
-  name: string;
-  cpf: string;
-}
 
 interface SpecialistResponse {
   id: string;
   name: string;
 }
 
-interface HolidayResponse {
-  day: Date;
-}
-
 const ConsultEnrolment: React.FC = () => {
   const datepickerRef = useRef(null);
+
   const { fieldName, registerField, defaultValue, error } = useField(
     'consultDate',
   );
 
   const [inputDate, setInputDate] = useState(defaultValue || null);
-  const [pacients, setPacients] = useState<PacientResponse[]>([]);
   const [specialists, setSpecialists] = useState<SpecialistResponse[]>([]);
   const [selectedSpecialistId, setSelectedSpecialistId] = useState('');
   const [specialistHolidays, setSpecialistHolidays] = useState<string[]>([]);
   const [validHoliday, setValidHolidays] = useState<Date[]>([]);
+  const [hours, setHours] = useState<string[]>([]);
   const [specialistAvailableDays, setSpecialistAvailableDays] = useState<
     number[]
   >([]);
-  const [hours, setHours] = useState('');
 
   const availableDays = useCallback(
     (date: Date) => {
@@ -96,12 +85,6 @@ const ConsultEnrolment: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    api.get('/pacients/supervisor').then(response => {
-      setPacients(response.data);
-    });
-  }, []);
-
-  useEffect(() => {
     if (selectedSpecialistId === '') {
       return;
     }
@@ -132,35 +115,24 @@ const ConsultEnrolment: React.FC = () => {
     setValidHolidays(holidayDates);
   }, [specialistHolidays]);
 
-  // useEffect(() => {
-  //   if (!inputDate) {
-  //     return;
-  //   }
-  //   const day = getDay(inputDate);
-  //   const parsedDate = format(inputDate, 'yyyy-MM-dd');
+  useEffect(() => {
+    if (!inputDate) {
+      return;
+    }
+    const day = getDay(inputDate);
+    const parsedDate = format(inputDate, 'yyyy-MM-dd');
 
-  //   api
-  //     .get(
-  //       `/schedules/availableHours/${selectedSpecialistId}/${day}/${parsedDate}`,
-  //     )
-  //     .then(response => {
-  //       setHours(response.data);
-  //       console.log(response.data);
-  //     });
-  // }, [inputDate, selectedSpecialistId]);
+    api
+      .get(
+        `/schedules/availableHours/${selectedSpecialistId}/${day}/${parsedDate}`,
+      )
+      .then(response => {
+        setHours(response.data);
+      });
+  }, [inputDate, selectedSpecialistId]);
+
   return (
     <>
-      <Select name="pacient" icon={FaUser}>
-        <option value="" selected hidden>
-          Paciente
-        </option>
-        {pacients.map(pacient => (
-          <option key={pacient.id} value={pacient.id}>
-            {pacient.name} - {pacient.cpf}
-          </option>
-        ))}
-      </Select>
-
       <Select
         name="specialist"
         onChange={handleSelectedSpecialist}
@@ -212,17 +184,16 @@ const ConsultEnrolment: React.FC = () => {
         )}
       </DateContainer>
 
-      {/* refazer abaixo igual o calendario, para mostrar um nao clicavel ou o certo */}
       {specialistAvailableDays.length ? (
         <Select name="consultHour" icon={FiClock}>
           <option value="" selected hidden>
             Hora da consulta
           </option>
-          {/* {hours.map(hour => (
-          <option key={hour} value={specialist.id}>
-            {specialist.name}
-          </option>
-        ))} */}
+          {hours.map(hour => (
+            <option key={hour} value={hour}>
+              {hour}
+            </option>
+          ))}
         </Select>
       ) : (
         <Input
