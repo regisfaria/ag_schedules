@@ -9,7 +9,7 @@ export const Container = styled.div`
   align-items: center;
   justify-content: center;
 
-  height: 100vh;
+  height: 100%;
   width: 100%;
 
   background-image: url(${doctorImg});
@@ -19,8 +19,8 @@ export const Container = styled.div`
   background-size: 50rem;
   background-color: var(--light-blue);
 
-  @media only screen and (max-width: 450px) and (min-height: 500px) and (max-height: 680px) {
-    height: 100%;
+  @media (min-width: 1024px) {
+    height: 100vh;
   }
 `;
 

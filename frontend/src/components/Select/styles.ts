@@ -16,6 +16,8 @@ export const Container = styled.div<ContainerProps>`
   margin-bottom: 2rem;
 
   width: 100%;
+  max-width: 70rem;
+  font-size: 1.4rem;
 
   height: 5rem;
 
