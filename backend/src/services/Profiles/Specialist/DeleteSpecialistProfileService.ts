@@ -8,7 +8,7 @@ export default class DeleteSpecialistProfileService {
     const specialistProfilesRepository = getRepository(SpecialistProfile);
 
     const specialistProfile = await specialistProfilesRepository.findOne({
-      where: { userId },
+      where: { id: userId },
     });
 
     if (!specialistProfile) {

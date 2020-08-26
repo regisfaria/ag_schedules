@@ -7,15 +7,17 @@ import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 
 import SpecialistProfile from '../models/SpecialistProfile';
 import CreateSpecialistProfileService from '../services/Profiles/Specialist/CreateSpecialistProfileService';
-// import DeleteSpecialistProfileService from '../services/Profiles/Specialist/DeleteSpecialistProfileService';
+import DeleteSpecialistProfileService from '../services/Profiles/Specialist/DeleteSpecialistProfileService';
 import UpdateSpecialistProfileAvatarService from '../services/Profiles/Specialist/UpdateSpecialistProfileAvatarService';
 import UpdateSpecialistProfileService from '../services/Profiles/Specialist/UpdateSpecialistProfileService';
+import ListSpecialistProfileService from '../services/Profiles/Specialist/ListSpecialistProfileService';
 
 import SupervisorProfile from '../models/SupervisorProfile';
 import CreateSupervisorProfileService from '../services/Profiles/Supervisor/CreateSupervisorProfileService';
-// import DeleteSupervisorProfileService from '../services/Profiles/Supervisor/DeleteSupervisorProfileService';
+import DeleteSupervisorProfileService from '../services/Profiles/Supervisor/DeleteSupervisorProfileService';
 import UpdateSupervisorProfileAvatarService from '../services/Profiles/Supervisor/UpdateSupervisorProfileAvatarService';
 import UpdateSupervisorProfileService from '../services/Profiles/Supervisor/UpdateSupervisorProfileService';
+import ListSupervisorProfileService from '../services/Profiles/Supervisor/ListSupervisorProfileService';
 
 const profilesRouter = Router();
 
@@ -37,6 +39,26 @@ profilesRouter.get('/supervisor', async (request, response) => {
   const profiles = await supervisorProfilesRepository.find();
 
   return response.json(profiles);
+});
+
+profilesRouter.get('/specialist/:userId', async (request, response) => {
+  const { userId } = request.params;
+
+  const listSpecialistProfile = new ListSpecialistProfileService();
+
+  const profile = await listSpecialistProfile.execute(userId);
+
+  return response.json(profile);
+});
+
+profilesRouter.get('/supervisor/:userId', async (request, response) => {
+  const { userId } = request.params;
+
+  const listSupervisorProfile = new ListSupervisorProfileService();
+
+  const profile = await listSupervisorProfile.execute(userId);
+
+  return response.json(profile);
 });
 
 profilesRouter.post('/specialist', async (request, response) => {
@@ -147,6 +169,26 @@ profilesRouter.put('/supervisor', async (request, response) => {
   });
 
   return response.json(supervisorProfile);
+});
+
+profilesRouter.delete('/specialist/:id', async (request, response) => {
+  const { id } = request.params;
+
+  const deleteSpecialist = new DeleteSpecialistProfileService();
+
+  await deleteSpecialist.execute(id);
+
+  return response.json(204).send;
+});
+
+profilesRouter.delete('/supervisor/:id', async (request, response) => {
+  const { id } = request.params;
+
+  const deleteSupervisor = new DeleteSupervisorProfileService();
+
+  await deleteSupervisor.execute(id);
+
+  return response.json(204).send;
 });
 
 export default profilesRouter;

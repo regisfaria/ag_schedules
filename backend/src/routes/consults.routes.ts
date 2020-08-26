@@ -51,7 +51,14 @@ consultsRouter.get('/:specialistId/date', async (request, response) => {
 });
 
 consultsRouter.post('/', async (request, response) => {
-  const { specialistId, pacientId, date, hour, payment, status } = request.body;
+  const {
+    specialist,
+    pacient,
+    consultDate,
+    consultHour,
+    payment,
+    status,
+  } = request.body;
 
   const userId = request.user.id;
 
@@ -59,10 +66,10 @@ consultsRouter.post('/', async (request, response) => {
 
   const consult = await createConsult.execute({
     userId,
-    specialistId,
-    pacientId,
-    date,
-    hour,
+    specialistId: specialist,
+    pacientId: pacient,
+    date: consultDate,
+    hour: consultHour,
     payment,
     status,
   });

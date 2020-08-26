@@ -1,8 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 import { shade } from 'polished';
 
-import consultImg from '../../assets/consulting.svg';
-
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -12,7 +10,6 @@ export const Container = styled.div`
   height: 100vh;
   width: 100%;
 
-  background-image: url(${consultImg});
   background-position: right bottom;
   background-repeat: no-repeat;
   background-size: 70rem;
