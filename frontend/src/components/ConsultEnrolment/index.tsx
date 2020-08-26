@@ -160,6 +160,21 @@ const ConsultEnrolment: React.FC = () => {
 
   return (
     <>
+      <Select
+        name="specialist"
+        onChange={handleSelectedSpecialist}
+        icon={FaUserMd}
+      >
+        <option value="" selected hidden>
+          Especialista
+        </option>
+        {specialists.map(specialist => (
+          <option key={specialist.id} value={specialist.id}>
+            {specialist.name}
+          </option>
+        ))}
+      </Select>
+
       {specialistProfile && (
         <SpecialistInfo>
           <div>
@@ -180,21 +195,6 @@ const ConsultEnrolment: React.FC = () => {
           <img src={specialistProfile.imageUrl} alt="profilePicture" />
         </SpecialistInfo>
       )}
-
-      <Select
-        name="specialist"
-        onChange={handleSelectedSpecialist}
-        icon={FaUserMd}
-      >
-        <option value="" selected hidden>
-          Especialista
-        </option>
-        {specialists.map(specialist => (
-          <option key={specialist.id} value={specialist.id}>
-            {specialist.name}
-          </option>
-        ))}
-      </Select>
 
       <DateContainer isErrored={!!error}>
         <FiCalendar size={20} />
