@@ -4,6 +4,8 @@ import { isBefore } from 'date-fns';
 import Consult from '../../models/Consult';
 import User from '../../models/User';
 import Pacient from '../../models/Pacient';
+import Holiday from '../../models/Holiday';
+
 import AppError from '../../errors/AppError';
 
 import ConvertStringHourToInt from '../../utils/ConvertStringHourToInt';
@@ -32,12 +34,18 @@ class CreateConsultService {
     const consultsRepository = getRepository(Consult);
     const usersRepository = getRepository(User);
     const pacientsRepository = getRepository(Pacient);
+    const holidaysRepository = getRepository(Holiday);
 
     const parsedHour = ConvertStringHourToInt(hour);
 
     const pacient = await pacientsRepository.findOne(pacientId);
     const specialist = await usersRepository.findOne(specialistId);
     const currentUser = await usersRepository.findOne(userId);
+    const isHoliday = await holidaysRepository.findOne({
+      where: {
+        day: date,
+      },
+    });
 
     if (currentUser?.type !== 'supervisor') {
       throw new AppError(
@@ -53,6 +61,10 @@ class CreateConsultService {
 
     if (!specialist) {
       throw new AppError('Especialista Invalido');
+    }
+
+    if (isHoliday) {
+      throw new AppError('Nao eh possivel marcar consultas em um dia de exce');
     }
 
     // Check if pacient and specialist are different
