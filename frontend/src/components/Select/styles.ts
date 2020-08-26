@@ -17,7 +17,6 @@ export const Container = styled.div<ContainerProps>`
 
   width: 100%;
   max-width: 70rem;
-  font-size: 1.4rem;
 
   height: 5rem;
 
@@ -44,9 +43,9 @@ export const Container = styled.div<ContainerProps>`
     flex: 1;
     border: none;
     color: var(--black);
-    font-size: 16px;
     font-family: Poppins, sans-serifa;
     color: var(--input-placeholder);
+    width: 100%;
 
     ${props =>
       props.isFocused &&
@@ -63,7 +62,7 @@ export const Container = styled.div<ContainerProps>`
     option {
       background-color: var(--white);
       flex: 1;
-      font-size: 16px;
+      font-size: 1.2rem;
       font-family: Poppins, sans-serifa;
       color: var(--black);
     }
@@ -71,6 +70,14 @@ export const Container = styled.div<ContainerProps>`
 
   svg {
     margin-right: 16px;
+  }
+
+  @media (min-width: 1024px) {
+    select {
+      option {
+        font-size: 1.6rem;
+      }
+    }
   }
 `;
 

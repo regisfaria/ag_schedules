@@ -131,8 +131,6 @@ schedulesRouter.get(
   async (request, response) => {
     const { id, day, date } = request.params;
 
-    console.log(id, day, date);
-
     const listAvailableHours = new ListAvailableHours();
 
     const availableHours = await listAvailableHours.execute({
