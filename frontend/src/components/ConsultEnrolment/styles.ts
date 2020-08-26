@@ -7,7 +7,61 @@ interface DateContainerProps {
 }
 
 export const SpecialistInfo = styled.div`
-  background-color: red;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+
+  width: 100%;
+  max-width: 70rem;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    strong {
+      font-size: 1.6rem;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin: 0.5rem 0 0.5rem 0;
+    }
+
+    span {
+      font-size: 1.2rem;
+      margin: 0.5rem 0 0.5rem 0;
+    }
+  }
+
+  img {
+    width: 13rem !important;
+    height: 13rem !important;
+    border-radius: 50%;
+  }
+
+  @media (min-width: 600px) {
+    img {
+      height: 15rem;
+      border-radius: 50%;
+    }
+
+    div {
+      strong {
+        font-size: 2rem;
+      }
+
+      p {
+        font-size: 1.6rem;
+        margin: 1rem 0 1rem 0;
+      }
+
+      span {
+        font-size: 1.6rem;
+        margin: 0.5rem 0 1rem 0;
+      }
+    }
+  }
 `;
 
 export const DateContainer = styled.div<DateContainerProps>`

@@ -160,18 +160,26 @@ const ConsultEnrolment: React.FC = () => {
 
   return (
     <>
-      {specialistProfile ? (
+      {specialistProfile && (
         <SpecialistInfo>
-          <strong>{selectedSpecialistName}</strong>
-          <span>{specialistProfile.phoneNumber}</span>
-          <p>
-            Endereço: {specialistProfile.city}, {specialistProfile.state}
-          </p>
           <div>
-            <img src={specialistProfile.imageUrl} alt="profilePicture" />
+            <strong>{selectedSpecialistName}</strong>
+            <p>
+              Endereço:{' '}
+              {specialistProfile.city
+                ? `${specialistProfile.state}, ${specialistProfile.city}`
+                : 'Nenhum endereço no perfil'}
+            </p>
+            <span>
+              Telefone:{' '}
+              {specialistProfile.phoneNumber
+                ? specialistProfile.phoneNumber
+                : 'Nenhum telefone no perfil'}
+            </span>
           </div>
+          <img src={specialistProfile.imageUrl} alt="profilePicture" />
         </SpecialistInfo>
-      ) : null}
+      )}
 
       <Select
         name="specialist"
