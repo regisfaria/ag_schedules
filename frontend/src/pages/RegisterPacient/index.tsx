@@ -32,12 +32,14 @@ import PageHeader from '../../components/PageHeader';
 import { Container, AnimatedContent } from './styles';
 
 import Menu from '../../components/Menu';
+import Datepicker from '../../components/Datepicker';
 
 interface PacientData {
   name: string;
   cpf: string;
   phoneNumber: string;
   gender: string;
+  bornDate: Date;
 }
 
 interface IBGEUFResponse {
@@ -174,7 +176,11 @@ const RegisterPacient: React.FC = () => {
                   type="text"
                   placeholder="*Nome"
                 />
-                <Input name="bornDate" type="date" text="Nascimento:&nbsp;" />
+                <Datepicker
+                  name="bornDate"
+                  placeholderText="Data de Nascimento"
+                  maxDate={new Date()}
+                />
                 <Input
                   name="cpf"
                   icon={AiOutlineFieldNumber}
