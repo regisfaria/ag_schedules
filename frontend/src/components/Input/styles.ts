@@ -63,11 +63,6 @@ export const Container = styled.div<ContainerProps>`
     &::placeholder {
       color: var(--input-placeholder);
     }
-
-    ::-webkit-datetime-edit-text { padding: 0 0.3rem; color: var(--input-placeholder); }
-    ::-webkit-datetime-edit-day-field { text-transform: uppercase; color: var(--input-placeholder); }
-    ::-webkit-datetime-edit-month-field { text-transform: uppercase; color: var(--input-placeholder); }
-    ::-webkit-datetime-edit-year-field { text-transform: uppercase; color: var(--input-placeholder); }
   }
 
   svg {
