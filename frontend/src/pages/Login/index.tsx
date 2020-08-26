@@ -49,6 +49,8 @@ const Login: React.FC = () => {
         });
 
         history.push('/dashboard');
+
+        window.location.reload();
       } catch (error) {
         if (error instanceof Yup.ValidationError) {
           const errors = getValidationErrors(error);
