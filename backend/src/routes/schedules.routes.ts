@@ -105,7 +105,7 @@ schedulesRouter.get('/rest/:id', async (request, response) => {
 
   const restTimesRepository = getRepository(RestTime);
 
-  const unparsedRestTimes = await restTimesRepository.findOne({
+  const unparsedRestTimes = await restTimesRepository.find({
     where: { scheduleAvailabilityId: id },
   });
 
