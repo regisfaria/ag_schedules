@@ -43,7 +43,7 @@ const Datepicker: React.FC<Props> = ({ name, ...rest }) => {
         selected={date}
         locale="pt"
         isClearable
-        dateFormat="Pp"
+        dateFormat="dd/MM/yyyy"
         useWeekdaysShort
         onChange={setDate}
         autoComplete="off"

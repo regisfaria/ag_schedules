@@ -11,6 +11,13 @@ export default class CreateSupervisorProfileService {
     const usersRepository = getRepository(User);
 
     const user = await usersRepository.findOne(userId);
+    const profileAlreadyExist = await supervisorProfilesRepository.findOne({
+      where: { userId },
+    });
+
+    if (profileAlreadyExist) {
+      throw new AppError('Este usuario ja tem um perfil');
+    }
 
     if (!user) {
       throw new AppError('Nenhum usuario com este ID foi encontrado.');
