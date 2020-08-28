@@ -4,13 +4,8 @@ export default createGlobalStyle`
   :root {
     font-size: 62.5%;
 
-
-    --blue: #109CF1;
-    --light-blue: #e1ebe1;
-    --yellow: #FFb946;
     --red: #F7685B;
     --green: #09644b;
-    --purple: #885AF8;
     --black: #192A3E;
     --table-black: #323C47;
     --table-gray: #707683;
