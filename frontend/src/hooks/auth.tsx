@@ -11,11 +11,17 @@ interface LoginCredentials {
   password: string;
 }
 
+interface userInfo {
+  role: string;
+  id: string;
+  name: string;
+}
+
 interface AuthContextData {
   user: object;
   signIn(credentials: LoginCredentials): Promise<void>;
   signOut(): void;
-  getUserRole(): string;
+  getUserInfo(): userInfo | null;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -53,13 +59,17 @@ const AuthProvider: React.FC = ({ children }) => {
     setData({} as AuthState);
   }, []);
 
-  const getUserRole = useCallback(() => {
+  const getUserInfo = useCallback(() => {
     const user = localStorage.getItem('@AGSchedules:user');
 
     if (user) {
       const parsedUser = JSON.parse(user);
 
-      return parsedUser.type;
+      return {
+        role: parsedUser.type,
+        id: parsedUser.id,
+        name: parsedUser.name,
+      };
     }
 
     return null;
@@ -67,7 +77,7 @@ const AuthProvider: React.FC = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user: data.user, signIn, signOut, getUserRole }}
+      value={{ user: data.user, signIn, signOut, getUserInfo }}
     >
       {children}
     </AuthContext.Provider>
