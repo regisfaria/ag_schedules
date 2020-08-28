@@ -21,6 +21,7 @@ import PageHeader from '../../components/PageHeader';
 import Menu from '../../components/Menu';
 import Select from '../../components/Select';
 import Button from '../../components/Button';
+import SectionRow from '../../components/SectionRow';
 
 import api from '../../services/api';
 
@@ -137,9 +138,11 @@ export default function App() {
             </option>
           </select>
 
-          <Button>Horario de trabalho</Button>
+          <SectionRow>
+            <Button>Horario de trabalho</Button>
 
-          <Button>Horario de Intervalo</Button>
+            <Button>Horario de Intervalo</Button>
+          </SectionRow>
 
           <WookSchedule work={workToday}>
             {/* {choosenDay && (

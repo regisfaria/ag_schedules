@@ -12,9 +12,12 @@ import { Container } from './styles';
 
 import api from '../../services/api';
 
+import Input from '../Input';
 import Select from '../Select';
 import Button from '../Button';
 import PageHeader from '../PageHeader';
+import SectionRow from '../SectionRow';
+import Section from '../Section';
 
 interface Day {
   id: string;
@@ -25,6 +28,7 @@ interface Day {
 }
 
 interface IRestDay {
+  id: string;
   formatedStartHour: number;
   formatedStartMinute: number;
   formatedEndHour: number;
@@ -88,12 +92,14 @@ const SelectHours: React.FC<Day> = ({
 
     tmpStartHourArray.splice(0, valueForRemove + 1);
 
-    if (
-      !infoRestDay.map(endHour => {
-        return endHour.formatedEndHour === formatedCloseHour - 1;
-      })
-    ) {
-      tmpStartHourArray.push(formatedCloseHour - 1);
+    const verifyIfIsTheLastHour = infoRestDay.map(endHour => {
+      return endHour.formatedEndHour === formatedCloseHour - 1;
+    });
+
+    if (!verifyIfIsTheLastHour[0]) {
+      formatedCloseHour === 23 && formatedCloseMinute === 59
+        ? tmpStartHourArray.push(formatedCloseHour)
+        : tmpStartHourArray.push(formatedCloseHour - 1);
     }
 
     setEndHoursArray(tmpStartHourArray);
@@ -125,13 +131,43 @@ const SelectHours: React.FC<Day> = ({
   }); */
   return (
     <Container>
-      {infoRestDay.map(day => {
-        return (
-          <p>
-            {`Inicio do intervalo: ${day.formatedStartHour}:${day.formatedStartMinute} Fim do intervalo: ${day.formatedEndHour}:${day.formatedEndMinute}`}
-          </p>
-        );
-      })}
+      {infoRestDay.length ? (
+        <Form ref={formRef} onSubmit={handleSubmit}>
+          {infoRestDay.map(day => {
+            return (
+              <SectionRow>
+                <span>De:</span>
+                <Select name="StartHour">
+                  <option value={day.formatedStartHour} selected hidden>
+                    {String(day.formatedStartHour).padStart(2, '0')}
+                  </option>
+                </Select>
+                <Select name="StartMinute">
+                  <option value={day.formatedStartMinute} selected hidden>
+                    {String(day.formatedStartMinute).padStart(2, '0')}
+                  </option>
+                </Select>
+
+                <span>Ate:</span>
+                <Select name="EndHour">
+                  <option value={day.formatedEndHour} selected hidden>
+                    {String(day.formatedEndHour).padStart(2, '0')}
+                  </option>
+                </Select>
+                <Select name="EndMinute">
+                  <option value={day.formatedEndMinute} selected hidden>
+                    {String(day.formatedEndMinute).padStart(2, '0')}
+                  </option>
+                </Select>
+                <Button>Hello</Button>
+                <Button>Hello</Button>
+              </SectionRow>
+            );
+          })}
+        </Form>
+      ) : (
+        <span>Você Não Possui Horarios de Intevalo Cadastrados</span>
+      )}
 
       <Form ref={formRef} onSubmit={handleSubmit}>
         <PageHeader
@@ -139,50 +175,56 @@ const SelectHours: React.FC<Day> = ({
           subTitle="Marque abaixo os dias que você gostaria de trabalhar"
         />
 
-        <span>De:</span>
-        <Select name="openTimeHour" onChange={handleChangeStartTimeHour}>
-          <option value="" selected hidden>
-            Horas
-          </option>
+        <SectionRow subTitle="De: ">
+          <Select name="openTimeHour" onChange={handleChangeStartTimeHour}>
+            <option value="" selected hidden>
+              Horas
+            </option>
 
-          {startHoursStart.map(hour => {
-            return (
-              <option value={hour}>{String(hour).padStart(2, '0')}</option>
-            );
-          })}
-        </Select>
+            {startHoursStart.map(hour => {
+              return (
+                <option value={hour}>{String(hour).padStart(2, '0')}</option>
+              );
+            })}
+          </Select>
 
-        <Select name="openTimeMin" disabled>
-          <option value={formatedOpenMinute} selected hidden>
-            {String(formatedOpenMinute).padStart(2, '0')}
-          </option>
-        </Select>
+          {console.log(formatedOpenMinute)}
+
+          <Select name="openTimeMin" disabled>
+            <option value={formatedOpenMinute} selected hidden>
+              {String(formatedOpenMinute).padStart(2, '0')}
+            </option>
+          </Select>
+        </SectionRow>
 
         {endHoursArray.length ? (
           <>
-            <span>Até:</span>
-            <Select name="closeTimeHour" onChange={handleChangeEndTimeHour}>
-              <option value="" selected hidden>
-                Horas
-              </option>
-              {endHoursArray.map(hour => {
-                return (
-                  <option value={hour}>{String(hour).padStart(2, '0')}</option>
-                );
-              })}
-            </Select>
-            <Select name="closeTimeMinute" disabled>
-              <option value={formatedOpenMinute} selected hidden>
-                {String(formatedOpenMinute).padStart(2, '0')}
-              </option>
-            </Select>
-            <Button type="submit">Salvar</Button>{' '}
+            <SectionRow subTitle="Até:">
+              <Select name="closeTimeHour" onChange={handleChangeEndTimeHour}>
+                <option value="" selected hidden>
+                  Horas
+                </option>
+                {endHoursArray.map(hour => {
+                  return (
+                    <option value={hour}>
+                      {String(hour).padStart(2, '0')}
+                    </option>
+                  );
+                })}
+              </Select>
+              <Select name="closeTimeMinute" disabled>
+                <option value={formatedOpenMinute} selected hidden>
+                  {String(formatedOpenMinute).padStart(2, '0')}
+                </option>
+              </Select>
+            </SectionRow>
+            <Button type="submit">Salvar</Button>
           </>
         ) : (
-          <>
-            {' '}
-            <strong> Não da</strong> <span>Teste</span>{' '}
-          </>
+          <span id="spanNotification">
+            Caso queira marcar um intervalo, por favor selecione um horario
+            inicial
+          </span>
         )}
       </Form>
     </Container>
