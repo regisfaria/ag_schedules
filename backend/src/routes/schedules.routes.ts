@@ -118,7 +118,7 @@ schedulesRouter.get('/rest/:id', async (request, response) => {
 });
 
 schedulesRouter.get(
-  '/availabilitySchedulesRest/:id',
+  '/availableSchedulesForRest/:id',
   async (request, response) => {
     const { id } = request.params;
 

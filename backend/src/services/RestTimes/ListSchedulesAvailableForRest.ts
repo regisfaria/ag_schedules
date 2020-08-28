@@ -57,10 +57,13 @@ class ListSchedulesAvailableForRest {
         number => number === element.formatedEndHour,
       );
 
-      const numberOfIndexForRemove = endValueRest - inicialValueRest;
-
-      createArrayForStartHours.splice(inicialValueRest, numberOfIndexForRemove);
+      createArrayForStartHours.splice(
+        inicialValueRest,
+        endValueRest - inicialValueRest,
+      );
     });
+
+    createArrayForStartHours.pop();
 
     return createArrayForStartHours;
   }

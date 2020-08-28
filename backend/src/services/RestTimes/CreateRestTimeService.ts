@@ -29,26 +29,29 @@ class CreateRestTimeService {
     );
 
     const restStartAvailability = await restTimesRepository.find({
-      where: { startTime: parsedStartTime },
+      where: { startTime: parsedStartTime, scheduleAvailabilityId },
     });
 
     const restEndAvailability = await restTimesRepository.find({
-      where: { endTime: parsedEndTime },
+      where: { endTime: parsedEndTime, scheduleAvailabilityId },
     });
 
-    if (restStartAvailability || restEndAvailability) {
+    if (
+      restStartAvailability.length !== 0 ||
+      restEndAvailability.length !== 0
+    ) {
       throw new AppError(
         'Você não pode marcar um intervalo em horarios já marcados ',
       );
     }
 
-    if (!scheduleAvailability?.openTime || !scheduleAvailability?.closeTime) {
-      throw new AppError('Horarios invalidos');
+    if (!scheduleAvailability) {
+      throw new AppError('Essa agenda não existe');
     }
 
     if (
-      parsedStartTime < scheduleAvailability.openTime ||
-      parsedEndTime > scheduleAvailability?.closeTime
+      parsedStartTime <= scheduleAvailability.openTime ||
+      parsedEndTime >= scheduleAvailability.closeTime
     ) {
       throw new AppError(
         'Você não pode marcar um intervalo fora do horario de trabalho',
