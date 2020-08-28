@@ -27,7 +27,7 @@ const Routes: React.FC = () => (
       component={RegisterSupervisor}
       isPrivate
     />
-    <Route path="/register/pacient" component={RegisterPacient} isPrivate />
+    <Route path="/pacients/create" component={RegisterPacient} isPrivate />
 
     <Route path="/profile" component={Profile} isPrivate />
 

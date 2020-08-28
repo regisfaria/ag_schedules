@@ -1,28 +1,17 @@
 import styled, { css, keyframes } from 'styled-components';
 import { shade, lighten } from 'polished';
-import { RiArrowDropDownLine, RiArrowDropUpLine } from 'react-icons/ri';
 
 interface MenuProps {
   menuState: boolean;
 }
 
-interface DropdownButtonProps {
-  open: boolean;
-  menuState: boolean;
-}
-
-interface LinkContainerProps {
-  role: string;
-}
-
-interface DropdownIconProps {
-  open: boolean;
+interface UserTypeProps {
+  role?: string;
 }
 
 export const ShowMenu = styled.div`
   button {
     border: none;
-    position: relative;
     position: fixed;
     top: 10px;
     left: 15px;
@@ -42,30 +31,70 @@ export const ShowMenu = styled.div`
   }
 `;
 
-export const SideMenuBox = styled.div<MenuProps>`
+const blurEffectIn = keyframes`
+  0% {
+    background-color: transparent;
+  }
+  100% {
+    backdrop-filter: blur(3px);
+  }
+`;
+
+const blurEffectOut = keyframes`
+  0% {
+    backdrop-filter: blur(3px);
+  }
+  100% {
+    backdrop-filter: 0;
+    background-color: transparent;
+  }
+`;
+
+export const SideMenuBoxContainer = styled.section<MenuProps>`
   position: fixed;
+
   display: flex;
   flex-direction: column;
-  left: 0px;
-  top: 0px;
-  bottom: 0px;
-  background-color: var(--white);
-  box-shadow: 1px 0 10px 0px var(--black);
-  z-index: 10;
+  z-index: 9999;
+
+  height: 100vh;
 
   ${props =>
     props.menuState
       ? css`
-          max-width: 500px;
-          transition: max-width 0.4s ease-in-out;
+          width: 100%;
+          animation: ${blurEffectIn} 1s;
+          animation-fill-mode: forwards;
+        `
+      : css`
+          width: 0;
+          transition: width 1s ease-in-out;
+          animation: ${blurEffectOut} 1s;
+          animation-fill-mode: forwards;
+        `}
+`;
+
+export const SideMenuBox = styled.div<MenuProps>`
+  background-color: var(--white);
+  height: 100vh;
+  box-shadow: 1px 0 10px 0 var(--black);
+
+  ${props =>
+    props.menuState
+      ? css`
+          max-width: 30rem;
+          transition: max-width 0.5s ease-in-out;
+          overflow: hidden;
+
           button {
             opacity: 1;
-            transition: opacity 0.4s linear;
+            transition: opacity 0.5s linear;
           }
         `
       : css`
           max-width: 0;
-          transition: max-width 1s ease-in-out;
+          transition: max-width 0.5s ease-in-out;
+
           button {
             opacity: 0;
             transition: opacity 0.5s linear;
@@ -74,13 +103,42 @@ export const SideMenuBox = styled.div<MenuProps>`
         `}
 `;
 
+export const SideMenuButtons = styled.div<MenuProps>`
+  justify-content: space-between;
+
+  /* Below height must have following math:
+  btn height + btn padding top + btn padding bottom
+
+   This happens because we set display none for buttons
+  and we cant animate something that have this property
+  so setting the div with the same height as it would have
+  when the buttons appears, will cause the div to stay with the same
+  height when they disappear */
+  height: 5.6rem;
+
+  border-bottom: 1px solid var(--table-gray);
+
+  ${props =>
+    props.menuState
+      ? css`
+          display: flex;
+          flex-direction: row;
+        `
+      : css`
+          display: hidden;
+          button {
+            display: none;
+          }
+        `}
+`;
+
 export const CloseMenu = styled.div`
+  padding: 0.8rem 0 0.8rem 0;
+  margin: 0 1.6rem 0 1.6rem;
+
   button {
     border: none;
-    position: relative;
-    background: transparent;
-    top: 10px;
-    left: 15px;
+    background: none;
 
     svg {
       color: var(--green);
@@ -90,22 +148,19 @@ export const CloseMenu = styled.div`
     &:hover {
       svg {
         color: ${lighten(0.2, '#09644b')};
-        transform: scale(1.1);
+        transform: scale(1.2);
       }
     }
   }
 `;
 
 export const Logout = styled.div`
-  justify-self: flex-end;
+  padding: 0.8rem 0 0.8rem 0;
+  margin: 0 1.6rem 0 1.6rem;
 
   button {
     border: none;
-    position: relative;
-    position: fixed;
-    top: 10px;
-    left: 215px;
-    background: transparent;
+    background: none;
 
     svg {
       color: var(--red);
@@ -114,7 +169,7 @@ export const Logout = styled.div`
 
     &:hover {
       svg {
-        color: ${shade(0.2, '#F7685B')};
+        color: ${shade(0.3, '#F7685B')};
         transform: scale(1.1);
       }
     }
@@ -122,50 +177,46 @@ export const Logout = styled.div`
 `;
 
 export const MenuOption = styled.div<MenuProps>`
-  margin-top: 20px;
-  border-top: 1px solid var(--table-gray);
   display: flex;
   flex-direction: column;
-  font-size: 20px;
+
+  justify-content: center;
+  align-items: center;
+
+  font-size: 2rem;
 
   ${props =>
     props.menuState
       ? css`
           opacity: 1;
-          transition: opacity 1s linear;
+          transition: opacity 0.3s linear;
         `
       : css`
           opacity: 0;
           transition: opacity 0.3s linear;
           pointer-events: none;
         `}
+`;
+
+export const OptionLinkContainer = styled.div`
+  width: 50%;
 
   a {
-    padding: 0px 49px 0 36px;
-    margin-right: 50px;
-    align-items: center;
     display: flex;
-    text-decoration: none;
+    flex-direction: row;
+
+    margin: 1.6rem 0;
+
+    align-items: center;
+    justify-content: flex-start;
+
     color: var(--table-black);
-    transition: color 0.2s;
+    text-decoration: none;
+    transition: color 220ms;
 
-    margin-bottom: 30px;
-
-    div {
-      margin-top: 20px;
-      display: flex;
-      padding-left: 16px;
-
-      svg {
-        position: relative;
-        top: 7px;
-        color: var(--table-black);
-        transition: color 220ms;
-      }
-
-      p {
-        padding-left: 12px;
-      }
+    svg {
+      color: var(--table-black);
+      transition: color 220ms;
     }
 
     &:hover {
@@ -173,251 +224,358 @@ export const MenuOption = styled.div<MenuProps>`
 
       svg {
         color: var(--green);
-        transform: scale(1.1);
+        transform: scale(1.2);
       }
-    }
-  }
-`;
-
-/* const disappear = keyframes`
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-25px);
-  }
-`; */
-
-export const DropdownButton = styled.div<DropdownButtonProps>`
-  position: relative;
-  display: inline-block;
-  align-self: center;
-
-  button {
-    padding: 0px 50px 0 0;
-    align-items: center;
-    background: transparent;
-    font-size: 20px;
-
-    display: flex;
-    flex-direction: column;
-    align-self: flex-start;
-
-    color: var(--table-black);
-    border: none;
-    transition: color 0.2s;
-
-    margin-top: 20px;
-    margin-bottom: 35px;
-
-    svg {
-      position: relative;
-      top: 2px;
-      color: var(--table-black);
-      transition: color 220ms;
-      margin-right: 12px;
-    }
-
-    a {
-      font-size: 16px;
     }
 
     p {
-      padding-left: 16px;
+      padding: 0 1.2rem;
+    }
+  }
+`;
+
+export const ProfileLinkContainer = styled.div<UserTypeProps>`
+  display: flex;
+  flex-direction: row;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+
+  img {
+    width: 8rem !important;
+    height: 8rem !important;
+    border-radius: 50%;
+  }
+
+  a {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    margin: 3.2rem 1.6rem;
+
+    color: var(--table-black);
+    text-decoration: none;
+    transition: color 220ms;
+
+    span {
+      font-weight: 200;
+      font-size: 1.6rem;
+      font-style: italic;
+      color: var(--table-gray);
+      padding: 0 1.2rem;
+
+      svg {
+        color: var(--table-black);
+        transition: color 220ms;
+
+        position: relative;
+        top: 0.12rem;
+      }
     }
 
     &:hover {
       color: var(--green);
-    }
 
-    div {
-      position: relative;
-      background: transparent;
-      text-align: center;
+      span {
+        color: var(--green);
 
-      ${props =>
-        props.open
-          ? css`
-              display: block;
-            `
-          : css`
-              display: none;
-            `}
+        svg {
+          color: var(--green);
+          transform: scale(1.2);
+        }
+      }
     }
   }
 
   ${props =>
-    props.menuState
-      ? css`
-          button {
-            opacity: 1;
-            transition: opacity 1s linear;
-          }
-        `
-      : css`
-          button {
-            opacity: 0;
-            transition: opacity 1s linear;
-            pointer-events: none;
-          }
-        `}
+    props.role === 'admin' &&
+    css`
+      display: none;
+    `}
 `;
 
-const appearFromUpside = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(-25px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
-
-export const LinkContainer = styled.div`
-  animation: ${appearFromUpside} 1s;
+export const AdminLockedOption = styled.div<UserTypeProps>`
+  width: 50%;
 
   a {
+    display: flex;
+    flex-direction: row;
+
+    margin: 1.6rem 0;
+
+    align-items: center;
+    justify-content: flex-start;
+
     color: var(--table-black);
-    margin: 20px 0 0 0;
-    padding: 5px 0 0 22px;
     text-decoration: none;
-    display: block;
+    transition: color 220ms;
 
     svg {
-      position: relative;
-      top: 2px;
       color: var(--table-black);
       transition: color 220ms;
-      margin-right: 5px;
     }
 
     &:hover {
+      color: var(--green);
+
       svg {
         color: var(--green);
-      }
-    }
-  }
-`;
-
-export const AgentLockedLinkContainer = styled.div<LinkContainerProps>`
-  animation: ${appearFromUpside} 1s;
-
-  a {
-    color: var(--table-black);
-    margin: 20px 0 0 0;
-    padding: 5px 0 0 22px;
-    text-decoration: none;
-    display: block;
-
-    svg {
-      position: relative;
-      top: 2px;
-      color: var(--table-black);
-      transition: color 220ms;
-      margin-right: 5px;
-    }
-
-    &:hover {
-      svg {
-        color: var(--green);
+        transform: scale(1.2);
       }
     }
 
-    ${props =>
-      props.role === 'agent' &&
-      css`
-        display: none;
-      `}
+    p {
+      padding: 0 1.2rem;
+    }
   }
-`;
 
-export const SpecialistLockedLinkContainer = styled.div<LinkContainerProps>`
-  animation: ${appearFromUpside} 1s;
-
-  a {
-    color: var(--table-black);
-    margin: 20px 0 0 0;
-    padding: 5px 0 0 22px;
-    text-decoration: none;
-    display: block;
-
-    svg {
-      position: relative;
-      top: 2px;
-      color: var(--table-black);
-      transition: color 220ms;
-      margin-right: 5px;
-    }
-
-    &:hover {
-      svg {
-        color: var(--green);
-      }
-    }
-
-    ${props =>
-      props.role === 'specialist' &&
-      css`
-        display: none;
-      `}
-  }
-`;
-
-export const AdminOnlyLinkContainer = styled.div<LinkContainerProps>`
-  animation: ${appearFromUpside} 1s;
-
-  a {
-    color: var(--table-black);
-    margin: 20px 0 0 0;
-    padding: 5px 0 0 22px;
-    text-decoration: none;
-    display: none;
-
-    svg {
-      position: relative;
-      top: 2px;
-      color: var(--table-black);
-      transition: color 220ms;
-      margin-right: 5px;
-    }
-
-    &:hover {
-      svg {
-        color: var(--green);
-      }
-    }
-
-    ${props =>
-      props.role === 'admin' &&
-      css`
-        display: block;
-      `}
-  }
-`;
-
-export const DownArrow = styled(RiArrowDropDownLine)<DropdownIconProps>`
-  transform: translateY(3px);
   ${props =>
-    props.open
-      ? css`
-          display: none;
-        `
-      : css`
-          display: visible;
-        `}
+    props.role === 'admin' &&
+    css`
+      display: none;
+    `}
 `;
 
-export const UpArrow = styled(RiArrowDropUpLine)<DropdownIconProps>`
-  transform: translateY(3px);
+export const SpecialistOnlyOption = styled.div<UserTypeProps>`
+  display: none;
+  width: 50%;
+
+  a {
+    display: flex;
+    flex-direction: row;
+
+    margin: 1.6rem 0;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    color: var(--table-black);
+    text-decoration: none;
+    transition: color 220ms;
+
+    svg {
+      color: var(--table-black);
+      transition: color 220ms;
+    }
+
+    &:hover {
+      color: var(--green);
+
+      svg {
+        color: var(--green);
+        transform: scale(1.2);
+      }
+    }
+
+    p {
+      padding: 0 1.2rem;
+    }
+  }
+
   ${props =>
-    props.open
-      ? css`
-          display: visible;
-        `
-      : css`
-          display: none;
-        `}
+    props.role === 'specialist' &&
+    css`
+      display: flex;
+    `}
+`;
+
+export const AdminOnlyOption = styled.div<UserTypeProps>`
+  display: none;
+  width: 50%;
+
+  a {
+    display: flex;
+    flex-direction: row;
+
+    margin: 1.6rem 0;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    color: var(--table-black);
+    text-decoration: none;
+    transition: color 220ms;
+
+    svg {
+      color: var(--table-black);
+      transition: color 220ms;
+    }
+
+    &:hover {
+      color: var(--green);
+
+      svg {
+        color: var(--green);
+        transform: scale(1.2);
+      }
+    }
+
+    p {
+      padding: 0 1.2rem;
+    }
+  }
+
+  ${props =>
+    props.role === 'admin' &&
+    css`
+      display: flex;
+    `}
+`;
+
+export const SupervisorOnlyOption = styled.div<UserTypeProps>`
+  display: none;
+  width: 50%;
+
+  a {
+    display: flex;
+    flex-direction: row;
+
+    margin: 1.6rem 0;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    color: var(--table-black);
+    text-decoration: none;
+    transition: color 220ms;
+
+    svg {
+      color: var(--table-black);
+      transition: color 220ms;
+    }
+
+    &:hover {
+      color: var(--green);
+
+      svg {
+        color: var(--green);
+        transform: scale(1.2);
+      }
+    }
+
+    p {
+      padding: 0 1.2rem;
+    }
+  }
+
+  ${props =>
+    props.role === 'supervisor' &&
+    css`
+      display: flex;
+    `}
+`;
+
+export const SpecialistLockedSection = styled.section<UserTypeProps>`
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+
+  justify-content: center;
+  align-items: center;
+
+  main {
+    width: 80%;
+
+    margin: 1.6rem 0;
+
+    border-bottom: 1px solid var(--table-black);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    svg {
+      color: var(--table-black);
+    }
+
+    p {
+      color: var(--table-black);
+      padding: 0 1.2rem;
+
+      width: 55%;
+    }
+  }
+
+  div {
+    margin-left: 5.1rem;
+
+    a {
+      margin-top: 0;
+      padding-top: 0.5rem;
+      font-size: 1.5rem;
+    }
+  }
+
+  div + div {
+    a {
+      margin: 0 0 1.6rem;
+    }
+  }
+
+  ${props =>
+    props.role === 'specialist' &&
+    css`
+      display: none;
+    `}
+`;
+
+export const AdminLockedSection = styled.section<UserTypeProps>`
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+
+  justify-content: center;
+  align-items: center;
+
+  main {
+    width: 80%;
+
+    margin: 1.6rem 0;
+
+    border-bottom: 1px solid var(--table-black);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    svg {
+      color: var(--table-black);
+    }
+
+    p {
+      color: var(--table-black);
+      padding: 0 1.2rem;
+
+      width: 55%;
+    }
+  }
+
+  div {
+    margin-left: 5.1rem;
+
+    a {
+      margin-top: 0;
+      padding-top: 0.5rem;
+      font-size: 1.5rem;
+    }
+  }
+
+  div + div {
+    a {
+      margin: 0 0 1.6rem;
+    }
+  }
+
+  ${props =>
+    props.role === 'admin' &&
+    css`
+      display: none;
+    `}
 `;
