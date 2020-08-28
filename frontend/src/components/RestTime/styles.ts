@@ -30,3 +30,54 @@ export const Container = styled.div`
     color: var(--table-gray);
   }
 `;
+
+export const ListRestDay = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  form {
+    margin: 0;
+    width: 95%;
+
+    section {
+      margin: 1rem auto;
+
+      span {
+        margin: 0 0.5rem 0 0.5rem;
+
+        & + span {
+          margin-left: 1rem;
+        }
+      }
+
+      div {
+        margin: 0;
+        padding: 0;
+        border-radius: 10px 0 0 10px;
+
+        & + div {
+          border-radius: 0 10px 10px 0;
+        }
+      }
+    }
+  }
+
+  button {
+    margin: 0;
+    background: none;
+    border: none;
+    text-decoration: none;
+    text-align: center;
+
+    svg {
+      padding-top: 0.5rem;
+      color: red;
+    }
+
+    :hover {
+      background: none;
+      color: red;
+      size: 4rem;
+    }
+  }
+`;

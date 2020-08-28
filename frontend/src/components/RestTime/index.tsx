@@ -7,8 +7,10 @@ import React, {
 } from 'react';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
-import { start } from 'repl';
-import { Container } from './styles';
+import { TiDeleteOutline } from 'react-icons/ti';
+import { MdDeleteForever } from 'react-icons/md';
+import { FiEdit3 } from 'react-icons/fi';
+import { Container, ListRestDay } from './styles';
 
 import api from '../../services/api';
 
@@ -131,43 +133,49 @@ const SelectHours: React.FC<Day> = ({
   }); */
   return (
     <Container>
-      {infoRestDay.length ? (
-        <Form ref={formRef} onSubmit={handleSubmit}>
-          {infoRestDay.map(day => {
-            return (
-              <SectionRow>
-                <span>De:</span>
-                <Select name="StartHour">
-                  <option value={day.formatedStartHour} selected hidden>
-                    {String(day.formatedStartHour).padStart(2, '0')}
-                  </option>
-                </Select>
-                <Select name="StartMinute">
-                  <option value={day.formatedStartMinute} selected hidden>
-                    {String(day.formatedStartMinute).padStart(2, '0')}
-                  </option>
-                </Select>
+      <ListRestDay>
+        {infoRestDay.length ? (
+          <Form ref={formRef} onSubmit={handleSubmit}>
+            {infoRestDay.map(day => {
+              return (
+                <SectionRow>
+                  <span>De:</span>
+                  <Select name="StartHour">
+                    <option value={day.formatedStartHour} selected hidden>
+                      {String(day.formatedStartHour).padStart(2, '0')}
+                    </option>
+                  </Select>
+                  <Select name="StartMinute">
+                    <option value={day.formatedStartMinute} selected hidden>
+                      {String(day.formatedStartMinute).padStart(2, '0')}
+                    </option>
+                  </Select>
 
-                <span>Ate:</span>
-                <Select name="EndHour">
-                  <option value={day.formatedEndHour} selected hidden>
-                    {String(day.formatedEndHour).padStart(2, '0')}
-                  </option>
-                </Select>
-                <Select name="EndMinute">
-                  <option value={day.formatedEndMinute} selected hidden>
-                    {String(day.formatedEndMinute).padStart(2, '0')}
-                  </option>
-                </Select>
-                <Button>Hello</Button>
-                <Button>Hello</Button>
-              </SectionRow>
-            );
-          })}
-        </Form>
-      ) : (
-        <span>Você Não Possui Horarios de Intevalo Cadastrados</span>
-      )}
+                  <span>Ate:</span>
+                  <Select name="EndHour">
+                    <option value={day.formatedEndHour} selected hidden>
+                      {String(day.formatedEndHour).padStart(2, '0')}
+                    </option>
+                  </Select>
+                  <Select name="EndMinute">
+                    <option value={day.formatedEndMinute} selected hidden>
+                      {String(day.formatedEndMinute).padStart(2, '0')}
+                    </option>
+                  </Select>
+                  <button type="submit">
+                    <FiEdit3 size={23} color="000" />
+                  </button>
+                  <button type="submit">
+                    <MdDeleteForever size={25} color="f8403a" />
+                  </button>
+                </SectionRow>
+              );
+            })}
+          </Form>
+        ) : (
+          <span>Você Não Possui Horarios de Intevalo Cadastrados</span>
+        )}
+      </ListRestDay>
 
       <Form ref={formRef} onSubmit={handleSubmit}>
         <PageHeader
