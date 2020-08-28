@@ -16,7 +16,6 @@ export const Container = styled.div`
   background-position: right bottom;
   background-repeat: no-repeat;
   background-size: 50rem;
-  background-color: var(--light-blue);
 
   @media only screen and (max-width: 450px) and (min-height: 500px) and (max-height: 680px) {
     height: 100%;

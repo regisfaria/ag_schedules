@@ -17,7 +17,6 @@ export const Container = styled.div`
   background-position: right bottom;
   background-repeat: no-repeat;
   background-size: 50rem;
-  background-color: var(--light-blue);
 
   @media (min-width: 1024px) {
     height: 100vh;
