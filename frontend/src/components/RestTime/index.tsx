@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
+import { start } from 'repl';
 import { Container } from './styles';
 
 import api from '../../services/api';
@@ -58,14 +59,6 @@ const SelectHours: React.FC<Day> = ({
     formRef.current?.setFieldValue('closeTimeHour', '');
     formRef.current?.setFieldValue('closeTimeMinute', formatedOpenMinute);
 
-    // Array para o horario de inicio
-    const createArrayForStartHours = Array.from(
-      { length: formatedCloseHour - formatedOpenHour - 1 },
-      (_, index) => index + formatedOpenHour + 1,
-    );
-
-    setStartHoursArray(createArrayForStartHours);
-
     api.get<IRestDay[]>(`/schedules/rest/${id}`).then(response => {
       setInfoRestDay(
         response.data.sort(function (a, b) {
@@ -73,6 +66,12 @@ const SelectHours: React.FC<Day> = ({
         }),
       );
     });
+
+    api
+      .get<number[]>(`/schedules/availableSchedulesForRest/${id}`)
+      .then(response => {
+        setStartHoursArray(response.data);
+      });
   }, [id]);
 
   // Array para o horario de saida
@@ -81,34 +80,23 @@ const SelectHours: React.FC<Day> = ({
       return;
     }
 
-    const hourStart = inicialStartHour + 1;
+    const tmpStartHourArray = startHoursStart.slice(0);
 
-    if (formatedCloseHour === 23 && formatedCloseMinute === 59) {
-      const createArrayForEndHours = Array.from(
-        { length: formatedCloseHour - hourStart + 1 },
-        (_, index) => index + hourStart,
-      );
+    const valueForRemove = tmpStartHourArray.findIndex(
+      number => number === inicialStartHour,
+    );
 
-      setEndHoursArray(createArrayForEndHours);
+    tmpStartHourArray.splice(0, valueForRemove + 1);
 
-      return;
+    if (
+      !infoRestDay.map(endHour => {
+        return endHour.formatedEndHour === formatedCloseHour - 1;
+      })
+    ) {
+      tmpStartHourArray.push(formatedCloseHour - 1);
     }
 
-    const createArrayForEndHours = Array.from(
-      { length: formatedCloseHour - hourStart },
-      (_, index) => index + hourStart,
-    );
-
-    console.log(
-      `for each: ${createArrayForEndHours.map(element => {
-        return element;
-      })}`,
-    );
-    console.log(
-      `find: ${createArrayForEndHours.findIndex(element => element === 11)}`,
-    );
-
-    setEndHoursArray(createArrayForEndHours);
+    setEndHoursArray(tmpStartHourArray);
   }, [inicialStartHour]);
 
   const handleChangeStartTimeHour = useCallback(
@@ -170,25 +158,32 @@ const SelectHours: React.FC<Day> = ({
           </option>
         </Select>
 
-        <span>Até:</span>
-        <Select name="closeTimeHour" onChange={handleChangeEndTimeHour}>
-          <option value="" selected hidden>
-            Horas
-          </option>
-          {endHoursArray.map(hour => {
-            return (
-              <option value={hour}>{String(hour).padStart(2, '0')}</option>
-            );
-          })}
-        </Select>
-
-        <Select name="closeTimeMinute" disabled>
-          <option value={formatedOpenMinute} selected hidden>
-            {String(formatedOpenMinute).padStart(2, '0')}
-          </option>
-        </Select>
-
-        <Button type="submit">Salvar</Button>
+        {endHoursArray.length ? (
+          <>
+            <span>Até:</span>
+            <Select name="closeTimeHour" onChange={handleChangeEndTimeHour}>
+              <option value="" selected hidden>
+                Horas
+              </option>
+              {endHoursArray.map(hour => {
+                return (
+                  <option value={hour}>{String(hour).padStart(2, '0')}</option>
+                );
+              })}
+            </Select>
+            <Select name="closeTimeMinute" disabled>
+              <option value={formatedOpenMinute} selected hidden>
+                {String(formatedOpenMinute).padStart(2, '0')}
+              </option>
+            </Select>
+            <Button type="submit">Salvar</Button>{' '}
+          </>
+        ) : (
+          <>
+            {' '}
+            <strong> Não da</strong> <span>Teste</span>{' '}
+          </>
+        )}
       </Form>
     </Container>
   );
