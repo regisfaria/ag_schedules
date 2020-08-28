@@ -10,8 +10,6 @@ export const Container = styled.div`
   width: 100%;
 
   div {
-    background: var(--light-blue);
-
     width: 100%;
     height: 100%;
 

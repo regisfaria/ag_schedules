@@ -25,6 +25,7 @@ import Button from '../../components/Button';
 import api from '../../services/api';
 
 import SelectHour from '../../components/SelectHours';
+import RestTime from '../../components/RestTime';
 
 interface FormData {
   consultState: string;
@@ -94,8 +95,6 @@ export default function App() {
     formRef.current?.setFieldValue('consultState', workToday);
   }, [workToday, choosenDay]);
 
-  console.log(workToday);
-
   return (
     <>
       <Menu />
@@ -143,8 +142,18 @@ export default function App() {
           <Button>Horario de Intervalo</Button>
 
           <WookSchedule work={workToday}>
-            {choosenDay && (
+            {/* {choosenDay && (
               <SelectHour
+                id={choosenDay.id}
+                formatedOpenHour={choosenDay.formatedOpenHour}
+                formatedOpenMinute={choosenDay.formatedOpenMinute}
+                formatedCloseHour={choosenDay.formatedCloseHour}
+                formatedCloseMinute={choosenDay.formatedCloseMinute}
+              />
+            )} */}
+
+            {choosenDay && (
+              <RestTime
                 id={choosenDay.id}
                 formatedOpenHour={choosenDay.formatedOpenHour}
                 formatedOpenMinute={choosenDay.formatedOpenMinute}
