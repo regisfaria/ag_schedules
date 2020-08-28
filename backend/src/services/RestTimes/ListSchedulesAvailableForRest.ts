@@ -17,6 +17,7 @@ class ListSchedulesAvailableForRest {
   }: Request): Promise<number[]> {
     let formatedOpenHour = 0;
     let formatedCloseHour = 0;
+    let formatedCloseMinute = 0;
     const restTimesRepository = getRepository(RestTime);
 
     const unparsedRestTimes = await restTimesRepository.find({
@@ -41,6 +42,7 @@ class ListSchedulesAvailableForRest {
       formatedCloseHour = closeTime / 60;
     } else {
       formatedCloseHour = Math.floor(closeTime / 60);
+      formatedCloseMinute = closeTimeMod;
     }
 
     const createArrayForStartHours = Array.from(
@@ -63,7 +65,9 @@ class ListSchedulesAvailableForRest {
       );
     });
 
-    createArrayForStartHours.pop();
+    if (formatedCloseMinute !== 59) {
+      createArrayForStartHours.pop();
+    }
 
     return createArrayForStartHours;
   }
