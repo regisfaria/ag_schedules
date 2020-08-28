@@ -10,6 +10,7 @@ import UpdateScheduleService from '../services/Schedules/UpdateScheduleService';
 import ListAvailableDays from '../services/Schedules/ListAvailableDays';
 import ListAvailableHours from '../services/Schedules/ListAvailableHours';
 import FormatSchedule from '../services/Schedules/FormatSchedule';
+import ListSchedulesAvailableForRest from '../services/RestTimes/ListSchedulesAvailableForRest';
 
 import CreateRestTimeService from '../services/RestTimes/CreateRestTimeService';
 import FormatRestTimes from '../services/RestTimes/FormatRestTimesService';
@@ -105,7 +106,7 @@ schedulesRouter.get('/rest/:id', async (request, response) => {
 
   const restTimesRepository = getRepository(RestTime);
 
-  const unparsedRestTimes = await restTimesRepository.findOne({
+  const unparsedRestTimes = await restTimesRepository.find({
     where: { scheduleAvailabilityId: id },
   });
 
@@ -115,6 +116,29 @@ schedulesRouter.get('/rest/:id', async (request, response) => {
 
   return response.json(restTimes);
 });
+
+schedulesRouter.get(
+  '/availableSchedulesForRest/:id',
+  async (request, response) => {
+    const { id } = request.params;
+
+    const schedulesRepository = getRepository(ScheduleAvailability);
+
+    const unparsedSchedule = await schedulesRepository.findOne({
+      where: { id },
+    });
+
+    const listSchedules = new ListSchedulesAvailableForRest();
+
+    const restTimes = await listSchedules.execute({
+      id,
+      openTime: unparsedSchedule!.openTime,
+      closeTime: unparsedSchedule!.closeTime,
+    });
+
+    return response.json(restTimes);
+  },
+);
 
 schedulesRouter.get('/availableDays/:id', async (request, response) => {
   const { id } = request.params;

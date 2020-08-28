@@ -26,12 +26,16 @@ export default class RestTime {
   @Column('int')
   startTime: number;
 
+  formatedStartHour: number;
+
+  formatedStartMinute: number;
+
   @Column('int')
   endTime: number;
 
-  formatedStartTime: string;
+  formatedEndHour: number;
 
-  formatedEndTime: string;
+  formatedEndMinute: number;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -29,8 +29,7 @@ export const Container = styled.div`
   /* background-position: center; */
   background-position: left bottom;
   background-repeat: no-repeat;
-  background-size: 50rem;
-  background-color: var(--light-blue);
+  background-size: 90rem;
 
   form {
     display: flex;
@@ -73,10 +72,10 @@ export const NewButton = styled.button<WorkDayProps>`
   width: 90%;
   max-width: 20rem;
 
-  background: red;
+  background: rgba(247, 104, 91, 0.9);
   border: 0px;
   border-radius: 10px;
-  color: var(--white);
+  color: var(--black);
   font-weight: 700;
 
   padding: 0 1.6rem;
@@ -85,7 +84,8 @@ export const NewButton = styled.button<WorkDayProps>`
   transition: background-color 0.2s;
 
   &:hover {
-    background: ${shade(0.2, '#09644b')};
+    background: transparent;
+    border: 1px solid black;
   }
 
   padding: 0;
@@ -100,7 +100,7 @@ export const NewButton = styled.button<WorkDayProps>`
   ${props =>
     !props.workDay &&
     css`
-      background: #09644b;
+      background: rgba(9, 100, 67, 0.7);
     `}
 
   ${props =>
@@ -153,4 +153,12 @@ export const AfterChooseOneDay = styled.div`
   justify-content: flex-start;
 
   height: 100%;
+
+  button {
+    background-image: linear-gradient(to right, #e9a957 0%, #d67b00 100%);
+
+    &:hover {
+      background: ${shade(0.2, '#d67b00')};
+    }
+  }
 `;

@@ -25,12 +25,12 @@ export const Content = styled.div`
   img {
     width: 95%;
     max-width: 35rem;
-    margin: 2rem 0 0 0;
+    margin: 4rem 0 0 0;
   }
 
-  background: var(--light-blue);
+  background-image: linear-gradient(180deg, #f1f2f2 0%, #64c261 100%);
 
-  border-radius: 7px;
+  border-radius: 40px;
   box-shadow: 0 1px 15px 1px var(--black);
 
   form {
@@ -72,7 +72,7 @@ export const Content = styled.div`
     button {
       width: 90%;
       max-width: 300px;
-      margin: 20px 0 20px 0;
+      margin: 4rem 0 4rem 0;
       font-size: 14px;
     }
   }
