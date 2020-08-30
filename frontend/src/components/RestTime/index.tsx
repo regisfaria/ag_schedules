@@ -56,7 +56,7 @@ const SelectHours: React.FC<Day> = ({
 
   const [infoRestDay, setInfoRestDay] = useState<IRestDay[]>([]);
 
-  const [startHoursStart, setStartHoursArray] = useState<number[]>([]);
+  const [startHoursArray, setStartHoursArray] = useState<number[]>([]);
   const [endHoursArray, setEndHoursArray] = useState<number[]>([]);
 
   const [selectEditRestTime, setSelectEditRestTime] = useState<EditRestTime[]>(
@@ -64,6 +64,8 @@ const SelectHours: React.FC<Day> = ({
   );
 
   const [editingOrRemoveRestTime, setEditingOrRemoveRestTime] = useState(false);
+
+  const [editScheduleArray, setEditScheduleArray] = useState<number[]>([]);
 
   const [selectDeleteRestTime, setSelectDeleteRestTime] = useState(false);
 
@@ -112,7 +114,7 @@ const SelectHours: React.FC<Day> = ({
       return;
     }
 
-    const tmpStartHourArray = startHoursStart.slice(0);
+    const tmpStartHourArray = startHoursArray.slice(0);
 
     const valueForRemove = tmpStartHourArray.findIndex(
       number => number === inicialStartHour,
@@ -148,15 +150,29 @@ const SelectHours: React.FC<Day> = ({
     [],
   );
 
-  const buttonEditRestTIme = useCallback((idByRest: string) => {
-    setSelectEditRestTime(element => {
-      return element.map(rest =>
-        rest.id === idByRest ? { ...rest, editable: true } : rest,
-      );
-    });
+  const buttonEditRestTIme = useCallback(
+    (idByRest: string, startRestTime: number) => {
+      setSelectEditRestTime(element => {
+        return element.map(rest =>
+          rest.id === idByRest ? { ...rest, editable: true } : rest,
+        );
+      });
 
-    setEditingOrRemoveRestTime(true);
-  }, []);
+      const tmpStartHourArray = startHoursArray.slice(0);
+
+      console.log(startHoursArray);
+
+      tmpStartHourArray.push(startRestTime);
+      tmpStartHourArray.sort(function (a, b) {
+        return a - b;
+      });
+
+      setEditScheduleArray(tmpStartHourArray);
+
+      setEditingOrRemoveRestTime(true);
+    },
+    [startHoursArray],
+  );
 
   const buttonCancelEditOrRemoveRestTime = useCallback((idByRest: string) => {
     setSelectEditRestTime(element => {
@@ -194,12 +210,22 @@ const SelectHours: React.FC<Day> = ({
                   >
                     <SectionRow>
                       <span>De: </span>
-                      <Select name="StartHour">
+                      <Select
+                        name="StartHour"
+                        disabled={
+                          !!selectEditRestTime.find(schedule => {
+                            return (
+                              schedule.id === day.id &&
+                              schedule.editable === false
+                            );
+                          })
+                        }
+                      >
                         <option value={day.formatedStartHour} hidden>
                           {String(day.formatedStartHour).padStart(2, '0')}
                         </option>
 
-                        {endHoursArray.map(hour => {
+                        {editScheduleArray.map(hour => {
                           return (
                             <option value={hour}>
                               {String(hour).padStart(2, '0')}
@@ -207,19 +233,19 @@ const SelectHours: React.FC<Day> = ({
                           );
                         })}
                       </Select>
-                      <Select name="StartMinute">
+                      <Select name="StartMinute" disabled>
                         <option value={day.formatedStartMinute} hidden>
                           {String(day.formatedStartMinute).padStart(2, '0')}
                         </option>
                       </Select>
 
                       <span>Ate:</span>
-                      <Select name="EndHour">
+                      <Select name="EndHour" disabled>
                         <option value={day.formatedEndHour} hidden>
                           {String(day.formatedEndHour).padStart(2, '0')}
                         </option>
                       </Select>
-                      <Select name="EndMinute">
+                      <Select name="EndMinute" disabled>
                         <option value={day.formatedEndMinute} hidden>
                           {String(day.formatedEndMinute).padStart(2, '0')}
                         </option>
@@ -234,7 +260,7 @@ const SelectHours: React.FC<Day> = ({
                           <button
                             type="button"
                             onClick={() => {
-                              buttonEditRestTIme(day.id);
+                              buttonEditRestTIme(day.id, day.formatedStartHour);
                             }}
                             disabled={editingOrRemoveRestTime}
                           >
@@ -294,7 +320,7 @@ const SelectHours: React.FC<Day> = ({
               Horas
             </option>
 
-            {startHoursStart.map(hour => {
+            {startHoursArray.map(hour => {
               return (
                 <option value={hour}>{String(hour).padStart(2, '0')}</option>
               );
