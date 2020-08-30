@@ -7,9 +7,8 @@ import React, {
 } from 'react';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
-import { TiDeleteOutline } from 'react-icons/ti';
-import { MdDeleteForever } from 'react-icons/md';
-import { FiEdit3 } from 'react-icons/fi';
+
+import { FiEdit3, FiTrash2, FiXCircle, FiCheck } from 'react-icons/fi';
 import { Container, ListRestDay } from './styles';
 
 import api from '../../services/api';
@@ -37,6 +36,11 @@ interface IRestDay {
   formatedEndMinute: number;
 }
 
+interface EditRestTime {
+  id: string;
+  editable: boolean;
+}
+
 const SelectHours: React.FC<Day> = ({
   id,
   formatedOpenHour,
@@ -45,6 +49,7 @@ const SelectHours: React.FC<Day> = ({
   formatedCloseMinute,
 }) => {
   const formRef = useRef<FormHandles>(null);
+  const formRefEditOrDeleteRestTimes = useRef<FormHandles>(null);
 
   const [inicialStartHour, setInicialStartHour] = useState<number>(-1);
   const [finishEndHour, setFinishEndHour] = useState<number>(-1);
@@ -53,6 +58,11 @@ const SelectHours: React.FC<Day> = ({
 
   const [startHoursStart, setStartHoursArray] = useState<number[]>([]);
   const [endHoursArray, setEndHoursArray] = useState<number[]>([]);
+
+  const [selectEditRestTime, setSelectEditRestTime] = useState<EditRestTime[]>(
+    [],
+  );
+  const [selectDeleteRestTime, setSelectDeleteRestTime] = useState(false);
 
   useEffect(() => {
     setInicialStartHour(-1);
@@ -79,6 +89,15 @@ const SelectHours: React.FC<Day> = ({
         setStartHoursArray(response.data);
       });
   }, [id]);
+
+  useEffect(() => {
+    const testeArray: EditRestTime[] = [];
+    infoRestDay.map(day => {
+      return testeArray.push({ id: day.id, editable: false });
+    });
+    console.log(testeArray);
+    setSelectEditRestTime(testeArray);
+  }, [infoRestDay]);
 
   // Array para o horario de saida
   useEffect(() => {
@@ -122,7 +141,21 @@ const SelectHours: React.FC<Day> = ({
     [],
   );
 
+  const buttonEditRestTIme = useCallback((idByRest: string) => {
+    setSelectEditRestTime(element => {
+      return element.map(rest =>
+        rest.id === idByRest ? { ...rest, editable: true } : rest,
+      );
+    });
+  }, []);
+
   function handleSubmit(data: FormData) {
+    console.log(id);
+    console.log(data);
+  }
+
+  function handleEditOrDeleteRestTime(data: object) {
+    console.log('editar');
     console.log(id);
     console.log(data);
   }
@@ -131,47 +164,85 @@ const SelectHours: React.FC<Day> = ({
       endHoursArray.findIndex(element => element === day.formatedStartHour),
     );
   }); */
+
+  console.log(selectEditRestTime);
   return (
     <Container>
       <ListRestDay>
         {infoRestDay.length ? (
-          <Form ref={formRef} onSubmit={handleSubmit}>
+          <>
             {infoRestDay.map(day => {
               return (
-                <SectionRow>
-                  <span>De:</span>
-                  <Select name="StartHour">
-                    <option value={day.formatedStartHour} selected hidden>
-                      {String(day.formatedStartHour).padStart(2, '0')}
-                    </option>
-                  </Select>
-                  <Select name="StartMinute">
-                    <option value={day.formatedStartMinute} selected hidden>
-                      {String(day.formatedStartMinute).padStart(2, '0')}
-                    </option>
-                  </Select>
+                <>
+                  <Form
+                    ref={formRefEditOrDeleteRestTimes}
+                    onSubmit={handleEditOrDeleteRestTime}
+                    key={day.id}
+                  >
+                    <SectionRow>
+                      <span>De: </span>
+                      <Select name="StartHour">
+                        <option value={day.formatedStartHour} selected hidden>
+                          {String(day.formatedStartHour).padStart(2, '0')}
+                        </option>
+                      </Select>
+                      <Select name="StartMinute">
+                        <option value={day.formatedStartMinute} selected hidden>
+                          {String(day.formatedStartMinute).padStart(2, '0')}
+                        </option>
+                      </Select>
 
-                  <span>Ate:</span>
-                  <Select name="EndHour">
-                    <option value={day.formatedEndHour} selected hidden>
-                      {String(day.formatedEndHour).padStart(2, '0')}
-                    </option>
-                  </Select>
-                  <Select name="EndMinute">
-                    <option value={day.formatedEndMinute} selected hidden>
-                      {String(day.formatedEndMinute).padStart(2, '0')}
-                    </option>
-                  </Select>
-                  <button type="submit">
-                    <FiEdit3 size={23} color="000" />
-                  </button>
-                  <button type="submit">
-                    <MdDeleteForever size={25} color="f8403a" />
-                  </button>
-                </SectionRow>
+                      <span>Ate:</span>
+                      <Select name="EndHour">
+                        <option value={day.formatedEndHour} selected hidden>
+                          {String(day.formatedEndHour).padStart(2, '0')}
+                        </option>
+                      </Select>
+                      <Select name="EndMinute">
+                        <option value={day.formatedEndMinute} selected hidden>
+                          {String(day.formatedEndMinute).padStart(2, '0')}
+                        </option>
+                      </Select>
+
+                      {selectEditRestTime.find(schedule => {
+                        return (
+                          schedule.id === day.id && schedule.editable === false
+                        );
+                      }) ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              buttonEditRestTIme(day.id);
+                            }}
+                          >
+                            <FiEdit3 size={23} color="000" />
+                          </button>
+                          <button type="button">
+                            <FiTrash2 size={25} color="f8403a" />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              buttonEditRestTIme(day.id);
+                            }}
+                          >
+                            <FiXCircle size={23} color="f8403a" />
+                          </button>
+                          <button type="button">
+                            <FiCheck size={25} color="008000" />
+                          </button>
+                        </>
+                      )}
+                    </SectionRow>
+                  </Form>
+                </>
               );
             })}
-          </Form>
+          </>
         ) : (
           <span>Você Não Possui Horarios de Intevalo Cadastrados</span>
         )}
@@ -195,8 +266,6 @@ const SelectHours: React.FC<Day> = ({
               );
             })}
           </Select>
-
-          {console.log(formatedOpenMinute)}
 
           <Select name="openTimeMin" disabled>
             <option value={formatedOpenMinute} selected hidden>

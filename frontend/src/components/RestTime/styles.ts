@@ -32,12 +32,12 @@ export const Container = styled.div`
 `;
 
 export const ListRestDay = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  max-height: 24rem;
+  overflow: auto;
+
   form {
-    margin: 0;
-    width: 95%;
+    height: 100%;
+    margin-top: 0;
 
     section {
       margin: 1rem auto;

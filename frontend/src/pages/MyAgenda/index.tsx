@@ -15,6 +15,7 @@ import {
   InicializePage,
   AfterChooseOneDay,
   NewButton,
+  SelectWorkToday,
 } from './styles';
 
 import PageHeader from '../../components/PageHeader';
@@ -125,18 +126,18 @@ export default function App() {
         </InicializePage> */}
 
         <AfterChooseOneDay>
-          <div>
-            <strong>Realizar Consultas Nesse Dia?</strong>
-          </div>
+          <strong>Realizar Consultas Nesse Dia?</strong>
 
-          <select name="consultState" onChange={handleSelectOptions}>
-            <option value="true" selected={workToday}>
-              Sim
-            </option>
-            <option value="false" selected={workToday === false}>
-              Não
-            </option>
-          </select>
+          <SelectWorkToday>
+            <select name="consultState" onChange={handleSelectOptions}>
+              <option value="true" selected={workToday}>
+                Sim
+              </option>
+              <option value="false" selected={workToday === false}>
+                Não
+              </option>
+            </select>
+          </SelectWorkToday>
 
           <SectionRow>
             <Button>Horario de trabalho</Button>

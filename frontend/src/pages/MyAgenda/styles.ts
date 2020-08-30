@@ -25,11 +25,11 @@ export const Container = styled.div`
   height: 100vh;
   width: 100%;
 
-  background-image: url(${doctorImg});
+  /* background-image: url(${doctorImg}); */
   /* background-position: center; */
-  background-position: left bottom;
+  /* background-position: left bottom;
   background-repeat: no-repeat;
-  background-size: 90rem;
+  background-size: 90rem; */
 
   form {
     display: flex;
@@ -70,7 +70,6 @@ export const DaysWeek = styled.header`
 export const NewButton = styled.button<WorkDayProps>`
   height: 5rem;
   width: 90%;
-  max-width: 20rem;
 
   background: rgba(247, 104, 91, 0.9);
   border: 0px;
@@ -154,11 +153,57 @@ export const AfterChooseOneDay = styled.div`
 
   height: 100%;
 
-  button {
-    background-image: linear-gradient(to right, #e9a957 0%, #d67b00 100%);
+  > section {
+    width: 90%;
+    margin-top: 1.5rem;
+    button {
+      background-image: linear-gradient(to right, #e9a957 0%, #d67b00 100%);
+      font-size: 1.4rem;
 
-    &:hover {
-      background: ${shade(0.2, '#d67b00')};
+      & + button {
+        margin-left: 3rem;
+      }
+
+      &:hover {
+        background: ${shade(0.2, '#d67b00')};
+      }
+    }
+  }
+`;
+
+export const SelectWorkToday = styled.div`
+  background: var(--white);
+  border-radius: 10px;
+  padding: 1.6rem;
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+
+  width: 100%;
+  max-width: 30rem;
+
+  height: 5rem;
+
+  border: 2px solid var(--white);
+  color: var(--input-placeholder);
+
+  display: flex;
+  align-items: center;
+
+  select {
+    background: transparent;
+    flex: 1;
+    border: none;
+    color: var(--black);
+    font-family: Poppins, sans-serifa;
+    color: var(--input-placeholder);
+    width: 100%;
+
+    option {
+      background-color: var(--white);
+      flex: 1;
+      font-size: 1.2rem;
+      font-family: Poppins, sans-serifa;
+      color: var(--black);
     }
   }
 `;
