@@ -62,6 +62,9 @@ const SelectHours: React.FC<Day> = ({
   const [selectEditRestTime, setSelectEditRestTime] = useState<EditRestTime[]>(
     [],
   );
+
+  const [editingOrRemoveRestTime, setEditingOrRemoveRestTime] = useState(false);
+
   const [selectDeleteRestTime, setSelectDeleteRestTime] = useState(false);
 
   useEffect(() => {
@@ -91,12 +94,16 @@ const SelectHours: React.FC<Day> = ({
   }, [id]);
 
   useEffect(() => {
-    const testeArray: EditRestTime[] = [];
+    const auxArrayForGetSchedulesRestTime: EditRestTime[] = [];
+
     infoRestDay.map(day => {
-      return testeArray.push({ id: day.id, editable: false });
+      return auxArrayForGetSchedulesRestTime.push({
+        id: day.id,
+        editable: false,
+      });
     });
-    console.log(testeArray);
-    setSelectEditRestTime(testeArray);
+
+    setSelectEditRestTime(auxArrayForGetSchedulesRestTime);
   }, [infoRestDay]);
 
   // Array para o horario de saida
@@ -147,6 +154,18 @@ const SelectHours: React.FC<Day> = ({
         rest.id === idByRest ? { ...rest, editable: true } : rest,
       );
     });
+
+    setEditingOrRemoveRestTime(true);
+  }, []);
+
+  const buttonCancelEditOrRemoveRestTime = useCallback((idByRest: string) => {
+    setSelectEditRestTime(element => {
+      return element.map(rest =>
+        rest.id === idByRest ? { ...rest, editable: false } : rest,
+      );
+    });
+
+    setEditingOrRemoveRestTime(false);
   }, []);
 
   function handleSubmit(data: FormData) {
@@ -159,13 +178,7 @@ const SelectHours: React.FC<Day> = ({
     console.log(id);
     console.log(data);
   }
-  /*   infoRestDay.forEach(day => {
-    console.log(
-      endHoursArray.findIndex(element => element === day.formatedStartHour),
-    );
-  }); */
 
-  console.log(selectEditRestTime);
   return (
     <Container>
       <ListRestDay>
@@ -182,24 +195,32 @@ const SelectHours: React.FC<Day> = ({
                     <SectionRow>
                       <span>De: </span>
                       <Select name="StartHour">
-                        <option value={day.formatedStartHour} selected hidden>
+                        <option value={day.formatedStartHour} hidden>
                           {String(day.formatedStartHour).padStart(2, '0')}
                         </option>
+
+                        {endHoursArray.map(hour => {
+                          return (
+                            <option value={hour}>
+                              {String(hour).padStart(2, '0')}
+                            </option>
+                          );
+                        })}
                       </Select>
                       <Select name="StartMinute">
-                        <option value={day.formatedStartMinute} selected hidden>
+                        <option value={day.formatedStartMinute} hidden>
                           {String(day.formatedStartMinute).padStart(2, '0')}
                         </option>
                       </Select>
 
                       <span>Ate:</span>
                       <Select name="EndHour">
-                        <option value={day.formatedEndHour} selected hidden>
+                        <option value={day.formatedEndHour} hidden>
                           {String(day.formatedEndHour).padStart(2, '0')}
                         </option>
                       </Select>
                       <Select name="EndMinute">
-                        <option value={day.formatedEndMinute} selected hidden>
+                        <option value={day.formatedEndMinute} hidden>
                           {String(day.formatedEndMinute).padStart(2, '0')}
                         </option>
                       </Select>
@@ -215,11 +236,24 @@ const SelectHours: React.FC<Day> = ({
                             onClick={() => {
                               buttonEditRestTIme(day.id);
                             }}
+                            disabled={editingOrRemoveRestTime}
                           >
-                            <FiEdit3 size={23} color="000" />
+                            <FiEdit3
+                              size={23}
+                              color={editingOrRemoveRestTime ? 'd9d9d9' : '000'}
+                            />
                           </button>
-                          <button type="button">
-                            <FiTrash2 size={25} color="f8403a" />
+
+                          <button
+                            type="button"
+                            disabled={editingOrRemoveRestTime}
+                          >
+                            <FiTrash2
+                              size={25}
+                              color={
+                                editingOrRemoveRestTime ? 'd9d9d9' : 'f8403a'
+                              }
+                            />
                           </button>
                         </>
                       ) : (
@@ -227,7 +261,7 @@ const SelectHours: React.FC<Day> = ({
                           <button
                             type="button"
                             onClick={() => {
-                              buttonEditRestTIme(day.id);
+                              buttonCancelEditOrRemoveRestTime(day.id);
                             }}
                           >
                             <FiXCircle size={23} color="f8403a" />
