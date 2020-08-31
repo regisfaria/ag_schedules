@@ -7,14 +7,18 @@ import React, {
 } from 'react';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
-import { start } from 'repl';
-import { Container } from './styles';
+
+import { FiEdit3, FiTrash2, FiXCircle, FiCheck } from 'react-icons/fi';
+import { Container, ListRestDay } from './styles';
 
 import api from '../../services/api';
 
+import Input from '../Input';
 import Select from '../Select';
 import Button from '../Button';
 import PageHeader from '../PageHeader';
+import SectionRow from '../SectionRow';
+import Section from '../Section';
 
 interface Day {
   id: string;
@@ -25,10 +29,16 @@ interface Day {
 }
 
 interface IRestDay {
+  id: string;
   formatedStartHour: number;
   formatedStartMinute: number;
   formatedEndHour: number;
   formatedEndMinute: number;
+}
+
+interface EditRestTime {
+  id: string;
+  editable: boolean;
 }
 
 const SelectHours: React.FC<Day> = ({
@@ -39,14 +49,25 @@ const SelectHours: React.FC<Day> = ({
   formatedCloseMinute,
 }) => {
   const formRef = useRef<FormHandles>(null);
+  const formRefEditOrDeleteRestTimes = useRef<FormHandles>(null);
 
   const [inicialStartHour, setInicialStartHour] = useState<number>(-1);
   const [finishEndHour, setFinishEndHour] = useState<number>(-1);
 
   const [infoRestDay, setInfoRestDay] = useState<IRestDay[]>([]);
 
-  const [startHoursStart, setStartHoursArray] = useState<number[]>([]);
+  const [startHoursArray, setStartHoursArray] = useState<number[]>([]);
   const [endHoursArray, setEndHoursArray] = useState<number[]>([]);
+
+  const [selectEditRestTime, setSelectEditRestTime] = useState<EditRestTime[]>(
+    [],
+  );
+
+  const [editingOrRemoveRestTime, setEditingOrRemoveRestTime] = useState(false);
+
+  const [editScheduleArray, setEditScheduleArray] = useState<number[]>([]);
+
+  const [selectDeleteRestTime, setSelectDeleteRestTime] = useState(false);
 
   useEffect(() => {
     setInicialStartHour(-1);
@@ -74,13 +95,26 @@ const SelectHours: React.FC<Day> = ({
       });
   }, [id]);
 
+  useEffect(() => {
+    const auxArrayForGetSchedulesRestTime: EditRestTime[] = [];
+
+    infoRestDay.map(day => {
+      return auxArrayForGetSchedulesRestTime.push({
+        id: day.id,
+        editable: false,
+      });
+    });
+
+    setSelectEditRestTime(auxArrayForGetSchedulesRestTime);
+  }, [infoRestDay]);
+
   // Array para o horario de saida
   useEffect(() => {
     if (inicialStartHour === -1) {
       return;
     }
 
-    const tmpStartHourArray = startHoursStart.slice(0);
+    const tmpStartHourArray = startHoursArray.slice(0);
 
     const valueForRemove = tmpStartHourArray.findIndex(
       number => number === inicialStartHour,
@@ -88,12 +122,14 @@ const SelectHours: React.FC<Day> = ({
 
     tmpStartHourArray.splice(0, valueForRemove + 1);
 
-    if (
-      !infoRestDay.map(endHour => {
-        return endHour.formatedEndHour === formatedCloseHour - 1;
-      })
-    ) {
-      tmpStartHourArray.push(formatedCloseHour - 1);
+    const verifyIfIsTheLastHour = infoRestDay.map(endHour => {
+      return endHour.formatedEndHour === formatedCloseHour - 1;
+    });
+
+    if (!verifyIfIsTheLastHour[0]) {
+      formatedCloseHour === 23 && formatedCloseMinute === 59
+        ? tmpStartHourArray.push(formatedCloseHour)
+        : tmpStartHourArray.push(formatedCloseHour - 1);
     }
 
     setEndHoursArray(tmpStartHourArray);
@@ -114,24 +150,163 @@ const SelectHours: React.FC<Day> = ({
     [],
   );
 
+  const buttonEditRestTIme = useCallback(
+    (idByRest: string, startRestTime: number) => {
+      setSelectEditRestTime(element => {
+        return element.map(rest =>
+          rest.id === idByRest ? { ...rest, editable: true } : rest,
+        );
+      });
+
+      const tmpStartHourArray = startHoursArray.slice(0);
+
+      console.log(startHoursArray);
+
+      tmpStartHourArray.push(startRestTime);
+      tmpStartHourArray.sort(function (a, b) {
+        return a - b;
+      });
+
+      setEditScheduleArray(tmpStartHourArray);
+
+      setEditingOrRemoveRestTime(true);
+    },
+    [startHoursArray],
+  );
+
+  const buttonCancelEditOrRemoveRestTime = useCallback((idByRest: string) => {
+    setSelectEditRestTime(element => {
+      return element.map(rest =>
+        rest.id === idByRest ? { ...rest, editable: false } : rest,
+      );
+    });
+
+    setEditingOrRemoveRestTime(false);
+  }, []);
+
   function handleSubmit(data: FormData) {
     console.log(id);
     console.log(data);
   }
-  /*   infoRestDay.forEach(day => {
-    console.log(
-      endHoursArray.findIndex(element => element === day.formatedStartHour),
-    );
-  }); */
+
+  function handleEditOrDeleteRestTime(data: object) {
+    console.log('editar');
+    console.log(id);
+    console.log(data);
+  }
+
   return (
     <Container>
-      {infoRestDay.map(day => {
-        return (
-          <p>
-            {`Inicio do intervalo: ${day.formatedStartHour}:${day.formatedStartMinute} Fim do intervalo: ${day.formatedEndHour}:${day.formatedEndMinute}`}
-          </p>
-        );
-      })}
+      <ListRestDay>
+        {infoRestDay.length ? (
+          <>
+            {infoRestDay.map(day => {
+              return (
+                <>
+                  <Form
+                    ref={formRefEditOrDeleteRestTimes}
+                    onSubmit={handleEditOrDeleteRestTime}
+                    key={day.id}
+                  >
+                    <SectionRow>
+                      <span>De: </span>
+                      <Select
+                        name="StartHour"
+                        disabled={
+                          !!selectEditRestTime.find(schedule => {
+                            return (
+                              schedule.id === day.id &&
+                              schedule.editable === false
+                            );
+                          })
+                        }
+                      >
+                        <option value={day.formatedStartHour} hidden>
+                          {String(day.formatedStartHour).padStart(2, '0')}
+                        </option>
+
+                        {editScheduleArray.map(hour => {
+                          return (
+                            <option value={hour}>
+                              {String(hour).padStart(2, '0')}
+                            </option>
+                          );
+                        })}
+                      </Select>
+                      <Select name="StartMinute" disabled>
+                        <option value={day.formatedStartMinute} hidden>
+                          {String(day.formatedStartMinute).padStart(2, '0')}
+                        </option>
+                      </Select>
+
+                      <span>Ate:</span>
+                      <Select name="EndHour" disabled>
+                        <option value={day.formatedEndHour} hidden>
+                          {String(day.formatedEndHour).padStart(2, '0')}
+                        </option>
+                      </Select>
+                      <Select name="EndMinute" disabled>
+                        <option value={day.formatedEndMinute} hidden>
+                          {String(day.formatedEndMinute).padStart(2, '0')}
+                        </option>
+                      </Select>
+
+                      {selectEditRestTime.find(schedule => {
+                        return (
+                          schedule.id === day.id && schedule.editable === false
+                        );
+                      }) ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              buttonEditRestTIme(day.id, day.formatedStartHour);
+                            }}
+                            disabled={editingOrRemoveRestTime}
+                          >
+                            <FiEdit3
+                              size={23}
+                              color={editingOrRemoveRestTime ? 'd9d9d9' : '000'}
+                            />
+                          </button>
+
+                          <button
+                            type="button"
+                            disabled={editingOrRemoveRestTime}
+                          >
+                            <FiTrash2
+                              size={25}
+                              color={
+                                editingOrRemoveRestTime ? 'd9d9d9' : 'f8403a'
+                              }
+                            />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              buttonCancelEditOrRemoveRestTime(day.id);
+                            }}
+                          >
+                            <FiXCircle size={23} color="f8403a" />
+                          </button>
+                          <button type="button">
+                            <FiCheck size={25} color="008000" />
+                          </button>
+                        </>
+                      )}
+                    </SectionRow>
+                  </Form>
+                </>
+              );
+            })}
+          </>
+        ) : (
+          <span>Você Não Possui Horarios de Intevalo Cadastrados</span>
+        )}
+      </ListRestDay>
 
       <Form ref={formRef} onSubmit={handleSubmit}>
         <PageHeader
@@ -139,50 +314,54 @@ const SelectHours: React.FC<Day> = ({
           subTitle="Marque abaixo os dias que você gostaria de trabalhar"
         />
 
-        <span>De:</span>
-        <Select name="openTimeHour" onChange={handleChangeStartTimeHour}>
-          <option value="" selected hidden>
-            Horas
-          </option>
+        <SectionRow subTitle="De: ">
+          <Select name="openTimeHour" onChange={handleChangeStartTimeHour}>
+            <option value="" selected hidden>
+              Horas
+            </option>
 
-          {startHoursStart.map(hour => {
-            return (
-              <option value={hour}>{String(hour).padStart(2, '0')}</option>
-            );
-          })}
-        </Select>
+            {startHoursArray.map(hour => {
+              return (
+                <option value={hour}>{String(hour).padStart(2, '0')}</option>
+              );
+            })}
+          </Select>
 
-        <Select name="openTimeMin" disabled>
-          <option value={formatedOpenMinute} selected hidden>
-            {String(formatedOpenMinute).padStart(2, '0')}
-          </option>
-        </Select>
+          <Select name="openTimeMin" disabled>
+            <option value={formatedOpenMinute} selected hidden>
+              {String(formatedOpenMinute).padStart(2, '0')}
+            </option>
+          </Select>
+        </SectionRow>
 
         {endHoursArray.length ? (
           <>
-            <span>Até:</span>
-            <Select name="closeTimeHour" onChange={handleChangeEndTimeHour}>
-              <option value="" selected hidden>
-                Horas
-              </option>
-              {endHoursArray.map(hour => {
-                return (
-                  <option value={hour}>{String(hour).padStart(2, '0')}</option>
-                );
-              })}
-            </Select>
-            <Select name="closeTimeMinute" disabled>
-              <option value={formatedOpenMinute} selected hidden>
-                {String(formatedOpenMinute).padStart(2, '0')}
-              </option>
-            </Select>
-            <Button type="submit">Salvar</Button>{' '}
+            <SectionRow subTitle="Até:">
+              <Select name="closeTimeHour" onChange={handleChangeEndTimeHour}>
+                <option value="" selected hidden>
+                  Horas
+                </option>
+                {endHoursArray.map(hour => {
+                  return (
+                    <option value={hour}>
+                      {String(hour).padStart(2, '0')}
+                    </option>
+                  );
+                })}
+              </Select>
+              <Select name="closeTimeMinute" disabled>
+                <option value={formatedOpenMinute} selected hidden>
+                  {String(formatedOpenMinute).padStart(2, '0')}
+                </option>
+              </Select>
+            </SectionRow>
+            <Button type="submit">Salvar</Button>
           </>
         ) : (
-          <>
-            {' '}
-            <strong> Não da</strong> <span>Teste</span>{' '}
-          </>
+          <span id="spanNotification">
+            Caso queira marcar um intervalo, por favor selecione um horario
+            inicial
+          </span>
         )}
       </Form>
     </Container>
