@@ -77,12 +77,10 @@ const Menu: React.FC = () => {
     if (userData.role === 'supervisor') {
       api.get(`/profiles/supervisor/${userData?.id}`).then(response => {
         setCurrentUserProfile(response.data);
-        console.log(response.data);
       });
     } else {
       api.get(`/profiles/specialist/${userData?.id}`).then(response => {
         setCurrentUserProfile(response.data);
-        console.log(response.data);
       });
     }
   }, [userData]);
