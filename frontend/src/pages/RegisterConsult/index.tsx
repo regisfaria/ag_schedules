@@ -21,6 +21,7 @@ import PageHeader from '../../components/PageHeader';
 import Section from '../../components/Section';
 import Main from '../../components/Main';
 import ConsultEnrolment from '../../components/ConsultEnrolment';
+import SuccessModal from '../../components/SuccessModal';
 
 import { Container, AnimatedContent } from './styles';
 
@@ -45,6 +46,7 @@ const RegisterConsult: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
   const [pacients, setPacients] = useState<PacientResponse[]>([]);
+  const [modalStatus, setModalStatus] = useState(false);
 
   const { addToast } = useToast();
   const history = useHistory();
@@ -98,6 +100,10 @@ const RegisterConsult: React.FC = () => {
     [addToast, history],
   );
 
+  const testModal = useCallback(() => {
+    setModalStatus(true);
+  }, []);
+
   useEffect(() => {
     api.get('/pacients/supervisor').then(response => {
       setPacients(response.data);
@@ -110,6 +116,14 @@ const RegisterConsult: React.FC = () => {
 
       <Container>
         <AnimatedContent>
+          <SuccessModal
+            modalStatus={modalStatus}
+            title="Consulta criada com sucesso"
+            subTitle="Deseja criar outra consulta?"
+            currentPageRedirectLabel="Sim"
+            secondLink="/dashboard"
+            secondLinkLabel="Nao"
+          />
           <PageHeader title="Criar uma Consulta" />
 
           <Form ref={formRef} onSubmit={handleSubmit}>
@@ -147,6 +161,9 @@ const RegisterConsult: React.FC = () => {
                 />
 
                 <Button type="submit">Criar</Button>
+                <Button type="button" color="yellow" onClick={testModal}>
+                  Modal
+                </Button>
               </Section>
             </Main>
           </Form>
