@@ -9,7 +9,7 @@ export const Container = styled.section`
 
   @media (min-width: 1024px) {
     strong {
-      font-size: 1.61rem;
+      font-size: 1.6rem;
     }
   }
 `;

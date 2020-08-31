@@ -1,6 +1,5 @@
 import React from 'react';
 import { Container } from './styles';
-import {FiActivity} 'react-icons/fi'
 
 interface SectionProps {
   title?: string;
