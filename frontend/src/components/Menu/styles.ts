@@ -78,13 +78,13 @@ export const SideMenuBox = styled.div<MenuProps>`
   background-color: var(--white);
   height: 100vh;
   box-shadow: 1px 0 10px 0 var(--black);
+  overflow: auto;
 
   ${props =>
     props.menuState
       ? css`
           max-width: 30rem;
           transition: max-width 0.5s ease-in-out;
-          overflow: hidden;
 
           button {
             opacity: 1;
