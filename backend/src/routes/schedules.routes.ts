@@ -14,6 +14,8 @@ import ListSchedulesAvailableForRest from '../services/RestTimes/ListSchedulesAv
 
 import CreateRestTimeService from '../services/RestTimes/CreateRestTimeService';
 import FormatRestTimes from '../services/RestTimes/FormatRestTimesService';
+import UpdateRestTime from '../services/RestTimes/UpdateRestTimeService';
+import DeleteRestTime from '../services/RestTimes/DeleteRestTimeService';
 
 import CreateHolidayService from '../services/Holidays/CreateHolidayService';
 import ListValidHolidays from '../services/Holidays/ListValidHolidays';
@@ -139,6 +141,30 @@ schedulesRouter.get(
     return response.json(restTimes);
   },
 );
+
+schedulesRouter.put('/rest/updateRestTime', async (request, response) => {
+  const { restTimeId, openTime, closeTime } = request.body;
+
+  const updateRestTime = new UpdateRestTime();
+
+  const scheduleAvailability = await updateRestTime.execute({
+    restTimeId,
+    openTime,
+    closeTime,
+  });
+
+  return response.json(scheduleAvailability);
+});
+
+schedulesRouter.delete('/rest/delete/:id', async (request, response) => {
+  const { id } = request.params;
+
+  const deleteRestTime = new DeleteRestTime();
+
+  await deleteRestTime.execute(id);
+
+  return response.json(204).send;
+});
 
 schedulesRouter.get('/availableDays/:id', async (request, response) => {
   const { id } = request.params;
