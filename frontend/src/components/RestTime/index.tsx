@@ -9,7 +9,7 @@ import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
 
 import { FiEdit3, FiTrash2, FiXCircle, FiCheck } from 'react-icons/fi';
-import { number } from 'yup';
+
 import {
   Container,
   ListRestDay,
@@ -26,7 +26,6 @@ import SectionRow from '../SectionRow';
 
 interface Day {
   id: string;
-  formatedOpenHour: number;
   formatedOpenMinute: number;
   formatedCloseHour: number;
   formatedCloseMinute: number;
@@ -48,7 +47,6 @@ interface EditRestTime {
 
 const SelectHours: React.FC<Day> = ({
   id,
-  formatedOpenHour,
   formatedOpenMinute,
   formatedCloseHour,
   formatedCloseMinute,
@@ -56,21 +54,41 @@ const SelectHours: React.FC<Day> = ({
   const formRef = useRef<FormHandles>(null);
   const formRefEditOrDeleteRestTimes = useRef<FormHandles>(null);
 
-  const [inicialStartHour, setInicialStartHour] = useState<number>(-1);
-  const [finishEndHour, setFinishEndHour] = useState<number>(-1);
+  const [startHourForANewRestTime, setStartHourForANewRestTime] = useState<
+    number
+  >(-1);
 
-  const [infoRestDay, setInfoRestDay] = useState<IRestDay[]>([]);
+  const [endHourForANewRestTime, setEndHourForANewRestTime] = useState<number>(
+    -1,
+  );
 
-  const [startHoursArray, setStartHoursArray] = useState<number[]>([]);
-  const [endHoursArray, setEndHoursArray] = useState<number[]>([]);
+  const [listRestTimesForADay, setListRestTimesForADay] = useState<IRestDay[]>(
+    [],
+  );
+
+  const [
+    arrayWithPossibleStartHourToRest,
+    setArrayWithPossibleStartHourToRest,
+  ] = useState<number[]>([]);
+
+  const [
+    arrayWithPossiblesEndHoursToRest,
+    setArrayWithPossiblesEndHourToRest,
+  ] = useState<number[]>([]);
 
   // Editar Ou deletar um horario existente
 
-  const [editInicialStartHour, setEditInicialStartHour] = useState<number>(-1);
-  const [editEndtHour, setEditEndtHour] = useState<number>(-1);
+  const [editStartHourForRestTime, setEditStartHourForRestTime] = useState<
+    number
+  >(-1);
 
-  const [auxEndRestTime, setAuxEndRestTime] = useState<number>(-1);
+  const [editEndHourForRestTime, setEditEndHourForRestTime] = useState<number>(
+    -1,
+  );
 
+  const [auxEndRestTime, setAuxEndRestTime] = useState<number>(-1); // Melhorar isso
+
+  // verifica se um dia esta sendo editado ou não (Melhor Jeito de Fazer isso?)
   const [selectEditRestTime, setSelectEditRestTime] = useState<EditRestTime[]>(
     [],
   );
@@ -85,11 +103,11 @@ const SelectHours: React.FC<Day> = ({
   const [reloadApi, setReloadApi] = useState(false);
 
   useEffect(() => {
-    setInicialStartHour(-1);
-    setFinishEndHour(-1);
-    setEndHoursArray([]);
+    setStartHourForANewRestTime(-1);
+    setEndHourForANewRestTime(-1);
+    setArrayWithPossiblesEndHourToRest([]);
 
-    setEditInicialStartHour(-1);
+    setEditStartHourForRestTime(-1);
     setEditingOrRemoveRestTime(false);
     setEditScheduleEndArray([]);
 
@@ -100,7 +118,7 @@ const SelectHours: React.FC<Day> = ({
     formRef.current?.setFieldValue('closeTimeMinute', formatedOpenMinute);
 
     api.get<IRestDay[]>(`/schedules/rest/${id}`).then(response => {
-      setInfoRestDay(
+      setListRestTimesForADay(
         response.data.sort(function (a, b) {
           return a.formatedStartHour - b.formatedStartHour;
         }),
@@ -110,14 +128,14 @@ const SelectHours: React.FC<Day> = ({
     api
       .get<number[]>(`/schedules/availableSchedulesForRest/${id}`)
       .then(response => {
-        setStartHoursArray(response.data);
+        setArrayWithPossibleStartHourToRest(response.data);
       });
   }, [id, reloadApi]);
 
   useEffect(() => {
     const auxArrayForGetSchedulesRestTime: EditRestTime[] = [];
 
-    infoRestDay.map(day => {
+    listRestTimesForADay.map(day => {
       return auxArrayForGetSchedulesRestTime.push({
         id: day.id,
         edit: false,
@@ -126,23 +144,23 @@ const SelectHours: React.FC<Day> = ({
     });
 
     setSelectEditRestTime(auxArrayForGetSchedulesRestTime);
-  }, [infoRestDay]);
+  }, [listRestTimesForADay]);
 
   // Array para o horario de saida
   useEffect(() => {
-    if (inicialStartHour === -1) {
+    if (startHourForANewRestTime === -1) {
       return;
     }
 
-    const tmpStartHourArray = startHoursArray.slice(0);
+    const tmpStartHourArray = arrayWithPossibleStartHourToRest.slice(0);
 
     const valueForRemove = tmpStartHourArray.findIndex(
-      number => number === inicialStartHour,
+      remove => remove === startHourForANewRestTime,
     );
 
     tmpStartHourArray.splice(0, valueForRemove + 1);
 
-    const verifyIfIsTheLastHour = infoRestDay.map(endHour => {
+    const verifyIfIsTheLastHour = listRestTimesForADay.map(endHour => {
       return endHour.formatedEndHour === formatedCloseHour - 1;
     });
 
@@ -152,12 +170,12 @@ const SelectHours: React.FC<Day> = ({
         : tmpStartHourArray.push(formatedCloseHour - 1);
     }
 
-    setEndHoursArray(tmpStartHourArray);
-  }, [inicialStartHour]);
+    setArrayWithPossiblesEndHourToRest(tmpStartHourArray);
+  }, [startHourForANewRestTime]);
 
   const handleChangeEditStartTimeHour = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      setEditInicialStartHour(Number(event.target.value));
+      setEditStartHourForRestTime(Number(event.target.value));
     },
     [],
   );
@@ -170,7 +188,7 @@ const SelectHours: React.FC<Day> = ({
         );
       });
 
-      const auxEditStartHourArray = startHoursArray.slice(0);
+      const auxEditStartHourArray = arrayWithPossibleStartHourToRest.slice(0);
       auxEditStartHourArray.push(startRestTime);
       auxEditStartHourArray.sort(function (a, b) {
         return a - b;
@@ -181,12 +199,12 @@ const SelectHours: React.FC<Day> = ({
 
       setEditingOrRemoveRestTime(true);
     },
-    [startHoursArray],
+    [arrayWithPossibleStartHourToRest],
   );
 
   // Array para o horario de saida referente a editar
   useEffect(() => {
-    if (editInicialStartHour === -1) {
+    if (editStartHourForRestTime === -1) {
       return;
     }
 
@@ -202,12 +220,12 @@ const SelectHours: React.FC<Day> = ({
     }
 
     const valueForRemove = auxEditStartHourArray.findIndex(
-      number => number === editInicialStartHour,
+      number => number === editStartHourForRestTime,
     );
 
     auxEditStartHourArray.splice(0, valueForRemove + 1);
 
-    const verifyIfIsTheLastHour = infoRestDay.map(endHour => {
+    const verifyIfIsTheLastHour = listRestTimesForADay.map(endHour => {
       return endHour.formatedEndHour === formatedCloseHour - 1;
     });
 
@@ -218,13 +236,11 @@ const SelectHours: React.FC<Day> = ({
     }
 
     setEditScheduleEndArray(auxEditStartHourArray);
-
-    console.log(editInicialStartHour);
-  }, [editInicialStartHour]);
+  }, [editStartHourForRestTime]);
 
   const handleChangeStartTimeHour = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      setInicialStartHour(Number(event.target.value));
+      setStartHourForANewRestTime(Number(event.target.value));
       formRef.current?.setFieldValue('closeTimeHour', '');
     },
     [],
@@ -232,14 +248,14 @@ const SelectHours: React.FC<Day> = ({
 
   const handleChangeEndTimeHour = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      setFinishEndHour(Number(event.target.value));
+      setEndHourForANewRestTime(Number(event.target.value));
     },
     [],
   );
 
   const handleChangeEditEndTimeHour = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      setEditEndtHour(Number(event.target.value));
+      setEditEndHourForRestTime(Number(event.target.value));
     },
     [],
   );
@@ -270,8 +286,8 @@ const SelectHours: React.FC<Day> = ({
 
     api.post(`/schedules/rest`, {
       scheduleAvailabilityId: id,
-      startTime: `${inicialStartHour}:${formatedOpenMinute}`,
-      endTime: `${finishEndHour}:${formatedOpenMinute}`,
+      startTime: `${startHourForANewRestTime}:${formatedOpenMinute}`,
+      endTime: `${endHourForANewRestTime}:${formatedOpenMinute}`,
     });
 
     setReloadApi(!reloadApi);
@@ -294,8 +310,8 @@ const SelectHours: React.FC<Day> = ({
     if (restTime.edit) {
       api.put(`/schedules/rest/updateRestTime`, {
         restTimeId: restId,
-        openTime: `${editInicialStartHour}:${formatedOpenMinute}`,
-        closeTime: `${editEndtHour}:${formatedOpenMinute}`,
+        openTime: `${editStartHourForRestTime}:${formatedOpenMinute}`,
+        closeTime: `${editEndHourForRestTime}:${formatedOpenMinute}`,
       });
     }
 
@@ -311,9 +327,9 @@ const SelectHours: React.FC<Day> = ({
   return (
     <Container>
       <ListRestDay>
-        {infoRestDay.length ? (
+        {listRestTimesForADay.length ? (
           <>
-            {infoRestDay.map(day => {
+            {listRestTimesForADay.map(day => {
               return (
                 <>
                   <Form
@@ -379,7 +395,7 @@ const SelectHours: React.FC<Day> = ({
                           {String(day.formatedEndHour).padStart(2, '0')}
                         </option>
 
-                        {editInicialStartHour === -1
+                        {editStartHourForRestTime === -1
                           ? []
                           : editScheduleEndArray.map(hour => {
                               return (
@@ -438,6 +454,10 @@ const SelectHours: React.FC<Day> = ({
                         </ButtonToEditOrRemove>
                       ) : (
                         <ButtonToCancelOrAccept>
+                          <button type="submit">
+                            <FiCheck size={25} color="008000" />
+                          </button>
+
                           <button
                             type="button"
                             onClick={() => {
@@ -445,10 +465,6 @@ const SelectHours: React.FC<Day> = ({
                             }}
                           >
                             <FiXCircle size={23} color="f8403a" />
-                          </button>
-
-                          <button type="submit">
-                            <FiCheck size={25} color="008000" />
                           </button>
                         </ButtonToCancelOrAccept>
                       )}
@@ -475,7 +491,7 @@ const SelectHours: React.FC<Day> = ({
               Horas
             </option>
 
-            {startHoursArray.map(hour => {
+            {arrayWithPossibleStartHourToRest.map(hour => {
               return (
                 <option value={hour}>{String(hour).padStart(2, '0')}</option>
               );
@@ -489,14 +505,14 @@ const SelectHours: React.FC<Day> = ({
           </Select>
         </SectionRow>
 
-        {endHoursArray.length ? (
+        {arrayWithPossiblesEndHoursToRest.length ? (
           <>
             <SectionRow subTitle="Até:">
               <Select name="closeTimeHour" onChange={handleChangeEndTimeHour}>
                 <option value="" selected hidden>
                   Horas
                 </option>
-                {endHoursArray.map(hour => {
+                {arrayWithPossiblesEndHoursToRest.map(hour => {
                   return (
                     <option value={hour}>
                       {String(hour).padStart(2, '0')}
