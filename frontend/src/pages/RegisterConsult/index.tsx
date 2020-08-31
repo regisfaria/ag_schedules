@@ -6,7 +6,7 @@ import { FaUser } from 'react-icons/fa';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import api from '../../services/api';
 
@@ -49,7 +49,6 @@ const RegisterConsult: React.FC = () => {
   const [modalStatus, setModalStatus] = useState(false);
 
   const { addToast } = useToast();
-  const history = useHistory();
 
   const handleSubmit = useCallback(
     async (data: ConsultFormData) => {
@@ -71,13 +70,7 @@ const RegisterConsult: React.FC = () => {
 
         await api.post('/consults', data);
 
-        history.push('/dashboard');
-
-        addToast({
-          type: 'success',
-          title: 'Consulta cadastrada!',
-          description: 'A consulta ja esta disponivel para o especialista!',
-        });
+        setModalStatus(true);
       } catch (error) {
         if (error instanceof Yup.ValidationError) {
           const errors = getValidationErrors(error);
@@ -97,12 +90,8 @@ const RegisterConsult: React.FC = () => {
         });
       }
     },
-    [addToast, history],
+    [addToast, setModalStatus],
   );
-
-  const testModal = useCallback(() => {
-    setModalStatus(true);
-  }, []);
 
   useEffect(() => {
     api.get('/pacients/supervisor').then(response => {
@@ -161,9 +150,6 @@ const RegisterConsult: React.FC = () => {
                 />
 
                 <Button type="submit">Criar</Button>
-                <Button type="button" color="yellow" onClick={testModal}>
-                  Modal
-                </Button>
               </Section>
             </Main>
           </Form>
