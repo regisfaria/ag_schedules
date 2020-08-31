@@ -81,3 +81,11 @@ export const ListRestDay = styled.div`
     }
   }
 `;
+
+export const ButtonToEditOrRemove = styled.div`
+  display: flex;
+`;
+
+export const ButtonToCancelOrAccept = styled.div`
+  display: flex;
+`;

@@ -10,16 +10,19 @@ import { FormHandles } from '@unform/core';
 
 import { FiEdit3, FiTrash2, FiXCircle, FiCheck } from 'react-icons/fi';
 import { number } from 'yup';
-import { Container, ListRestDay } from './styles';
+import {
+  Container,
+  ListRestDay,
+  ButtonToEditOrRemove,
+  ButtonToCancelOrAccept,
+} from './styles';
 
 import api from '../../services/api';
 
-import Input from '../Input';
 import Select from '../Select';
 import Button from '../Button';
 import PageHeader from '../PageHeader';
 import SectionRow from '../SectionRow';
-import Section from '../Section';
 
 interface Day {
   id: string;
@@ -64,6 +67,7 @@ const SelectHours: React.FC<Day> = ({
   // Editar Ou deletar um horario existente
 
   const [editInicialStartHour, setEditInicialStartHour] = useState<number>(-1);
+  const [editEndtHour, setEditEndtHour] = useState<number>(-1);
 
   const [auxEndRestTime, setAuxEndRestTime] = useState<number>(-1);
 
@@ -78,12 +82,16 @@ const SelectHours: React.FC<Day> = ({
     [],
   );
 
-  const [selectDeleteRestTime, setSelectDeleteRestTime] = useState(false);
+  const [reloadApi, setReloadApi] = useState(false);
 
   useEffect(() => {
     setInicialStartHour(-1);
     setFinishEndHour(-1);
+    setEndHoursArray([]);
+
+    setEditInicialStartHour(-1);
     setEditingOrRemoveRestTime(false);
+    setEditScheduleEndArray([]);
 
     formRef.current?.setFieldValue('openTimeHour', '');
     formRef.current?.setFieldValue('openTimeMin', formatedOpenMinute);
@@ -104,7 +112,7 @@ const SelectHours: React.FC<Day> = ({
       .then(response => {
         setStartHoursArray(response.data);
       });
-  }, [id]);
+  }, [id, reloadApi]);
 
   useEffect(() => {
     const auxArrayForGetSchedulesRestTime: EditRestTime[] = [];
@@ -150,8 +158,6 @@ const SelectHours: React.FC<Day> = ({
   const handleChangeEditStartTimeHour = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       setEditInicialStartHour(Number(event.target.value));
-      console.log('mudou');
-      formRefEditOrDeleteRestTimes.current?.setFieldValue('EndHour', '');
     },
     [],
   );
@@ -231,6 +237,13 @@ const SelectHours: React.FC<Day> = ({
     [],
   );
 
+  const handleChangeEditEndTimeHour = useCallback(
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      setEditEndtHour(Number(event.target.value));
+    },
+    [],
+  );
+
   const buttonDeleteRestTime = useCallback((idByRest: string) => {
     setSelectEditRestTime(element => {
       return element.map(rest =>
@@ -254,12 +267,45 @@ const SelectHours: React.FC<Day> = ({
   function handleSubmit(data: FormData) {
     console.log(id);
     console.log(data);
+
+    api.post(`/schedules/rest`, {
+      scheduleAvailabilityId: id,
+      startTime: `${inicialStartHour}:${formatedOpenMinute}`,
+      endTime: `${finishEndHour}:${formatedOpenMinute}`,
+    });
+
+    setReloadApi(!reloadApi);
   }
 
-  function handleEditOrDeleteRestTime(data: object) {
+  function handleEditOrDeleteRestTime(restId: string) {
     console.log('editar');
-    console.log(id);
-    console.log(data);
+    console.log(restId);
+
+    const restTime = selectEditRestTime.find(
+      findRestById => findRestById.id === restId,
+    );
+
+    if (!restTime) {
+      buttonCancelEditOrRemoveRestTime(restId);
+      // chamar erro
+      return;
+    }
+
+    if (restTime.edit) {
+      api.put(`/schedules/rest/updateRestTime`, {
+        restTimeId: restId,
+        openTime: `${editInicialStartHour}:${formatedOpenMinute}`,
+        closeTime: `${editEndtHour}:${formatedOpenMinute}`,
+      });
+    }
+
+    if (restTime.delete) {
+      api.delete(`/schedules/rest/delete/${restId}`);
+    }
+
+    setReloadApi(!reloadApi);
+
+    buttonCancelEditOrRemoveRestTime(restId);
   }
 
   return (
@@ -272,7 +318,9 @@ const SelectHours: React.FC<Day> = ({
                 <>
                   <Form
                     ref={formRefEditOrDeleteRestTimes}
-                    onSubmit={handleEditOrDeleteRestTime}
+                    onSubmit={() => {
+                      handleEditOrDeleteRestTime(day.id);
+                    }}
                     key={day.id}
                   >
                     <SectionRow>
@@ -314,6 +362,7 @@ const SelectHours: React.FC<Day> = ({
                       <span>Ate:</span>
                       <Select
                         name="EndHour"
+                        onChange={handleChangeEditEndTimeHour}
                         disabled={
                           !!selectEditRestTime.find(schedule => {
                             return (
@@ -330,13 +379,15 @@ const SelectHours: React.FC<Day> = ({
                           {String(day.formatedEndHour).padStart(2, '0')}
                         </option>
 
-                        {editScheduleEndArray.map(hour => {
-                          return (
-                            <option value={hour}>
-                              {String(hour).padStart(2, '0')}
-                            </option>
-                          );
-                        })}
+                        {editInicialStartHour === -1
+                          ? []
+                          : editScheduleEndArray.map(hour => {
+                              return (
+                                <option value={hour}>
+                                  {String(hour).padStart(2, '0')}
+                                </option>
+                              );
+                            })}
                       </Select>
 
                       <Select name="EndMinute" disabled>
@@ -352,7 +403,7 @@ const SelectHours: React.FC<Day> = ({
                           schedule.delete === false
                         );
                       }) ? (
-                        <>
+                        <ButtonToEditOrRemove>
                           <button
                             type="button"
                             onClick={() => {
@@ -384,9 +435,9 @@ const SelectHours: React.FC<Day> = ({
                               }
                             />
                           </button>
-                        </>
+                        </ButtonToEditOrRemove>
                       ) : (
-                        <>
+                        <ButtonToCancelOrAccept>
                           <button
                             type="button"
                             onClick={() => {
@@ -395,10 +446,11 @@ const SelectHours: React.FC<Day> = ({
                           >
                             <FiXCircle size={23} color="f8403a" />
                           </button>
-                          <button type="button">
+
+                          <button type="submit">
                             <FiCheck size={25} color="008000" />
                           </button>
-                        </>
+                        </ButtonToCancelOrAccept>
                       )}
                     </SectionRow>
                   </Form>
