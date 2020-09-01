@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
+import * as Yup from 'yup';
 
 import { FiTrash2, FiXCircle, FiCheck } from 'react-icons/fi';
 
@@ -18,6 +19,8 @@ import {
 } from './styles';
 
 import api from '../../services/api';
+
+import { useToast } from '../../hooks/toast';
 
 import Select from '../Select';
 import SectionRow from '../SectionRow';
@@ -46,6 +49,9 @@ const ListRestTime: React.FC<Day> = ({
   formatedCloseMinute,
 }) => {
   const formRef = useRef<FormHandles>(null);
+  const formRefEditOrDeleteRestTimes = useRef<FormHandles>(null);
+
+  const { addToast } = useToast();
 
   const [startHourForANewRestTime, setStartHourForANewRestTime] = useState<
     number
@@ -54,8 +60,6 @@ const ListRestTime: React.FC<Day> = ({
   const [endHourForANewRestTime, setEndHourForANewRestTime] = useState<number>(
     -1,
   );
-
-  const formRefEditOrDeleteRestTimes = useRef<FormHandles>(null);
 
   const [listRestTimesForADay, setListRestTimesForADay] = useState<IRestDay[]>(
     [],
@@ -84,11 +88,11 @@ const ListRestTime: React.FC<Day> = ({
 
     setEditingOrRemoveRestTime(false);
 
-    formRef.current?.setFieldValue('openTimeHour', '');
-    formRef.current?.setFieldValue('openTimeMin', formatedOpenMinute);
+    formRef.current?.setFieldValue('formatedStartHour', '');
+    formRef.current?.setFieldValue('formatedStartMinute', formatedOpenMinute);
 
-    formRef.current?.setFieldValue('closeTimeHour', '');
-    formRef.current?.setFieldValue('closeTimeMinute', formatedOpenMinute);
+    formRef.current?.setFieldValue('formatedEndHour', '');
+    formRef.current?.setFieldValue('formatedEndMinute', formatedOpenMinute);
 
     api.get<IRestDay[]>(`/schedules/rest/${id}`).then(response => {
       setListRestTimesForADay(
@@ -119,15 +123,9 @@ const ListRestTime: React.FC<Day> = ({
 
     tmpStartHourArray.splice(0, valueForRemove + 1);
 
-    const verifyIfIsTheLastHour = listRestTimesForADay.map(endHour => {
-      return endHour.formatedEndHour === formatedCloseHour - 1;
-    });
-
-    if (!verifyIfIsTheLastHour[0]) {
-      formatedCloseHour === 23 && formatedCloseMinute === 59
-        ? tmpStartHourArray.push(formatedCloseHour)
-        : tmpStartHourArray.push(formatedCloseHour - 1);
-    }
+    formatedCloseHour === 23 && formatedCloseMinute === 59
+      ? tmpStartHourArray.push(formatedCloseHour)
+      : tmpStartHourArray.push(formatedCloseHour - 1);
 
     setArrayWithPossiblesEndHourToRest(tmpStartHourArray);
   }, [startHourForANewRestTime]);
@@ -135,7 +133,7 @@ const ListRestTime: React.FC<Day> = ({
   const handleChangeStartTimeHour = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       setStartHourForANewRestTime(Number(event.target.value));
-      formRef.current?.setFieldValue('closeTimeHour', '');
+      formRef.current?.setFieldValue('formatedEndHour', '');
     },
     [],
   );
@@ -160,9 +158,6 @@ const ListRestTime: React.FC<Day> = ({
   }, []);
 
   function handleEditOrDeleteRestTime(restId: string) {
-    console.log('editar');
-    console.log(restId);
-
     if (idByDeleteARestTime === '') {
       buttonCancelEditOrRemoveRestTime();
       // chamar erro
@@ -178,18 +173,66 @@ const ListRestTime: React.FC<Day> = ({
     buttonCancelEditOrRemoveRestTime();
   }
 
-  function handleSubmit(data: FormData) {
-    console.log(id);
-    console.log(data);
+  const handleSubmit = useCallback(
+    async (data: IRestDay) => {
+      try {
+        const schema = Yup.object().shape({
+          formatedStartHour: Yup.number().required(
+            'Hora de Inicial do Descanso é Obrigatorio',
+          ),
+          formatedStartMinute: Yup.number().required(
+            'Minuto Inicial do Descanso é Obrigatorio',
+          ),
+          formatedEndHour: Yup.number().required(
+            'Hora Final do Descanso é Obrigatorio',
+          ),
+          formatedEndMinute: Yup.number().required(
+            'Minuto Final do Descanso é Obrigatorio',
+          ),
+        });
 
-    api.post(`/schedules/rest`, {
-      scheduleAvailabilityId: id,
-      startTime: `${startHourForANewRestTime}:${formatedOpenMinute}`,
-      endTime: `${endHourForANewRestTime}:${formatedOpenMinute}`,
-    });
+        await schema.validate(data, {
+          abortEarly: false,
+        });
 
-    setReloadApi(!reloadApi);
-  }
+        // Comparação
+
+        await listRestTimesForADay.forEach(anotherRest => {
+          console.log(anotherRest.formatedStartHour);
+          if (anotherRest.formatedStartHour >= data.formatedStartHour) {
+            throw new Error();
+          }
+
+          if (anotherRest.formatedEndHour <= data.formatedEndHour) {
+            console.log('erro');
+          }
+        });
+
+        /// //////////
+
+        api.post(`/schedules/rest`, {
+          scheduleAvailabilityId: id,
+          startTime: `${data.formatedStartHour}:${data.formatedStartMinute}`,
+          endTime: `${data.formatedEndHour}:${data.formatedStartMinute}`,
+        });
+
+        addToast({
+          type: 'success',
+          title: 'Horário de Intervalo Criado Com Sucesso!',
+        });
+
+        setReloadApi(!reloadApi);
+      } catch (err) {
+        addToast({
+          type: 'error',
+          title: 'Erro no cadastro de Intervalo',
+          description:
+            'Ocorreu um erro durante o cadastro, verifique os dados e tente novamente.',
+        });
+      }
+    },
+    [addToast, reloadApi, listRestTimesForADay],
+  );
 
   return (
     <Container>
@@ -290,7 +333,7 @@ const ListRestTime: React.FC<Day> = ({
         />
 
         <SectionRow subTitle="De: ">
-          <Select name="openTimeHour" onChange={handleChangeStartTimeHour}>
+          <Select name="formatedStartHour" onChange={handleChangeStartTimeHour}>
             <option value="" selected hidden>
               Horas
             </option>
@@ -302,7 +345,7 @@ const ListRestTime: React.FC<Day> = ({
             })}
           </Select>
 
-          <Select name="openTimeMin" disabled>
+          <Select name="formatedStartMinute" disabled>
             <option value={formatedOpenMinute} selected hidden>
               {String(formatedOpenMinute).padStart(2, '0')}
             </option>
@@ -312,10 +355,11 @@ const ListRestTime: React.FC<Day> = ({
         {arrayWithPossiblesEndHoursToRest.length ? (
           <>
             <SectionRow subTitle="Até:">
-              <Select name="closeTimeHour" onChange={handleChangeEndTimeHour}>
+              <Select name="formatedEndHour" onChange={handleChangeEndTimeHour}>
                 <option value="" selected hidden>
                   Horas
                 </option>
+
                 {arrayWithPossiblesEndHoursToRest.map(hour => {
                   return (
                     <option value={hour}>
@@ -324,7 +368,8 @@ const ListRestTime: React.FC<Day> = ({
                   );
                 })}
               </Select>
-              <Select name="closeTimeMinute" disabled>
+
+              <Select name="formatedEndMinute" disabled>
                 <option value={formatedOpenMinute} selected hidden>
                   {String(formatedOpenMinute).padStart(2, '0')}
                 </option>
