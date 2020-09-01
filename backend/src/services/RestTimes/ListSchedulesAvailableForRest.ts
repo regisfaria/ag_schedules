@@ -1,8 +1,3 @@
-import { getRepository } from 'typeorm';
-
-import RestTime from '../../models/RestTime';
-import FormatRestTimes from './FormatRestTimesService';
-
 interface Request {
   id: string;
   openTime: number;
@@ -10,23 +5,10 @@ interface Request {
 }
 
 class ListSchedulesAvailableForRest {
-  public async execute({
-    id,
-    openTime,
-    closeTime,
-  }: Request): Promise<number[]> {
+  public async execute({ openTime, closeTime }: Request): Promise<number[]> {
     let formatedOpenHour = 0;
     let formatedCloseHour = 0;
     let formatedCloseMinute = 0;
-    const restTimesRepository = getRepository(RestTime);
-
-    const unparsedRestTimes = await restTimesRepository.find({
-      where: { scheduleAvailabilityId: id },
-    });
-
-    const formatRestTimes = new FormatRestTimes();
-
-    const restTimes = formatRestTimes.execute(unparsedRestTimes);
 
     const startTimeMod = openTime % 60;
 
@@ -49,21 +31,6 @@ class ListSchedulesAvailableForRest {
       { length: formatedCloseHour - formatedOpenHour - 1 },
       (_, index) => index + formatedOpenHour + 1,
     );
-
-    restTimes.forEach(element => {
-      const inicialValueRest = createArrayForStartHours.findIndex(
-        number => number === element.formatedStartHour,
-      );
-
-      const endValueRest = createArrayForStartHours.findIndex(
-        number => number === element.formatedEndHour,
-      );
-
-      createArrayForStartHours.splice(
-        inicialValueRest,
-        endValueRest - inicialValueRest,
-      );
-    });
 
     if (formatedCloseMinute !== 59) {
       createArrayForStartHours.pop();
