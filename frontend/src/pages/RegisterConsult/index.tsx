@@ -6,11 +6,12 @@ import { FaUser } from 'react-icons/fa';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
 import api from '../../services/api';
 
 import { useToast } from '../../hooks/toast';
+import { useAuth } from '../../hooks/auth';
 
 import getValidationErrors from '../../utils/getValidationErrors';
 
@@ -49,6 +50,7 @@ const RegisterConsult: React.FC = () => {
   const [modalStatus, setModalStatus] = useState(false);
 
   const { addToast } = useToast();
+  const { getUserType } = useAuth();
 
   const handleSubmit = useCallback(
     async (data: ConsultFormData) => {
@@ -101,6 +103,9 @@ const RegisterConsult: React.FC = () => {
 
   return (
     <>
+      {getUserType() !== 'supervisor' && (
+        <Redirect to={{ pathname: '/dashboard' }} />
+      )}
       <Menu />
 
       <Container>
