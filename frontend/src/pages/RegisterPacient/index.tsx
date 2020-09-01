@@ -8,7 +8,7 @@ import React, {
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, Redirect } from 'react-router-dom';
 import axios from 'axios';
 
 // Import Icons
@@ -19,6 +19,7 @@ import { AiOutlineFieldNumber } from 'react-icons/ai';
 import api from '../../services/api';
 
 import { useToast } from '../../hooks/toast';
+import { useAuth } from '../../hooks/auth';
 
 import getValidationErrors from '../../utils/getValidationErrors';
 
@@ -60,6 +61,7 @@ const RegisterPacient: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
   const { addToast } = useToast();
+  const { getUserType } = useAuth();
 
   const history = useHistory();
 
@@ -158,6 +160,9 @@ const RegisterPacient: React.FC = () => {
 
   return (
     <>
+      {getUserType() !== 'supervisor' && (
+        <Redirect to={{ pathname: '/dashboard' }} />
+      )}
       <Menu />
 
       <Container>
