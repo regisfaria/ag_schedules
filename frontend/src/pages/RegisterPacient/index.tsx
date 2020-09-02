@@ -61,7 +61,7 @@ const RegisterPacient: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
   const { addToast } = useToast();
-  const { getUserType } = useAuth();
+  const { user } = useAuth();
 
   const history = useHistory();
 
@@ -160,7 +160,7 @@ const RegisterPacient: React.FC = () => {
 
   return (
     <>
-      {getUserType() !== 'supervisor' && (
+      {user.type !== 'supervisor' && (
         <Redirect to={{ pathname: '/dashboard' }} />
       )}
       <Menu />

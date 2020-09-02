@@ -12,6 +12,7 @@ import api from '../../services/api';
 
 import { useToast } from '../../hooks/toast';
 import { useAuth } from '../../hooks/auth';
+import { useReset } from '../../hooks/reset';
 
 import getValidationErrors from '../../utils/getValidationErrors';
 
@@ -50,10 +51,11 @@ const RegisterConsult: React.FC = () => {
   const [modalStatus, setModalStatus] = useState(false);
 
   const { addToast } = useToast();
-  const { getUserType } = useAuth();
+  const { user } = useAuth();
+  const { resetCreateConsult, resetCreateConsultPage } = useReset();
 
   const handleSubmit = useCallback(
-    async (data: ConsultFormData) => {
+    async (data: ConsultFormData, { reset }) => {
       try {
         formRef.current?.setErrors({});
 
@@ -72,6 +74,7 @@ const RegisterConsult: React.FC = () => {
 
         await api.post('/consults', data);
 
+        reset();
         setModalStatus(true);
       } catch (error) {
         if (error instanceof Yup.ValidationError) {
@@ -101,9 +104,16 @@ const RegisterConsult: React.FC = () => {
     });
   }, []);
 
+  useEffect(() => {
+    if (resetCreateConsult === true) {
+      resetCreateConsultPage(false);
+      setModalStatus(false);
+    }
+  }, [resetCreateConsult]);
+
   return (
     <>
-      {getUserType() !== 'supervisor' && (
+      {user.type !== 'supervisor' && (
         <Redirect to={{ pathname: '/dashboard' }} />
       )}
       <Menu />
@@ -114,9 +124,10 @@ const RegisterConsult: React.FC = () => {
             modalStatus={modalStatus}
             title="Consulta criada com sucesso"
             subTitle="Deseja criar outra consulta?"
-            currentPageRedirectLabel="Sim"
-            secondLink="/dashboard"
-            secondLinkLabel="Nao"
+            btnFunction={resetCreateConsultPage}
+            currentPageBtnLabel="Sim"
+            redirectTo="/dashboard"
+            redirectLabel="Nao"
           />
           <PageHeader title="Criar uma Consulta" />
 

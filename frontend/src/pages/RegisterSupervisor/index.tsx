@@ -32,7 +32,7 @@ const RegisterSupervisor: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
   const { addToast } = useToast();
-  const { getUserType } = useAuth();
+  const { user } = useAuth();
 
   const history = useHistory();
 
@@ -60,8 +60,8 @@ const RegisterSupervisor: React.FC = () => {
           abortEarly: false,
         });
 
-        const user = await api.post('/users', data);
-        await api.post('/profiles/supervisor', { userId: user.data.id });
+        const newUser = await api.post('/users', data);
+        await api.post('/profiles/supervisor', { userId: newUser.data.id });
 
         history.push('/dashboard');
 
@@ -92,9 +92,7 @@ const RegisterSupervisor: React.FC = () => {
 
   return (
     <>
-      {getUserType() !== 'admin' && (
-        <Redirect to={{ pathname: '/dashboard' }} />
-      )}
+      {user.type !== 'admin' && <Redirect to={{ pathname: '/dashboard' }} />}
       <Menu />
 
       <Container>

@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
-import { FiCheckCircle, FiCheck } from 'react-icons/fi';
-import { Link, useHistory } from 'react-router-dom';
+import React from 'react';
+import { FiCheck } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 
 import { Modal, ButtonContainer } from './styles';
 
@@ -12,26 +12,21 @@ interface Props {
   modalStatus: boolean;
   title: string;
   subTitle?: string;
-  currentPageRedirectLabel: string;
-  secondLink: string;
-  secondLinkLabel: string;
+  btnFunction: Function;
+  currentPageBtnLabel: string;
+  redirectTo: string;
+  redirectLabel: string;
 }
 
 const SuccessModal: React.FC<Props> = ({
   modalStatus,
   title,
   subTitle = undefined,
-  currentPageRedirectLabel,
-  secondLink,
-  secondLinkLabel,
+  btnFunction,
+  currentPageBtnLabel,
+  redirectTo,
+  redirectLabel,
 }) => {
-  const history = useHistory();
-
-  const renderCurrentComponent = useCallback(() => {
-    history.push('/dashboard');
-    history.goBack();
-  }, [history]);
-
   return (
     <Modal isOpen={modalStatus}>
       <Section>
@@ -41,15 +36,15 @@ const SuccessModal: React.FC<Props> = ({
 
         <SectionRow>
           <ButtonContainer>
-            <Button type="button" onClick={renderCurrentComponent}>
-              {currentPageRedirectLabel}
+            <Button type="button" onClick={() => btnFunction(true)}>
+              {currentPageBtnLabel}
             </Button>
           </ButtonContainer>
 
-          <Link to={secondLink}>
+          <Link to={redirectTo}>
             <ButtonContainer>
               <Button type="button" color="yellow">
-                {secondLinkLabel}
+                {redirectLabel}
               </Button>
             </ButtonContainer>
           </Link>
