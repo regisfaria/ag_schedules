@@ -32,7 +32,7 @@ const RegisterSpecialist: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
   const { addToast } = useToast();
-  const { getUserType } = useAuth();
+  const { user } = useAuth();
 
   const history = useHistory();
 
@@ -60,9 +60,9 @@ const RegisterSpecialist: React.FC = () => {
           abortEarly: false,
         });
 
-        const user = await api.post('/users', data);
-        await api.post('/profiles/specialist', { userId: user.data.id });
-        await api.post('/schedules', { userId: user.data.id });
+        const newUser = await api.post('/users', data);
+        await api.post('/profiles/specialist', { userId: newUser.data.id });
+        await api.post('/schedules', { userId: newUser.data.id });
 
         history.push('/dashboard');
 
@@ -93,7 +93,7 @@ const RegisterSpecialist: React.FC = () => {
 
   return (
     <>
-      {getUserType() === 'specialist' && (
+      {user.type === 'specialist' && (
         <Redirect to={{ pathname: '/dashboard' }} />
       )}
       <Menu />

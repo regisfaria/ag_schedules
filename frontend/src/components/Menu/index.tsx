@@ -36,25 +36,18 @@ import {
   AdminLockedSection,
 } from './styles';
 
-interface userInfo {
-  role: string;
-  id: string;
-  name: string;
-}
-
 interface UserProfile {
   imageUrl: string;
 }
 
 const Menu: React.FC = () => {
   const [menuState, setMenuState] = useState(false);
-  const [userData, setUserData] = useState<userInfo | null>({} as userInfo);
   const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile>(
     {} as UserProfile,
   );
 
   const history = useHistory();
-  const { signOut, getUserInfo } = useAuth();
+  const { signOut, user } = useAuth();
 
   const handleMenuState = useCallback(() => {
     setMenuState(!menuState);
@@ -67,23 +60,19 @@ const Menu: React.FC = () => {
   }, [signOut, history]);
 
   useEffect(() => {
-    setUserData(getUserInfo());
-  }, [getUserInfo]);
-
-  useEffect(() => {
-    if (!userData?.id && userData?.role !== 'admin') {
+    if (!user.id && user.type !== 'admin') {
       return;
     }
-    if (userData.role === 'supervisor') {
-      api.get(`/profiles/supervisor/${userData?.id}`).then(response => {
+    if (user.type === 'supervisor') {
+      api.get(`/profiles/supervisor/${user.id}`).then(response => {
         setCurrentUserProfile(response.data);
       });
     } else {
-      api.get(`/profiles/specialist/${userData?.id}`).then(response => {
+      api.get(`/profiles/specialist/${user.id}`).then(response => {
         setCurrentUserProfile(response.data);
       });
     }
-  }, [userData]);
+  }, [user]);
 
   return (
     <>
@@ -110,10 +99,10 @@ const Menu: React.FC = () => {
           </SideMenuButtons>
 
           <MenuOption menuState={menuState}>
-            <ProfileLinkContainer role={userData?.role}>
+            <ProfileLinkContainer role={user.type}>
               <img src={currentUserProfile.imageUrl} alt="fotoPerfil" />
               <Link to="/profile">
-                <strong>{userData?.name}</strong>
+                <strong>{user.name}</strong>
                 <span>
                   Perfil&nbsp;
                   <FiEdit size={14} />
@@ -121,14 +110,14 @@ const Menu: React.FC = () => {
               </Link>
             </ProfileLinkContainer>
 
-            <AdminLockedOption role={userData?.role}>
+            <AdminLockedOption role={user.type}>
               <Link to="/dashboard">
                 <FiLayers size={16} />
                 <p>Dashboard</p>
               </Link>
             </AdminLockedOption>
 
-            <SpecialistOnlyOption role={userData?.role}>
+            <SpecialistOnlyOption role={user.type}>
               <Link to="/myagenda">
                 <FiWatch size={16} />
                 <p>Agenda</p>
@@ -142,13 +131,13 @@ const Menu: React.FC = () => {
               </Link>
             </OptionLinkContainer>
 
-            <SpecialistLockedSection role={userData?.role}>
+            <SpecialistLockedSection role={user.type}>
               <main>
                 <FaRegAddressCard size={16} />
                 <p>Pacientes</p>
               </main>
 
-              <SupervisorOnlyOption role={userData?.role}>
+              <SupervisorOnlyOption role={user.type}>
                 <Link to="/pacients/create">
                   <FiPlus size={16} />
                   <p>Criar</p>
@@ -163,13 +152,13 @@ const Menu: React.FC = () => {
               </OptionLinkContainer>
             </SpecialistLockedSection>
 
-            <AdminLockedSection role={userData?.role}>
+            <AdminLockedSection role={user.type}>
               <main>
                 <FiFileText size={16} />
                 <p>Consultas</p>
               </main>
 
-              <SupervisorOnlyOption role={userData?.role}>
+              <SupervisorOnlyOption role={user.type}>
                 <Link to="/consults/create">
                   <FiPlus size={16} />
                   <p>Criar</p>
@@ -184,7 +173,7 @@ const Menu: React.FC = () => {
               </OptionLinkContainer>
             </AdminLockedSection>
 
-            <SpecialistLockedSection role={userData?.role}>
+            <SpecialistLockedSection role={user.type}>
               <main>
                 <FaRegAddressCard size={16} />
                 <p>Cadastro</p>
@@ -197,7 +186,7 @@ const Menu: React.FC = () => {
                 </Link>
               </OptionLinkContainer>
 
-              <AdminOnlyOption role={userData?.role}>
+              <AdminOnlyOption role={user.type}>
                 <Link to="/register/supervisor">
                   <FaUserTie size={16} />
                   <p>Supervisor</p>

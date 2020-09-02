@@ -8,11 +8,11 @@ import Menu from '../../components/Menu';
 import { Container } from './styles';
 
 const Dashboard: React.FC = () => {
-  const { getUserType } = useAuth();
+  const { user } = useAuth();
 
   return (
     <>
-      {getUserType() === 'admin' && <Redirect to={{ pathname: '/history' }} />}
+      {user.type === 'admin' && <Redirect to={{ pathname: '/history' }} />}
 
       <Menu />
       <Container>

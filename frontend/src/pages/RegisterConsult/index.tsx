@@ -50,7 +50,7 @@ const RegisterConsult: React.FC = () => {
   const [modalStatus, setModalStatus] = useState(false);
 
   const { addToast } = useToast();
-  const { getUserType } = useAuth();
+  const { user } = useAuth();
 
   const handleSubmit = useCallback(
     async (data: ConsultFormData) => {
@@ -103,7 +103,7 @@ const RegisterConsult: React.FC = () => {
 
   return (
     <>
-      {getUserType() !== 'supervisor' && (
+      {user.type !== 'supervisor' && (
         <Redirect to={{ pathname: '/dashboard' }} />
       )}
       <Menu />

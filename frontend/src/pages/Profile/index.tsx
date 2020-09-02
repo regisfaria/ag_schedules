@@ -39,7 +39,7 @@ let controlEdit = true;
 
 const Profile: React.FC = () => {
   /* const { addToast } = useToast(); */
-  const { getUserType } = useAuth();
+  const { user } = useAuth();
   const [editProfile, setEditProfile] = useState(!controlEdit);
 
   const [states, setStates] = useState<StatesInfo[]>([{} as StatesInfo]);
@@ -98,9 +98,7 @@ const Profile: React.FC = () => {
 
   return (
     <>
-      {getUserType() === 'admin' && (
-        <Redirect to={{ pathname: '/dashboard' }} />
-      )}
+      {user.type === 'admin' && <Redirect to={{ pathname: '/dashboard' }} />}
 
       <Menu />
       <Container>
