@@ -171,6 +171,11 @@ const ListRestTime: React.FC<Day> = ({
     setReloadApi(!reloadApi);
 
     buttonCancelEditOrRemoveRestTime();
+
+    addToast({
+      type: 'success',
+      title: 'Horário de Intervalo Apagado Com Sucesso!',
+    });
   }
 
   const handleSubmit = useCallback(
@@ -198,13 +203,28 @@ const ListRestTime: React.FC<Day> = ({
         // Comparação
 
         await listRestTimesForADay.forEach(anotherRest => {
-          console.log(anotherRest.formatedStartHour);
-          if (anotherRest.formatedStartHour >= data.formatedStartHour) {
+          if (
+            (data.formatedStartHour >= anotherRest.formatedStartHour &&
+              data.formatedEndHour <= anotherRest.formatedEndHour) ||
+            (data.formatedStartHour <= anotherRest.formatedStartHour &&
+              data.formatedEndHour <= anotherRest.formatedEndHour) ||
+            (data.formatedStartHour >= anotherRest.formatedStartHour &&
+              data.formatedEndHour >= anotherRest.formatedEndHour)
+          ) {
             throw new Error();
           }
 
-          if (anotherRest.formatedEndHour <= data.formatedEndHour) {
-            console.log('erro');
+          if (
+            data.formatedStartHour < anotherRest.formatedStartHour &&
+            data.formatedEndHour > anotherRest.formatedEndHour
+          ) {
+            // Função que vai excluir o outro horario
+            api.delete(`/schedules/rest/delete/${anotherRest.id}`);
+            addToast({
+              type: 'info',
+              title: 'Lista de Horários, será atualizada!',
+              description: 'Este horário abrange outros horários ja setados!',
+            });
           }
         });
 
