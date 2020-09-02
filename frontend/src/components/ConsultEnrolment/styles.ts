@@ -6,7 +6,11 @@ interface DateContainerProps {
   isErrored: boolean;
 }
 
-export const SpecialistInfo = styled.div`
+interface SpecialistInfoProps {
+  profileExists: boolean;
+}
+
+export const SpecialistInfo = styled.div<SpecialistInfoProps>`
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
@@ -62,6 +66,12 @@ export const SpecialistInfo = styled.div`
       }
     }
   }
+
+  ${props =>
+    !props.profileExists &&
+    css`
+      display: none;
+    `}
 `;
 
 export const DateContainer = styled.div<DateContainerProps>`
@@ -199,4 +209,8 @@ export const Error = styled(Tooltip)`
       border-color: var(--error-red) transparent;
     }
   }
+`;
+
+export const Empty = styled.div`
+  display: none;
 `;
