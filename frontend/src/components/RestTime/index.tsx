@@ -9,13 +9,14 @@ import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
 
-import { FiTrash2, FiXCircle, FiCheck } from 'react-icons/fi';
+import { FiTrash2, FiXCircle, FiCheck, FiClock } from 'react-icons/fi';
 
 import {
   Container,
   ListRestDay,
   ButtonToEditOrRemove,
   ButtonToCancelOrAccept,
+  NewRestTime,
 } from './styles';
 
 import api from '../../services/api';
@@ -25,6 +26,7 @@ import { useToast } from '../../hooks/toast';
 import Select from '../Select';
 import SectionRow from '../SectionRow';
 import Button from '../Button';
+import Input from '../Input';
 import PageHeader from '../PageHeader';
 
 interface Day {
@@ -207,9 +209,9 @@ const ListRestTime: React.FC<Day> = ({
             (data.formatedStartHour >= anotherRest.formatedStartHour &&
               data.formatedEndHour <= anotherRest.formatedEndHour) ||
             (data.formatedStartHour <= anotherRest.formatedStartHour &&
-              data.formatedEndHour <= anotherRest.formatedEndHour) ||
+              data.formatedEndHour >= anotherRest.formatedStartHour) ||
             (data.formatedStartHour >= anotherRest.formatedStartHour &&
-              data.formatedEndHour >= anotherRest.formatedEndHour)
+              data.formatedStartHour <= anotherRest.formatedEndHour)
           ) {
             throw new Error();
           }
@@ -271,38 +273,34 @@ const ListRestTime: React.FC<Day> = ({
                   >
                     <SectionRow>
                       <span>De: </span>
-                      <Select name="StartHour" disabled>
-                        <option
-                          value={day.formatedStartHour}
-                          selected={!editingOrRemoveRestTime}
-                          hidden
-                        >
-                          {String(day.formatedStartHour).padStart(2, '0')}
-                        </option>
-                      </Select>
-
-                      <Select name="StartMinute" disabled>
-                        <option value={day.formatedStartMinute} hidden>
-                          {String(day.formatedStartMinute).padStart(2, '0')}
-                        </option>
-                      </Select>
+                      <Input
+                        name="StartHour"
+                        type="text"
+                        icon={FiClock}
+                        placeholder={`${String(day.formatedStartHour).padStart(
+                          2,
+                          '0',
+                        )} : ${String(day.formatedStartMinute).padStart(
+                          2,
+                          '0',
+                        )}`}
+                        disabled
+                      />
 
                       <span>Ate:</span>
-                      <Select name="EndHour" disabled>
-                        <option
-                          value={day.formatedEndHour}
-                          selected={!editingOrRemoveRestTime}
-                          hidden
-                        >
-                          {String(day.formatedEndHour).padStart(2, '0')}
-                        </option>
-                      </Select>
-
-                      <Select name="EndMinute" disabled>
-                        <option value={day.formatedEndMinute} hidden>
-                          {String(day.formatedEndMinute).padStart(2, '0')}
-                        </option>
-                      </Select>
+                      <Input
+                        name="EndHour"
+                        type="text"
+                        icon={FiClock}
+                        placeholder={`${String(day.formatedEndHour).padStart(
+                          2,
+                          '0',
+                        )} : ${String(day.formatedStartMinute).padStart(
+                          2,
+                          '0',
+                        )}`}
+                        disabled
+                      />
 
                       {idByDeleteARestTime !== day.id ? (
                         <ButtonToEditOrRemove>
@@ -346,64 +344,72 @@ const ListRestTime: React.FC<Day> = ({
         )}
       </ListRestDay>
 
-      <Form ref={formRef} onSubmit={handleSubmit}>
-        <PageHeader
-          title="Horários de Intervalo"
-          subTitle="Marque abaixo os dias que você gostaria de trabalhar"
-        />
+      <NewRestTime>
+        <Form ref={formRef} onSubmit={handleSubmit}>
+          <PageHeader
+            title="Horários de Intervalo"
+            subTitle="Marque abaixo os dias que você gostaria de trabalhar"
+          />
 
-        <SectionRow subTitle="De: ">
-          <Select name="formatedStartHour" onChange={handleChangeStartTimeHour}>
-            <option value="" selected hidden>
-              Horas
-            </option>
+          <SectionRow subTitle="De: ">
+            <Select
+              name="formatedStartHour"
+              onChange={handleChangeStartTimeHour}
+            >
+              <option value="" selected hidden>
+                Horas
+              </option>
 
-            {arrayWithPossibleStartHourToRest.map(hour => {
-              return (
-                <option value={hour}>{String(hour).padStart(2, '0')}</option>
-              );
-            })}
-          </Select>
+              {arrayWithPossibleStartHourToRest.map(hour => {
+                return (
+                  <option value={hour}>{String(hour).padStart(2, '0')}</option>
+                );
+              })}
+            </Select>
 
-          <Select name="formatedStartMinute" disabled>
-            <option value={formatedOpenMinute} selected hidden>
-              {String(formatedOpenMinute).padStart(2, '0')}
-            </option>
-          </Select>
-        </SectionRow>
+            <Select name="formatedStartMinute" disabled>
+              <option value={formatedOpenMinute} selected hidden>
+                {String(formatedOpenMinute).padStart(2, '0')}
+              </option>
+            </Select>
+          </SectionRow>
 
-        {arrayWithPossiblesEndHoursToRest.length ? (
-          <>
-            <SectionRow subTitle="Até:">
-              <Select name="formatedEndHour" onChange={handleChangeEndTimeHour}>
-                <option value="" selected hidden>
-                  Horas
-                </option>
+          {arrayWithPossiblesEndHoursToRest.length ? (
+            <>
+              <SectionRow subTitle="Até:">
+                <Select
+                  name="formatedEndHour"
+                  onChange={handleChangeEndTimeHour}
+                >
+                  <option value="" selected hidden>
+                    Horas
+                  </option>
 
-                {arrayWithPossiblesEndHoursToRest.map(hour => {
-                  return (
-                    <option value={hour}>
-                      {String(hour).padStart(2, '0')}
-                    </option>
-                  );
-                })}
-              </Select>
+                  {arrayWithPossiblesEndHoursToRest.map(hour => {
+                    return (
+                      <option value={hour}>
+                        {String(hour).padStart(2, '0')}
+                      </option>
+                    );
+                  })}
+                </Select>
 
-              <Select name="formatedEndMinute" disabled>
-                <option value={formatedOpenMinute} selected hidden>
-                  {String(formatedOpenMinute).padStart(2, '0')}
-                </option>
-              </Select>
-            </SectionRow>
-            <Button type="submit">Salvar</Button>
-          </>
-        ) : (
-          <span id="spanNotification">
-            Caso queira marcar um intervalo, por favor selecione um horario
-            inicial
-          </span>
-        )}
-      </Form>
+                <Select name="formatedEndMinute" disabled>
+                  <option value={formatedOpenMinute} selected hidden>
+                    {String(formatedOpenMinute).padStart(2, '0')}
+                  </option>
+                </Select>
+              </SectionRow>
+              <Button type="submit">Salvar</Button>
+            </>
+          ) : (
+            <p>
+              Caso queira marcar um intervalo, por favor selecione um horario
+              inicial
+            </p>
+          )}
+        </Form>
+      </NewRestTime>
     </Container>
   );
 };
