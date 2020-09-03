@@ -1,12 +1,7 @@
-import React, {
-  useRef,
-  useState,
-  useEffect,
-  useCallback,
-  ChangeEvent,
-} from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
+import { FiArrowLeft } from 'react-icons/fi';
 
 import {
   Container,
@@ -16,6 +11,7 @@ import {
   AfterChooseOneDay,
   NewButton,
   SelectWorkToday,
+  Back,
 } from './styles';
 
 import PageHeader from '../../components/PageHeader';
@@ -59,6 +55,10 @@ export default function App() {
   // Verifica se aquele dia o cara trabalho ou não
   const [workToday, setWorkToday] = useState(false);
 
+  const [buttonHoursWork, setButtonHoursWork] = useState(true);
+
+  const [buttonRestTime, setButtonRestTime] = useState(false);
+
   // Get information by API
   useEffect(() => {
     api
@@ -80,12 +80,24 @@ export default function App() {
 
     if (choosenDay.workDay === true) {
       setWorkToday(true);
+      setButtonHoursWork(true);
+      setButtonRestTime(false);
 
       return;
     }
 
     setWorkToday(false);
   }, [workDays, choosenDay]);
+
+  const handleButtonHoursWork = useCallback(() => {
+    setButtonHoursWork(true);
+    setButtonRestTime(false);
+  }, []);
+
+  const handleButtonRestTime = useCallback(() => {
+    setButtonHoursWork(false);
+    setButtonRestTime(true);
+  }, []);
 
   // Function On Change. It set the value at Work Today, when the select is changed
   const handleSelectOptions = useCallback(() => {
@@ -100,6 +112,17 @@ export default function App() {
   return (
     <>
       <Menu />
+
+      <Back>
+        <button
+          type="button"
+          onClick={() => {
+            setChoosenDay(undefined);
+          }}
+        >
+          <FiArrowLeft size={35} />
+        </button>
+      </Back>
 
       <Container>
         <DaysWeek>
@@ -118,54 +141,72 @@ export default function App() {
             );
           })}
         </DaysWeek>
+        {choosenDay ? (
+          <AfterChooseOneDay>
+            <strong>Realizar Consultas Nesse Dia?</strong>
 
-        {/*  <InicializePage >
-          <div>
-            <p>Clique em um dia da semana para começar a editar</p>
-          </div>
-        </InicializePage> */}
+            <SelectWorkToday>
+              <select name="consultState" onChange={handleSelectOptions}>
+                <option value="true" selected={workToday}>
+                  Sim
+                </option>
+                <option value="false" selected={workToday === false}>
+                  Não
+                </option>
+              </select>
+            </SelectWorkToday>
 
-        <AfterChooseOneDay>
-          <strong>Realizar Consultas Nesse Dia?</strong>
+            {workToday ? (
+              <SectionRow>
+                <Button
+                  color="yellow"
+                  isSelected={buttonHoursWork}
+                  onClick={handleButtonHoursWork}
+                >
+                  Horario de trabalho
+                </Button>
 
-          <SelectWorkToday>
-            <select name="consultState" onChange={handleSelectOptions}>
-              <option value="true" selected={workToday}>
-                Sim
-              </option>
-              <option value="false" selected={workToday === false}>
-                Não
-              </option>
-            </select>
-          </SelectWorkToday>
-
-          <SectionRow>
-            <Button>Horario de trabalho</Button>
-
-            <Button>Horario de Intervalo</Button>
-          </SectionRow>
-
-          <WookSchedule work={workToday}>
-            {/* {choosenDay && (
-              <SelectHour
-                id={choosenDay.id}
-                formatedOpenHour={choosenDay.formatedOpenHour}
-                formatedOpenMinute={choosenDay.formatedOpenMinute}
-                formatedCloseHour={choosenDay.formatedCloseHour}
-                formatedCloseMinute={choosenDay.formatedCloseMinute}
-              />
-            )} */}
-
-            {choosenDay && (
-              <RestTime
-                id={choosenDay.id}
-                formatedOpenMinute={choosenDay.formatedOpenMinute}
-                formatedCloseHour={choosenDay.formatedCloseHour}
-                formatedCloseMinute={choosenDay.formatedCloseMinute}
-              />
+                <Button
+                  color={choosenDay.formatedOpenHour === -1 ? 'gray' : 'yellow'}
+                  isSelected={buttonRestTime}
+                  onClick={handleButtonRestTime}
+                  disabled={choosenDay.formatedOpenHour === -1}
+                >
+                  Horario de Intervalo
+                </Button>
+              </SectionRow>
+            ) : (
+              <Button>Salvar</Button>
             )}
-          </WookSchedule>
-        </AfterChooseOneDay>
+
+            <WookSchedule work={workToday}>
+              {buttonHoursWork && (
+                <SelectHour
+                  id={choosenDay.id}
+                  formatedOpenHour={choosenDay.formatedOpenHour}
+                  formatedOpenMinute={choosenDay.formatedOpenMinute}
+                  formatedCloseHour={choosenDay.formatedCloseHour}
+                  formatedCloseMinute={choosenDay.formatedCloseMinute}
+                />
+              )}
+
+              {buttonRestTime && (
+                <RestTime
+                  id={choosenDay.id}
+                  formatedOpenMinute={choosenDay.formatedOpenMinute}
+                  formatedCloseHour={choosenDay.formatedCloseHour}
+                  formatedCloseMinute={choosenDay.formatedCloseMinute}
+                />
+              )}
+            </WookSchedule>
+          </AfterChooseOneDay>
+        ) : (
+          <InicializePage>
+            <div>
+              <p>Clique em um dia da semana para começar a editar</p>
+            </div>
+          </InicializePage>
+        )}
       </Container>
     </>
   );

@@ -25,11 +25,11 @@ export const Container = styled.div`
   height: 100vh;
   width: 100%;
 
-  /* background-image: url(${doctorImg}); */
+  background-image: url(${doctorImg});
   /* background-position: center; */
-  /* background-position: left bottom;
+  background-position: left bottom;
   background-repeat: no-repeat;
-  background-size: 90rem; */
+  background-size: 30rem;
 
   form {
     display: flex;
@@ -45,6 +45,28 @@ export const Container = styled.div`
   }
 `;
 
+export const Back = styled.div`
+  button {
+    border: none;
+    position: fixed;
+    top: 1rem;
+    right: 1.5rem;
+    background: transparent;
+    z-index: 1;
+
+    svg {
+      color: var(--green);
+      transition: transform scale color 0.2s;
+    }
+
+    &:hover {
+      svg {
+        transform: scale(1.1);
+      }
+    }
+  }
+`;
+
 export const DaysWeek = styled.header`
   display: flex;
   flex-direction: row;
@@ -54,24 +76,14 @@ export const DaysWeek = styled.header`
   width: 100%;
 
   padding: 6rem 1rem 3rem 1rem;
-
-  button {
-    padding: 0;
-    margin: 0;
-    max-width: 5rem;
-    height: 5rem;
-
-    & + button {
-      margin-left: 0.5rem;
-    }
-  }
 `;
 
 export const NewButton = styled.button<WorkDayProps>`
   height: 5rem;
   width: 90%;
+  max-width: 10rem;
 
-  background: rgba(247, 104, 91, 0.9);
+  background: rgba(9, 100, 67, 0.7);
   border: 0px;
   border-radius: 10px;
   color: var(--black);
@@ -82,24 +94,23 @@ export const NewButton = styled.button<WorkDayProps>`
 
   transition: background-color 0.2s;
 
-  &:hover {
-    background: transparent;
-    border: 1px solid black;
-  }
-
   padding: 0;
   margin: 0;
-  max-width: 5rem;
-  height: 5rem;
 
   & + button {
     margin-left: 0.5rem;
   }
 
+  &:hover {
+    background: transparent;
+    border: 1px solid black;
+    transform: scale(1.1);
+  }
+
   ${props =>
-    !props.workDay &&
+    props.workDay &&
     css`
-      background: rgba(9, 100, 67, 0.7);
+      background: rgba(247, 104, 91, 0.9);
     `}
 
   ${props =>
@@ -130,7 +141,7 @@ export const WookSchedule = styled.div<SpecialistWorkTodayProps>`
 `;
 
 export const InicializePage = styled.div`
-  display: none;
+  display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
@@ -157,15 +168,10 @@ export const AfterChooseOneDay = styled.div`
     width: 90%;
     margin-top: 1.5rem;
     button {
-      background-image: linear-gradient(to right, #e9a957 0%, #d67b00 100%);
       font-size: 1.4rem;
 
       & + button {
         margin-left: 3rem;
-      }
-
-      &:hover {
-        background: ${shade(0.2, '#d67b00')};
       }
     }
   }

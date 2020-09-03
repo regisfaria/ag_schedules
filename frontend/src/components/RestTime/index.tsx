@@ -90,13 +90,28 @@ const ListRestTime: React.FC<Day> = ({
     formRef.current?.setFieldValue('formatedEndHour', '');
     formRef.current?.setFieldValue('formatedEndMinute', formatedOpenMinute);
 
-    api.get<IRestDay[]>(`/schedules/rest/${id}`).then(response => {
+    async function getItems() {
+      try {
+        const { data } = await api.get<IRestDay[]>(`/schedules/rest/${id}`);
+        setListRestTimes(
+          data.sort(function (a, b) {
+            return a.formatedStartHour - b.formatedStartHour;
+          }),
+        );
+      } catch (error) {
+        alert('Ocorreu um erro ao buscar os items');
+      }
+    }
+
+    getItems();
+
+    /*  api.get<IRestDay[]>(`/schedules/rest/${id}`).then(response => {
       setListRestTimes(
         response.data.sort(function (a, b) {
           return a.formatedStartHour - b.formatedStartHour;
         }),
       );
-    });
+    }); */
 
     api
       .get<number[]>(`/schedules/availableSchedulesForRest/${id}`)

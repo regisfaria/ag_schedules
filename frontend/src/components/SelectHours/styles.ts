@@ -6,17 +6,40 @@ export const Container = styled.div`
   align-items: center;
   justify-content: center;
 
-  width: 90%;
+  width: 100%;
+  max-width: 50rem;
 
-  main {
-    flex-direction: row;
-  }
+  form {
+    width: 90%;
 
-  div {
-    margin: 0.5rem;
-    max-width: 15rem;
+    section {
+      > span {
+        margin-right: 2rem;
+      }
 
-    select {
+      div {
+        margin: 0 3rem 0 0;
+
+        svg {
+          width: 1.5rem;
+          margin-right: 0.5rem;
+        }
+      }
+
+      & + section {
+        margin: 3rem auto;
+
+        span {
+          margin-right: 1.5rem;
+        }
+      }
+    }
+
+    p {
+      margin: 3rem 0 3rem 0;
+      width: 40rem;
+      text-align: center;
+      color: var(--table-gray);
     }
   }
 
