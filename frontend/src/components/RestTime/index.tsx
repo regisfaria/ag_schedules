@@ -22,6 +22,7 @@ import {
 import api from '../../services/api';
 
 import { useToast } from '../../hooks/toast';
+import { useReset } from '../../hooks/reset';
 
 import Select from '../Select';
 import SectionRow from '../SectionRow';
@@ -51,7 +52,9 @@ const ListRestTime: React.FC<Day> = ({
   formatedCloseMinute,
 }) => {
   const formRef = useRef<FormHandles>(null);
-  const formRefEditOrDeleteRestTimes = useRef<FormHandles>(null);
+  const formRefDelite = useRef<FormHandles>(null);
+
+  const { resetCreateRestTime, resetCreateRestTimePage } = useReset();
 
   const { addToast } = useToast();
 
@@ -73,8 +76,6 @@ const ListRestTime: React.FC<Day> = ({
   const [idByDelete, setIdByDelete] = useState('');
 
   const [deleteRest, setDeleteRest] = useState(false);
-
-  const [reloadApi, setReloadApi] = useState(false);
 
   useEffect(() => {
     setStartHour(-1);
@@ -102,7 +103,7 @@ const ListRestTime: React.FC<Day> = ({
       .then(response => {
         setArrayWithPossibleHours(response.data);
       });
-  }, [id, reloadApi]);
+  }, [id, resetCreateRestTime]);
 
   // Array para o horario de saida
   useEffect(() => {
@@ -152,7 +153,7 @@ const ListRestTime: React.FC<Day> = ({
     setDeleteRest(false);
   }, []);
 
-  function handleEditOrDeleteRestTime(restId: string) {
+  const handleSubmitDelete = useCallback(() => {
     if (idByDelete === '') {
       handleCancelDeleteRest();
       // chamar erro
@@ -163,7 +164,7 @@ const ListRestTime: React.FC<Day> = ({
       api.delete(`/schedules/rest/delete/${idByDelete}`);
     }
 
-    setReloadApi(!reloadApi);
+    resetCreateRestTimePage(!resetCreateRestTime);
 
     handleCancelDeleteRest();
 
@@ -171,7 +172,7 @@ const ListRestTime: React.FC<Day> = ({
       type: 'success',
       title: 'Horário de Intervalo Apagado Com Sucesso!',
     });
-  }
+  }, [idByDelete, resetCreateRestTime]);
 
   const handleSubmit = useCallback(
     async (data: IRestDay) => {
@@ -249,7 +250,7 @@ const ListRestTime: React.FC<Day> = ({
           title: 'Horário de Intervalo Criado Com Sucesso!',
         });
 
-        setReloadApi(!reloadApi);
+        resetCreateRestTimePage(!resetCreateRestTime);
       } catch (err) {
         addToast({
           type: 'error',
@@ -259,7 +260,7 @@ const ListRestTime: React.FC<Day> = ({
         });
       }
     },
-    [addToast, reloadApi, listRestTimes, id],
+    [addToast, resetCreateRestTime, listRestTimes, id],
   );
 
   return (
@@ -271,10 +272,8 @@ const ListRestTime: React.FC<Day> = ({
               return (
                 <>
                   <Form
-                    ref={formRefEditOrDeleteRestTimes}
-                    onSubmit={() => {
-                      handleEditOrDeleteRestTime(day.id);
-                    }}
+                    ref={formRefDelite}
+                    onSubmit={handleSubmitDelete}
                     key={day.id}
                   >
                     <SectionRow>
