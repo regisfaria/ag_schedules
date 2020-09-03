@@ -25,9 +25,12 @@ const Toast: React.FC<ToastProps> = ({ message, style }) => {
   const { removeToast } = useToast();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      removeToast(message.id);
-    }, 3000);
+    const timer = setTimeout(
+      () => {
+        removeToast(message.id);
+      },
+      message.type === 'info' ? 6000 : 3000,
+    );
 
     // Below function is executed IF the component stop to exist
     return () => {

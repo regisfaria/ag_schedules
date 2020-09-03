@@ -37,15 +37,19 @@ class CreateRestTimeService {
     });
 
     if (
-      restStartAvailability.length !== 0 ||
+      restStartAvailability.length !== 0 &&
       restEndAvailability.length !== 0
     ) {
+      console.log('1');
+
       throw new AppError(
         'Você não pode marcar um intervalo em horarios já marcados ',
       );
     }
 
     if (!scheduleAvailability) {
+      console.log('2');
+
       throw new AppError('Essa agenda não existe');
     }
 

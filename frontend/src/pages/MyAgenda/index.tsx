@@ -159,7 +159,6 @@ export default function App() {
             {choosenDay && (
               <RestTime
                 id={choosenDay.id}
-                formatedOpenHour={choosenDay.formatedOpenHour}
                 formatedOpenMinute={choosenDay.formatedOpenMinute}
                 formatedCloseHour={choosenDay.formatedCloseHour}
                 formatedCloseMinute={choosenDay.formatedCloseMinute}
