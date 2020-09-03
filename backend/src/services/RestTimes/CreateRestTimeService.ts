@@ -37,7 +37,7 @@ class CreateRestTimeService {
     });
 
     if (
-      restStartAvailability.length !== 0 ||
+      restStartAvailability.length !== 0 &&
       restEndAvailability.length !== 0
     ) {
       console.log('1');
@@ -60,7 +60,6 @@ class CreateRestTimeService {
       throw new AppError(
         'Você não pode marcar um intervalo fora do horario de trabalho',
       );
-      console.log('3');
     }
 
     const restTime = restTimesRepository.create({
