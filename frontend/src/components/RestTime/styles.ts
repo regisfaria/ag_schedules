@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  background: yellow;
   width: 100%;
   max-width: 50rem;
 `;
@@ -60,6 +59,10 @@ export const ListRestDay = styled.div`
         }
       }
     }
+  }
+
+  > span {
+    text-align: center;
   }
 `;
 
