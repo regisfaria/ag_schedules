@@ -14,13 +14,12 @@ const blurEffectIn = keyframes`
 `;
 
 export const Modal = styled.div<ModalProps>`
-  position: absolute;
+  position: fixed;
 
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
+
   z-index: 100;
-
-  overflow: auto;
 
   background-color: rgba(0, 0, 0, 0.9);
 

@@ -117,20 +117,19 @@ const RegisterConsult: React.FC = () => {
         <Redirect to={{ pathname: '/dashboard' }} />
       )}
       <Menu />
+      <SuccessModal
+        modalStatus={modalStatus}
+        title="Consulta criada com sucesso"
+        subTitle="Deseja criar outra consulta?"
+        btnFunction={resetCreateConsultPage}
+        currentPageBtnLabel="Sim"
+        redirectTo="/dashboard"
+        redirectLabel="Nao"
+      />
 
       <Container>
         <AnimatedContent>
-          <SuccessModal
-            modalStatus={modalStatus}
-            title="Consulta criada com sucesso"
-            subTitle="Deseja criar outra consulta?"
-            btnFunction={resetCreateConsultPage}
-            currentPageBtnLabel="Sim"
-            redirectTo="/dashboard"
-            redirectLabel="Nao"
-          />
           <PageHeader title="Criar uma Consulta" />
-
           <Form ref={formRef} onSubmit={handleSubmit}>
             <Main>
               <Section>
