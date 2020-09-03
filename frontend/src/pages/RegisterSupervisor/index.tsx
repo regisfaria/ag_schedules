@@ -4,11 +4,12 @@ import { FaUserTie } from 'react-icons/fa';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, Redirect } from 'react-router-dom';
 
 import api from '../../services/api';
 
 import { useToast } from '../../hooks/toast';
+import { useAuth } from '../../hooks/auth';
 
 import getValidationErrors from '../../utils/getValidationErrors';
 
@@ -29,7 +30,10 @@ interface SignUpFormData {
 
 const RegisterSupervisor: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
+
   const { addToast } = useToast();
+  const { user } = useAuth();
+
   const history = useHistory();
 
   const handleSubmit = useCallback(
@@ -56,8 +60,8 @@ const RegisterSupervisor: React.FC = () => {
           abortEarly: false,
         });
 
-        const user = await api.post('/users', data);
-        await api.post('/profiles/supervisor', { userId: user.data.id });
+        const newUser = await api.post('/users', data);
+        await api.post('/profiles/supervisor', { userId: newUser.data.id });
 
         history.push('/dashboard');
 
@@ -88,6 +92,7 @@ const RegisterSupervisor: React.FC = () => {
 
   return (
     <>
+      {user.type !== 'admin' && <Redirect to={{ pathname: '/dashboard' }} />}
       <Menu />
 
       <Container>

@@ -14,6 +14,8 @@ import { useField } from '@unform/core';
 import { FiCalendar, FiAlertTriangle, FiClock } from 'react-icons/fi';
 import { FaUserMd } from 'react-icons/fa';
 
+import { useReset } from '../../hooks/reset';
+
 import Select from '../Select';
 import Input from '../Input';
 
@@ -38,6 +40,8 @@ interface SpecialistProfileResponse {
 
 const ConsultEnrolment: React.FC = () => {
   const datepickerRef = useRef(null);
+
+  const { resetCreateConsult } = useReset();
 
   const { fieldName, registerField, defaultValue, error } = useField(
     'consultDate',
@@ -158,6 +162,19 @@ const ConsultEnrolment: React.FC = () => {
       });
   }, [inputDate, selectedSpecialistId]);
 
+  useEffect(() => {
+    if (resetCreateConsult === false) {
+      return;
+    }
+    setSelectedSpecialistId('');
+    setSelectedSpecialistName('');
+    setSpecialistProfile(null);
+    setSpecialistHolidays([]);
+    setValidHolidays([]);
+    setHours([]);
+    setSpecialistAvailableDays([]);
+  }, [resetCreateConsult]);
+
   return (
     <>
       <Select
@@ -175,7 +192,7 @@ const ConsultEnrolment: React.FC = () => {
         ))}
       </Select>
 
-      {specialistProfile && (
+      {/* {specialistProfile && (
         <SpecialistInfo>
           <div>
             <strong>{selectedSpecialistName}</strong>
@@ -194,7 +211,26 @@ const ConsultEnrolment: React.FC = () => {
           </div>
           <img src={specialistProfile.imageUrl} alt="profilePicture" />
         </SpecialistInfo>
-      )}
+      )} */}
+
+      <SpecialistInfo profileExists={!!specialistProfile}>
+        <div>
+          <strong>{selectedSpecialistName}</strong>
+          <p>
+            Endereço:{' '}
+            {specialistProfile?.city
+              ? `${specialistProfile.state}, ${specialistProfile.city}`
+              : 'Nenhum endereço no perfil'}
+          </p>
+          <span>
+            Telefone:{' '}
+            {specialistProfile?.phoneNumber
+              ? specialistProfile.phoneNumber
+              : 'Nenhum telefone no perfil'}
+          </span>
+        </div>
+        <img src={specialistProfile?.imageUrl} alt="profilePicture" />
+      </SpecialistInfo>
 
       <DateContainer isErrored={!!error}>
         <FiCalendar size={20} />

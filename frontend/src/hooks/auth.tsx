@@ -1,9 +1,16 @@
 import React, { createContext, useCallback, useState, useContext } from 'react';
 import api from '../services/api';
 
+interface User {
+  name: string;
+  type: string;
+  email: string;
+  id: string;
+}
+
 interface AuthState {
   token: string;
-  user: object;
+  user: User;
 }
 
 interface LoginCredentials {
@@ -12,10 +19,9 @@ interface LoginCredentials {
 }
 
 interface AuthContextData {
-  user: object;
+  user: User;
   signIn(credentials: LoginCredentials): Promise<void>;
   signOut(): void;
-  getUserRole(): string;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -53,22 +59,8 @@ const AuthProvider: React.FC = ({ children }) => {
     setData({} as AuthState);
   }, []);
 
-  const getUserRole = useCallback(() => {
-    const user = localStorage.getItem('@AGSchedules:user');
-
-    if (user) {
-      const parsedUser = JSON.parse(user);
-
-      return parsedUser.type;
-    }
-
-    return null;
-  }, []);
-
   return (
-    <AuthContext.Provider
-      value={{ user: data.user, signIn, signOut, getUserRole }}
-    >
+    <AuthContext.Provider value={{ user: data.user, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

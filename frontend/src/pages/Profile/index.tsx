@@ -1,5 +1,6 @@
 import React, { useEffect, useState, ChangeEvent, useCallback } from 'react';
 import { Form } from '@unform/web';
+import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 
 import Menu from '../../components/Menu';
@@ -10,6 +11,7 @@ import TextArea from '../../components/TextArea';
 import Main from '../../components/Main';
 import Section from '../../components/Section';
 
+import { useAuth } from '../../hooks/auth';
 /* import { useToast } from '../../hooks/toast'; */
 
 import {
@@ -37,6 +39,7 @@ let controlEdit = true;
 
 const Profile: React.FC = () => {
   /* const { addToast } = useToast(); */
+  const { user } = useAuth();
   const [editProfile, setEditProfile] = useState(!controlEdit);
 
   const [states, setStates] = useState<StatesInfo[]>([{} as StatesInfo]);
@@ -95,6 +98,8 @@ const Profile: React.FC = () => {
 
   return (
     <>
+      {user.type === 'admin' && <Redirect to={{ pathname: '/dashboard' }} />}
+
       <Menu />
       <Container>
         <Header>

@@ -4,11 +4,12 @@ import { FaUserMd } from 'react-icons/fa';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, Redirect } from 'react-router-dom';
 
 import api from '../../services/api';
 
 import { useToast } from '../../hooks/toast';
+import { useAuth } from '../../hooks/auth';
 
 import getValidationErrors from '../../utils/getValidationErrors';
 
@@ -29,7 +30,10 @@ interface SignUpFormData {
 
 const RegisterSpecialist: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
+
   const { addToast } = useToast();
+  const { user } = useAuth();
+
   const history = useHistory();
 
   const handleSubmit = useCallback(
@@ -56,9 +60,9 @@ const RegisterSpecialist: React.FC = () => {
           abortEarly: false,
         });
 
-        const user = await api.post('/users', data);
-        await api.post('/profiles/specialist', { userId: user.data.id });
-        // await api.post('/schedules', { specialistId: user.data.id });
+        const newUser = await api.post('/users', data);
+        await api.post('/profiles/specialist', { userId: newUser.data.id });
+        await api.post('/schedules', { userId: newUser.data.id });
 
         history.push('/dashboard');
 
@@ -89,6 +93,9 @@ const RegisterSpecialist: React.FC = () => {
 
   return (
     <>
+      {user.type === 'specialist' && (
+        <Redirect to={{ pathname: '/dashboard' }} />
+      )}
       <Menu />
 
       <Container>

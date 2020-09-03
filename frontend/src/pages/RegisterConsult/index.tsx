@@ -6,11 +6,13 @@ import { FaUser } from 'react-icons/fa';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
 import api from '../../services/api';
 
 import { useToast } from '../../hooks/toast';
+import { useAuth } from '../../hooks/auth';
+import { useReset } from '../../hooks/reset';
 
 import getValidationErrors from '../../utils/getValidationErrors';
 
@@ -21,6 +23,7 @@ import PageHeader from '../../components/PageHeader';
 import Section from '../../components/Section';
 import Main from '../../components/Main';
 import ConsultEnrolment from '../../components/ConsultEnrolment';
+import SuccessModal from '../../components/SuccessModal';
 
 import { Container, AnimatedContent } from './styles';
 
@@ -45,12 +48,14 @@ const RegisterConsult: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
   const [pacients, setPacients] = useState<PacientResponse[]>([]);
+  const [modalStatus, setModalStatus] = useState(false);
 
   const { addToast } = useToast();
-  const history = useHistory();
+  const { user } = useAuth();
+  const { resetCreateConsult, resetCreateConsultPage } = useReset();
 
   const handleSubmit = useCallback(
-    async (data: ConsultFormData) => {
+    async (data: ConsultFormData, { reset }) => {
       try {
         formRef.current?.setErrors({});
 
@@ -69,13 +74,8 @@ const RegisterConsult: React.FC = () => {
 
         await api.post('/consults', data);
 
-        history.push('/dashboard');
-
-        addToast({
-          type: 'success',
-          title: 'Consulta cadastrada!',
-          description: 'A consulta ja esta disponivel para o especialista!',
-        });
+        reset();
+        setModalStatus(true);
       } catch (error) {
         if (error instanceof Yup.ValidationError) {
           const errors = getValidationErrors(error);
@@ -95,7 +95,7 @@ const RegisterConsult: React.FC = () => {
         });
       }
     },
-    [addToast, history],
+    [addToast, setModalStatus],
   );
 
   useEffect(() => {
@@ -104,14 +104,32 @@ const RegisterConsult: React.FC = () => {
     });
   }, []);
 
+  useEffect(() => {
+    if (resetCreateConsult === true) {
+      resetCreateConsultPage(false);
+      setModalStatus(false);
+    }
+  }, [resetCreateConsult]);
+
   return (
     <>
+      {user.type !== 'supervisor' && (
+        <Redirect to={{ pathname: '/dashboard' }} />
+      )}
       <Menu />
+      <SuccessModal
+        modalStatus={modalStatus}
+        title="Consulta criada com sucesso"
+        subTitle="Deseja criar outra consulta?"
+        btnFunction={resetCreateConsultPage}
+        currentPageBtnLabel="Sim"
+        redirectTo="/dashboard"
+        redirectLabel="Nao"
+      />
 
       <Container>
         <AnimatedContent>
           <PageHeader title="Criar uma Consulta" />
-
           <Form ref={formRef} onSubmit={handleSubmit}>
             <Main>
               <Section>

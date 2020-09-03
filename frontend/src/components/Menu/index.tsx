@@ -2,16 +2,19 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import {
   FiLayers,
-  FiFilePlus,
+  FiPlus,
+  FiList,
+  FiEdit,
+  FiWatch,
   FiBookOpen,
   FiMenu,
   FiX,
   FiLogOut,
+  FiFileText,
 } from 'react-icons/fi';
-import { FaUserMd, FaUserTie, FaUserPlus } from 'react-icons/fa';
-import { RiContactsBook2Line } from 'react-icons/ri';
-import { AiOutlineFileSearch } from 'react-icons/ai';
-import { BsPersonFill } from 'react-icons/bs';
+import { FaRegAddressCard, FaUserTie, FaUserMd } from 'react-icons/fa';
+
+import api from '../../services/api';
 
 import { useAuth } from '../../hooks/auth';
 
@@ -19,26 +22,32 @@ import {
   ShowMenu,
   CloseMenu,
   Logout,
+  SideMenuBoxContainer,
+  SideMenuButtons,
   SideMenuBox,
   MenuOption,
-  DropdownButton,
-  LinkContainer,
-  AgentLockedLinkContainer,
-  SpecialistLockedLinkContainer,
-  AdminOnlyLinkContainer,
-  DownArrow,
-  UpArrow,
+  ProfileLinkContainer,
+  OptionLinkContainer,
+  AdminLockedOption,
+  SpecialistOnlyOption,
+  SupervisorOnlyOption,
+  AdminOnlyOption,
+  SpecialistLockedSection,
+  AdminLockedSection,
 } from './styles';
+
+interface UserProfile {
+  imageUrl: string;
+}
 
 const Menu: React.FC = () => {
   const [menuState, setMenuState] = useState(false);
-  const [consultsButtonState, setConsultsButtonState] = useState(false);
-  const [historyButtonState, setHistoryButtonState] = useState(false);
-  const [registerButtonState, setRegisterButtonState] = useState(false);
-  const [userData, setUserData] = useState<string>();
+  const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile>(
+    {} as UserProfile,
+  );
 
   const history = useHistory();
-  const { signOut, getUserRole } = useAuth();
+  const { signOut, user } = useAuth();
 
   const handleMenuState = useCallback(() => {
     setMenuState(!menuState);
@@ -50,21 +59,20 @@ const Menu: React.FC = () => {
     history.push('/');
   }, [signOut, history]);
 
-  const handleConsultsButton = useCallback(() => {
-    setConsultsButtonState(!consultsButtonState);
-  }, [consultsButtonState]);
-
-  const handleHistoryButton = useCallback(() => {
-    setHistoryButtonState(!historyButtonState);
-  }, [historyButtonState]);
-
-  const handleRegisterButton = useCallback(() => {
-    setRegisterButtonState(!registerButtonState);
-  }, [registerButtonState]);
-
   useEffect(() => {
-    setUserData(getUserRole());
-  }, [getUserRole]);
+    if (!user.id && user.type !== 'admin') {
+      return;
+    }
+    if (user.type === 'supervisor') {
+      api.get(`/profiles/supervisor/${user.id}`).then(response => {
+        setCurrentUserProfile(response.data);
+      });
+    } else {
+      api.get(`/profiles/specialist/${user.id}`).then(response => {
+        setCurrentUserProfile(response.data);
+      });
+    }
+  }, [user]);
 
   return (
     <>
@@ -74,129 +82,120 @@ const Menu: React.FC = () => {
         </button>
       </ShowMenu>
 
-      <SideMenuBox menuState={menuState}>
-        <CloseMenu>
-          <button type="button" onClick={handleMenuState}>
-            <FiX size={40} />
-          </button>
-        </CloseMenu>
+      <SideMenuBoxContainer menuState={menuState}>
+        <SideMenuBox menuState={menuState}>
+          <SideMenuButtons menuState={menuState}>
+            <CloseMenu>
+              <button type="button" onClick={handleMenuState}>
+                <FiX size={40} />
+              </button>
+            </CloseMenu>
 
-        <Logout>
-          <button type="button" onClick={handleLogOut}>
-            <FiLogOut size={40} />
-          </button>
-        </Logout>
+            <Logout>
+              <button type="button" onClick={handleLogOut}>
+                <FiLogOut size={40} />
+              </button>
+            </Logout>
+          </SideMenuButtons>
 
-        <MenuOption menuState={menuState}>
-          <Link to="/profile">
-            <div>
-              <BsPersonFill size={16} />
-              <p>Perfil</p>
-            </div>
-          </Link>
-          <Link to="/dashboard">
-            <div>
-              <FiLayers size={16} />
-              <p>Dashboard</p>
-            </div>
-          </Link>
+          <MenuOption menuState={menuState}>
+            <ProfileLinkContainer role={user.type}>
+              <img src={currentUserProfile.imageUrl} alt="fotoPerfil" />
+              <Link to="/profile">
+                <strong>{user.name}</strong>
+                <span>
+                  Perfil&nbsp;
+                  <FiEdit size={14} />
+                </span>
+              </Link>
+            </ProfileLinkContainer>
 
-          <DropdownButton menuState={menuState} open={consultsButtonState}>
-            <button type="button" onClick={handleConsultsButton}>
-              <p>
-                Consultas
-                <DownArrow size={20} open={consultsButtonState} />
-                <UpArrow size={20} open={consultsButtonState} />
-              </p>
-              <div>
-                <SpecialistLockedLinkContainer role={userData as string}>
-                  <Link to="/consults/create">
-                    <FiFilePlus />
-                    Criar Consultas
-                  </Link>
-                </SpecialistLockedLinkContainer>
+            <AdminLockedOption role={user.type}>
+              <Link to="/dashboard">
+                <FiLayers size={16} />
+                <p>Dashboard</p>
+              </Link>
+            </AdminLockedOption>
 
-                <LinkContainer>
-                  <Link to="/consults">
-                    <AiOutlineFileSearch />
-                    Ver Consultas
-                  </Link>
-                </LinkContainer>
-              </div>
-            </button>
-          </DropdownButton>
+            <SpecialistOnlyOption role={user.type}>
+              <Link to="/myagenda">
+                <FiWatch size={16} />
+                <p>Agenda</p>
+              </Link>
+            </SpecialistOnlyOption>
 
-          <DropdownButton menuState={menuState} open={historyButtonState}>
-            <button type="button" onClick={handleHistoryButton}>
-              <p>
-                Historico
-                <DownArrow size={20} open={historyButtonState} />
-                <UpArrow size={20} open={historyButtonState} />
-              </p>
+            <OptionLinkContainer>
+              <Link to="/history">
+                <FiBookOpen size={16} />
+                <p>Histórico</p>
+              </Link>
+            </OptionLinkContainer>
 
-              <div>
-                <LinkContainer>
-                  <Link to="/history/pacients">
-                    <RiContactsBook2Line />
-                    Pacientes Criados
-                  </Link>
-                </LinkContainer>
+            <SpecialistLockedSection role={user.type}>
+              <main>
+                <FaRegAddressCard size={16} />
+                <p>Pacientes</p>
+              </main>
 
-                <AgentLockedLinkContainer role={userData as string}>
-                  <Link to="/history/agents">
-                    <RiContactsBook2Line />
-                    Agentes Criados
-                  </Link>
-                </AgentLockedLinkContainer>
+              <SupervisorOnlyOption role={user.type}>
+                <Link to="/pacients/create">
+                  <FiPlus size={16} />
+                  <p>Criar</p>
+                </Link>
+              </SupervisorOnlyOption>
 
-                <AdminOnlyLinkContainer role={userData as string}>
-                  <Link to="/history/agents">
-                    <RiContactsBook2Line />
-                    Especialistas Criados
-                  </Link>
-                </AdminOnlyLinkContainer>
+              <OptionLinkContainer>
+                <Link to="/pacients">
+                  <FiList size={16} />
+                  <p>Listar</p>
+                </Link>
+              </OptionLinkContainer>
+            </SpecialistLockedSection>
 
-                <LinkContainer>
-                  <Link to="/history/consults">
-                    <FiBookOpen />
-                    Consultas Criadas
-                  </Link>
-                </LinkContainer>
-              </div>
-            </button>
-          </DropdownButton>
+            <AdminLockedSection role={user.type}>
+              <main>
+                <FiFileText size={16} />
+                <p>Consultas</p>
+              </main>
 
-          <DropdownButton menuState={menuState} open={registerButtonState}>
-            <button type="button" onClick={handleRegisterButton}>
-              <p>
-                Registrar
-                <DownArrow size={20} open={registerButtonState} />
-                <UpArrow size={20} open={registerButtonState} />
-              </p>
+              <SupervisorOnlyOption role={user.type}>
+                <Link to="/consults/create">
+                  <FiPlus size={16} />
+                  <p>Criar</p>
+                </Link>
+              </SupervisorOnlyOption>
 
-              <div>
-                <LinkContainer>
-                  <Link to="/register/pacient">
-                    <FaUserPlus /> Registrar Paciente
-                  </Link>
-                </LinkContainer>
+              <OptionLinkContainer>
+                <Link to="/consults">
+                  <FiList size={16} />
+                  <p>Listar</p>
+                </Link>
+              </OptionLinkContainer>
+            </AdminLockedSection>
 
-                <AgentLockedLinkContainer role={userData as string}>
-                  <Link to="/register/agent">
-                    <FaUserTie /> Registrar Agente
-                  </Link>
-                </AgentLockedLinkContainer>
+            <SpecialistLockedSection role={user.type}>
+              <main>
+                <FaRegAddressCard size={16} />
+                <p>Cadastro</p>
+              </main>
 
-                <AdminOnlyLinkContainer role={userData as string}>
-                  <Link to="/register/specialist">
-                    <FaUserMd /> Registrar Especialista
-                  </Link>
-                </AdminOnlyLinkContainer>
-              </div>
-            </button>
-          </DropdownButton>
-        </MenuOption>
-      </SideMenuBox>
+              <OptionLinkContainer>
+                <Link to="/register/specialist">
+                  <FaUserMd size={16} />
+                  <p>Especialista</p>
+                </Link>
+              </OptionLinkContainer>
+
+              <AdminOnlyOption role={user.type}>
+                <Link to="/register/supervisor">
+                  <FaUserTie size={16} />
+                  <p>Supervisor</p>
+                </Link>
+              </AdminOnlyOption>
+            </SpecialistLockedSection>
+          </MenuOption>
+        </SideMenuBox>
+      </SideMenuBoxContainer>
     </>
   );
 };
