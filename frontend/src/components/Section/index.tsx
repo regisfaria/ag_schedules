@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { ObjectHTMLAttributes } from 'react';
 import { Container } from './styles';
 
-interface SectionProps {
+interface SectionProps extends ObjectHTMLAttributes<HTMLTableSectionElement> {
   title?: string;
 }
 
-const Section: React.FC<SectionProps> = ({ title, children }) => {
+const Section: React.FC<SectionProps> = ({ title, children, ...props }) => {
   return (
-    <Container>
+    <Container {...props}>
       {title && <strong>{title}</strong>}
 
       {children}

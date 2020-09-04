@@ -12,6 +12,7 @@ export const Container = styled.section`
 
     strong {
       font-size: 1.6rem;
+      color: var(--table-black);
     }
   }
 `;
