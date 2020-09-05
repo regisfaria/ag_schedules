@@ -37,6 +37,20 @@ consultsRouter.get('/:specialistId', async (request, response) => {
   return response.json(consults);
 });
 
+consultsRouter.get('/createdBy/:supervisorId', async (request, response) => {
+  const { supervisorId } = request.params;
+
+  const consultsRepository = getRepository(Consult);
+
+  const consults = await consultsRepository.find({
+    where: {
+      createdById: supervisorId,
+    },
+  });
+
+  return response.json(consults);
+});
+
 consultsRouter.get('/:specialistId/date', async (request, response) => {
   const { specialistId } = request.params;
   const { date } = request.body;

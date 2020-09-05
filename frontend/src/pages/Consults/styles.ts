@@ -72,6 +72,24 @@ export const ConsultsList = styled.div`
   }
 `;
 
+const blurEffectIn = keyframes`
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+`;
+
+const blurEffectOut = keyframes`
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+`;
+
 export const ConsultCard = styled.div<ConsultCardProps>`
   display: flex;
   flex-direction: row;
@@ -130,6 +148,12 @@ export const ConsultCard = styled.div<ConsultCardProps>`
       ? css`
           height: 20rem;
           transition: height 0.5s ease-in-out;
+
+          section {
+            p {
+              animation: ${blurEffectIn} 1s;
+            }
+          }
         `
       : css`
           height: 10rem;
