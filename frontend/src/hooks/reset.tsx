@@ -5,6 +5,8 @@ interface ResetContextData {
   resetCreateConsultPage(renderState: boolean): void;
   resetCreateRestTime: boolean;
   resetCreateRestTimePage(renderState: boolean): void;
+  renderButtonsDays: boolean;
+  renderButtonsDaysPage(renderState: boolean): void;
 }
 
 const ResetContext = createContext<ResetContextData>({} as ResetContextData);
@@ -12,6 +14,7 @@ const ResetContext = createContext<ResetContextData>({} as ResetContextData);
 const ResetProvider: React.FC = ({ children }) => {
   const [resetCreateConsult, setResetCreateConsult] = useState(false);
   const [resetCreateRestTime, setResetCreateRestTime] = useState(false);
+  const [renderButtonsDays, setRenderButtonsDaysPage] = useState(false);
 
   const resetCreateConsultPage = useCallback((renderState: boolean) => {
     setResetCreateConsult(renderState);
@@ -21,6 +24,10 @@ const ResetProvider: React.FC = ({ children }) => {
     setResetCreateRestTime(renderState);
   }, []);
 
+  const renderButtonsDaysPage = useCallback((renderState: boolean) => {
+    setRenderButtonsDaysPage(renderState);
+  }, []);
+
   return (
     <ResetContext.Provider
       value={{
@@ -28,6 +35,8 @@ const ResetProvider: React.FC = ({ children }) => {
         resetCreateConsultPage,
         resetCreateRestTime,
         resetCreateRestTimePage,
+        renderButtonsDays,
+        renderButtonsDaysPage,
       }}
     >
       {children}

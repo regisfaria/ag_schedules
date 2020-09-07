@@ -90,28 +90,13 @@ const ListRestTime: React.FC<Day> = ({
     formRef.current?.setFieldValue('formatedEndHour', '');
     formRef.current?.setFieldValue('formatedEndMinute', formatedOpenMinute);
 
-    async function getItems() {
-      try {
-        const { data } = await api.get<IRestDay[]>(`/schedules/rest/${id}`);
-        setListRestTimes(
-          data.sort(function (a, b) {
-            return a.formatedStartHour - b.formatedStartHour;
-          }),
-        );
-      } catch (error) {
-        alert('Ocorreu um erro ao buscar os items');
-      }
-    }
-
-    getItems();
-
-    /*  api.get<IRestDay[]>(`/schedules/rest/${id}`).then(response => {
+    api.get<IRestDay[]>(`/schedules/rest/${id}`).then(response => {
       setListRestTimes(
         response.data.sort(function (a, b) {
           return a.formatedStartHour - b.formatedStartHour;
         }),
       );
-    }); */
+    });
 
     api
       .get<number[]>(`/schedules/availableSchedulesForRest/${id}`)
@@ -168,7 +153,7 @@ const ListRestTime: React.FC<Day> = ({
     setDeleteRest(false);
   }, []);
 
-  const handleSubmitDelete = useCallback(() => {
+  const handleSubmitDelete = useCallback(async () => {
     if (idByDelete === '') {
       handleCancelDeleteRest();
       // chamar erro
@@ -176,7 +161,7 @@ const ListRestTime: React.FC<Day> = ({
     }
 
     if (idByDelete !== '') {
-      api.delete(`/schedules/rest/delete/${idByDelete}`);
+      await api.delete(`/schedules/rest/delete/${idByDelete}`);
     }
 
     resetCreateRestTimePage(!resetCreateRestTime);
@@ -254,7 +239,7 @@ const ListRestTime: React.FC<Day> = ({
           }
         });
 
-        api.post(`/schedules/rest`, {
+        await api.post(`/schedules/rest`, {
           scheduleAvailabilityId: id,
           startTime: `${data.formatedStartHour}:${data.formatedStartMinute}`,
           endTime: `${data.formatedEndHour}:${data.formatedStartMinute}`,

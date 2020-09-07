@@ -8,6 +8,7 @@ import React, {
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
 import { FiClock } from 'react-icons/fi';
+import * as Yup from 'yup';
 import { Container } from './styles';
 
 import Select from '../Select';
@@ -15,12 +16,24 @@ import Button from '../Button';
 import PageHeader from '../PageHeader';
 import SectionRow from '../SectionRow';
 
+import api from '../../services/api';
+
+import { useToast } from '../../hooks/toast';
+import { useReset } from '../../hooks/reset';
+
 interface Day {
   id: string;
   formatedOpenHour: number;
   formatedOpenMinute: number;
   formatedCloseHour: number;
   formatedCloseMinute: number;
+}
+
+interface FormData {
+  openTimeHour: number;
+  openTimeMinute: number;
+  closeTimeHour: number;
+  closeTimeMinute: number;
 }
 
 const SelectHours: React.FC<Day> = ({
@@ -31,12 +44,17 @@ const SelectHours: React.FC<Day> = ({
   formatedCloseMinute,
 }) => {
   const formRef = useRef<FormHandles>(null);
+  const { addToast } = useToast();
+  const { renderButtonsDays, renderButtonsDaysPage } = useReset();
 
   const [inicialTimeHour, setInicialTimeHour] = useState<number>();
   const [inicialTimeMinute, setInicialTimeMinute] = useState<number>();
   const [finishTimeMinute, setFinishTimeMinute] = useState<number>();
   const [finishTimeHour, setFinishTimeHour] = useState<number>();
   const [specialCaseTwentTree, setSpecialCaseTwentTree] = useState(false);
+  const [specialCaseMinuteException, setSpecialCaseMinuteException] = useState(
+    false,
+  );
 
   const [possibleFinishTimeHour, setPossibleFinishTimeHour] = useState<
     number[]
@@ -51,7 +69,7 @@ const SelectHours: React.FC<Day> = ({
     setFinishTimeMinute(formatedCloseMinute);
 
     formRef.current?.setFieldValue('openTimeHour', inicialTimeHour);
-    formRef.current?.setFieldValue('openTimeMin', inicialTimeMinute);
+    formRef.current?.setFieldValue('openTimeMinute', inicialTimeMinute);
 
     formRef.current?.setFieldValue('closeTimeHour', finishTimeHour);
     formRef.current?.setFieldValue('closeTimeMinute', finishTimeMinute);
@@ -100,6 +118,15 @@ const SelectHours: React.FC<Day> = ({
     setPossibleFinishTimeHour(eachHourArray);
   }, [inicialTimeHour]);
 
+  useEffect(() => {
+    if (finishTimeHour === 23 && inicialTimeMinute === 0) {
+      setSpecialCaseMinuteException(true);
+      return;
+    }
+
+    setSpecialCaseMinuteException(false);
+  }, [finishTimeHour]);
+
   const handleChangeMinute = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       setInicialTimeMinute(Number(event.target.value));
@@ -123,10 +150,47 @@ const SelectHours: React.FC<Day> = ({
     [],
   );
 
-  function handleSubmit(data: FormData) {
-    console.log(id);
-    console.log(data);
-  }
+  const handleSubmit = useCallback(
+    async (data: FormData) => {
+      try {
+        const schema = Yup.object().shape({
+          openTimeHour: Yup.number().required('Hora de Inicial é Obrigatorio'),
+          openTimeMinute: Yup.number()
+            .moreThan(-1)
+            .required('Minuto Inicial é Obrigatorio'),
+          closeTimeHour: Yup.number().required('Hora Final  é Obrigatorio'),
+          closeTimeMinute: Yup.number()
+            .moreThan(-1)
+            .required('Minuto Final  é Obrigatorio'),
+        });
+
+        await schema.validate(data, {
+          abortEarly: false,
+        });
+
+        await api.put('/schedules', {
+          scheduleId: id,
+          openTime: `${data.openTimeHour}:${data.openTimeMinute}`,
+          closeTime: `${data.closeTimeHour}:${data.closeTimeMinute}`,
+        });
+
+        renderButtonsDaysPage(!renderButtonsDays);
+
+        addToast({
+          type: 'success',
+          title: 'Salva com Sucesso',
+        });
+      } catch (err) {
+        addToast({
+          type: 'error',
+          title: 'Erro no cadastro de Intervalo',
+          description:
+            'Ocorreu um erro durante o cadastro, verifique os dados e tente novamente.',
+        });
+      }
+    },
+    [addToast, id, renderButtonsDays, renderButtonsDaysPage],
+  );
 
   return (
     <Container>
@@ -156,7 +220,7 @@ const SelectHours: React.FC<Day> = ({
           </Select>
 
           <Select
-            name="openTimeMin"
+            name="openTimeMinute"
             icon={FiClock}
             onChange={handleChangeMinute}
           >
@@ -174,7 +238,7 @@ const SelectHours: React.FC<Day> = ({
           </Select>
         </SectionRow>
 
-        {inicialTimeHour !== -1 ? (
+        {inicialTimeHour !== -1 && inicialTimeMinute !== -1 ? (
           <>
             <SectionRow>
               <span>Até:</span>
@@ -197,12 +261,13 @@ const SelectHours: React.FC<Day> = ({
                 })}
               </Select>
 
-              <Select name="closeTimeMinute" icon={FiClock} disabled>
-                <option value={finishTimeMinute} selected hidden>
+              <Select name="closeTimeMinute" icon={FiClock}>
+                <option value={finishTimeMinute} selected>
                   {finishTimeMinute === -1
                     ? 'Min'
                     : String(finishTimeMinute).padStart(2, '0')}
                 </option>
+                {specialCaseMinuteException && <option value={59}>59</option>}
               </Select>
             </SectionRow>
           </>
