@@ -2,8 +2,6 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
 import { FiArrowLeft } from 'react-icons/fi';
-import DayPicker, { DayModifiers } from 'react-day-picker';
-import 'react-day-picker/lib/style.css';
 
 import {
   Container,
@@ -14,7 +12,6 @@ import {
   NewButton,
   SelectWorkToday,
   Back,
-  Calendar,
 } from './styles';
 
 import Menu from '../../components/Menu';
@@ -25,9 +22,11 @@ import api from '../../services/api';
 
 import SelectHour from '../../components/SelectHours';
 import RestTime from '../../components/RestTime';
+import Calendar from './components/DayPicker';
 
 import { useToast } from '../../hooks/toast';
 import { useReset } from '../../hooks/reset';
+import { useAuth } from '../../hooks/auth';
 
 interface Days {
   id: string;
@@ -47,6 +46,7 @@ const App: React.FC = () => {
   const { renderButtonsDays, renderButtonsDaysPage } = useReset();
 
   const { addToast } = useToast();
+  const { user } = useAuth();
 
   // Recebe os dados da api
   const [arrayInfoDay, setArrayInfoDay] = useState<Days[]>([]);
@@ -61,23 +61,19 @@ const App: React.FC = () => {
 
   const [buttonRestTime, setButtonRestTime] = useState(false);
 
-  const [selectDate, setSelectDate] = useState(new Date());
-
   // Get information by API
   useEffect(() => {
-    api
-      .get<Days[]>('/schedules/9d2eb621-53f8-42cb-9177-5aabac578c6d')
-      .then(response => {
-        setArrayInfoDay(
-          response.data.sort(function (a, b) {
-            return a.day - b.day;
-          }),
-        );
+    api.get<Days[]>(`/schedules/${user.id}`).then(response => {
+      setArrayInfoDay(
+        response.data.sort(function (a, b) {
+          return a.day - b.day;
+        }),
+      );
 
-        if (chosenDay) {
-          setChosenDay(response.data.find(day => day.id === chosenDay.id));
-        }
-      });
+      if (chosenDay) {
+        setChosenDay(response.data.find(day => day.id === chosenDay.id));
+      }
+    });
   }, [renderButtonsDays]);
 
   // verify if the day is a work day or not
@@ -141,42 +137,11 @@ const App: React.FC = () => {
     [addToast, renderButtonsDays, renderButtonsDaysPage],
   );
 
-  const handleDateChange = useCallback((day: Date, modifiers: DayModifiers) => {
-    if (modifiers.available) {
-      setSelectDate(day);
-    }
-  }, []);
-
   return (
     <>
       {/*  <Menu /> */}
 
-      <Calendar>
-        <DayPicker
-          weekdaysShort={['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab']}
-          fromMonth={new Date()}
-          disabledDays={{
-            before: new Date(),
-          }}
-          selectedDays={selectDate}
-          onDayClick={handleDateChange}
-          modifiers={{ available: { daysOfWeek: [0, 1, 2, 3, 4, 5, 6] } }}
-          months={[
-            'Janeiro',
-            'Fevereiro',
-            'Março',
-            'Abril',
-            'Maio',
-            'Junho',
-            'Julho',
-            'Agosto',
-            'Setembro',
-            'Outubro',
-            'Novembro',
-            'Dezembro',
-          ]}
-        />
-      </Calendar>
+      <Calendar />
 
       {chosenDay && (
         <Back>

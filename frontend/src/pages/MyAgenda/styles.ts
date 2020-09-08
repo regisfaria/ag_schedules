@@ -1,5 +1,4 @@
 import styled, { css } from 'styled-components';
-import { shade } from 'polished';
 
 import doctorImg from '../../assets/MinhaAgenda.svg';
 
@@ -206,87 +205,5 @@ export const SelectWorkToday = styled.div`
       font-family: Poppins, sans-serifa;
       color: var(--black);
     }
-  }
-`;
-
-export const Calendar = styled.aside`
-  width: 38rem;
-
-  .DayPicker {
-    border-radius: 10px;
-  }
-
-  .DayPicker-wrapper {
-    padding-bottom: 0;
-    background: #c5c5c5;
-    border-radius: 10px;
-    color: #000;
-  }
-
-  .DayPicker,
-  .DayPicker-Month {
-    width: 100%;
-  }
-
-  .DayPicker-NavButton {
-    color: #999591 !important;
-    top: 1.3rem !important;
-  }
-
-  .DayPicker-NavButton--prev {
-    right: auto;
-    left: 1.5em;
-    margin-right: 0;
-  }
-
-  .DayPicker-Month {
-    border-collapse: separate;
-    border-spacing: 8px;
-    margin: 16px 0 0 0;
-    padding: 16px;
-    background-color: #fff;
-    border-radius: 0 0 10px 10px;
-  }
-
-  .DayPicker-Caption {
-    margin-bottom: 1em;
-    padding: 0 1em;
-    color: #000;
-
-    > div {
-      text-align: center;
-    }
-  }
-
-  .DayPicker-Day {
-    width: 40px;
-    height: 40px;
-  }
-
-  .DayPicker-Day--available:not(.DayPicker-Day--outside) {
-    background: #fcda80;
-    border-radius: 10px;
-    color: #464646;
-  }
-
-  .DayPicker:not(.DayPicker--interactionDisabled)
-    .DayPicker-Day:not(.DayPicker-Day--disabled):not(.DayPicker-Day--selected):not(.DayPicker-Day--outside):hover {
-    background: ${shade(0.2, '#3e3b47')};
-  }
-
-  .DayPicker-Day--today {
-    font-weight: normal;
-  }
-
-  .DayPicker-Day--disabled {
-    color: #808080 !important;
-    background: #d9d9d9 !important;
-    border-radius: 10px;
-  }
-
-  .DayPicker-Day--selected {
-    background: #f9b90d !important;
-    border-radius: 10px;
-    color: #232129 !important;
   }
 `;
