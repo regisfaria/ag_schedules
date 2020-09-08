@@ -34,12 +34,105 @@ export const Container = styled.div`
 
     #ConsultCalendar {
       order: 1;
+
+      padding: 2rem;
+
+      strong {
+        font-size: 1.8rem;
+      }
+
+      span {
+        font-weight: 200;
+        font-size: 1.4rem;
+        font-style: italic;
+        color: var(--table-gray);
+        padding: 0 1.2rem;
+      }
+
+      .DayPicker {
+        z-index: 0;
+        position: initial;
+        border-radius: 10px;
+      }
+
+      .DayPicker-wrapper {
+        padding-bottom: 0;
+        background: #3e3b47;
+        border-radius: 10px;
+      }
+
+      .DayPicker,
+      .DayPicker-Month {
+        width: 100%;
+      }
+
+      .DayPicker-NavButton {
+        color: #999591 !important;
+      }
+
+      .DayPicker-NavButton--prev {
+        right: auto;
+        left: 1.5em;
+        margin-right: 0;
+      }
+
+      .DayPicker-Month {
+        border-collapse: separate;
+        border-spacing: 8px;
+        margin: 16px 0 0 0;
+        padding: 16px;
+        background-color: #28262e;
+        border-radius: 0 0 10px 10px;
+      }
+
+      .DayPicker-Caption {
+        margin-bottom: 1em;
+        padding: 0 1em;
+        color: #f4ede8;
+
+        > div {
+          text-align: center;
+        }
+      }
+
+      .DayPicker-Day {
+        width: 40px;
+        height: 40px;
+      }
+
+      .DayPicker-Day--available:not(.DayPicker-Day--outside) {
+        background: #3e3b47;
+        border-radius: 10px;
+        color: #fff;
+      }
+
+      .DayPicker:not(.DayPicker--interactionDisabled)
+        .DayPicker-Day:not(.DayPicker-Day--disabled):not(.DayPicker-Day--selected):not(.DayPicker-Day--outside):hover {
+        background: ${shade(0.2, '#3e3b47')};
+      }
+
+      .DayPicker-Day--today {
+        font-weight: normal;
+      }
+
+      .DayPicker-Day--disabled {
+        color: #666360 !important;
+        background: transparent !important;
+      }
+
+      .DayPicker-Day--selected {
+        background: #ff9000 !important;
+        border-radius: 10px;
+        color: #232129 !important;
+      }
     }
   }
 
   @media only screen and (max-width: 450px) and (min-height: 500px) and (max-height: 680px) {
     height: 100%;
+  }
 
+  /* @media (max-width: 1024px) {
     main {
       #ConsultContent {
         order: 1;
@@ -49,7 +142,7 @@ export const Container = styled.div`
         order: 0;
       }
     }
-  }
+  } */
 `;
 
 export const ConsultsList = styled.div`
@@ -60,6 +153,7 @@ export const ConsultsList = styled.div`
   height: 40rem;
 
   align-items: center;
+  justify-content: center;
 
   padding: 1rem 0 1rem 0;
 
@@ -78,15 +172,6 @@ const blurEffectIn = keyframes`
   }
   100% {
     opacity: 1;
-  }
-`;
-
-const blurEffectOut = keyframes`
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
   }
 `;
 
@@ -111,14 +196,41 @@ export const ConsultCard = styled.div<ConsultCardProps>`
     justify-content: space-evenly;
 
     margin: 0.8rem 0 0.8rem 1rem;
+    div {
+      display: flex;
+      flex-direction: row;
 
-    p {
-      color: var(--black);
+      align-items: center;
+
+      p {
+        color: var(--black);
+      }
+
+      button {
+        border: none;
+        background: none;
+
+        margin-left: 1rem;
+
+        svg {
+          position: relative;
+          top: 3px;
+          color: var(--black);
+          transition: color 0.2s;
+        }
+
+        &:hover {
+          svg {
+            color: ${shade(0.3, '#192A3E')};
+            transform: scale(1.1);
+          }
+        }
+      }
     }
   }
 
   ${props =>
-    props.status === 'Em Aberto' &&
+    props.status === 'Em aberto' &&
     css`
       background-color: #b8daf3;
     `}
@@ -161,6 +273,46 @@ export const ConsultCard = styled.div<ConsultCardProps>`
         `}
 `;
 
+export const HiddenContent = styled.section`
+  display: flex;
+  flex-direction: column;
+
+  justify-content: space-evenly;
+
+  margin: 0.8rem 0 0.8rem 1rem;
+  div {
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+
+    p {
+      color: var(--black);
+    }
+
+    button {
+      border: none;
+      background: none;
+
+      margin-left: 1rem;
+
+      svg {
+        position: relative;
+        top: 3px;
+        color: var(--green);
+        transition: color 0.2s;
+      }
+
+      &:hover {
+        svg {
+          color: ${shade(0.3, '#192A3E')};
+          transform: scale(1.1);
+        }
+      }
+    }
+  }
+`;
+
 export const CardRightContent = styled.div<ExpandedProps>`
   display: flex;
   align-items: flex-start;
@@ -175,30 +327,35 @@ export const CardRightContent = styled.div<ExpandedProps>`
     border-radius: 50%;
   }
 
-  button {
-    border: none;
-    background: none;
+  div {
+    display: flex;
+    flex-direction: column;
 
-    margin: 1.5rem 1.5rem 0 1rem;
+    button {
+      border: none;
+      background: none;
 
-    svg {
-      color: var(--black);
-      transition: color 0.2s;
-    }
+      margin: 1.5rem 1.5rem 0 1rem;
 
-    &:hover {
       svg {
-        color: ${shade(0.3, '#192A3E')};
-        transform: scale(1.1);
+        color: var(--black);
+        transition: color 0.2s;
+      }
+
+      &:hover {
+        svg {
+          color: ${shade(0.3, '#192A3E')};
+          transform: scale(1.1);
+        }
       }
     }
   }
 
   @media (min-width: 1024px) {
-    button {
-      margin: 1rem 1.5rem 0 5rem;
+    div {
+      button {
+        margin: 1rem 1.5rem 0 5rem;
+      }
     }
   }
 `;
-
-export const HiddenContent = styled.div<ExpandedProps>``;
