@@ -9,6 +9,7 @@ import RegisterSpecialist from '../pages/RegisterSpecialist';
 import RegisterSupervisor from '../pages/RegisterSupervisor';
 import RegisterPacient from '../pages/RegisterPacient';
 import RegisterConsult from '../pages/RegisterConsult';
+import Consults from '../pages/Consults';
 import Profile from '../pages/Profile';
 import MyAgenda from '../pages/MyAgenda';
 
@@ -17,6 +18,7 @@ const Routes: React.FC = () => (
     <Route path="/" exact component={Login} />
     <Route path="/dashboard" component={Dashboard} isPrivate />
     <Route path="/consults/create" component={RegisterConsult} isPrivate />
+    <Route path="/consults" component={Consults} isPrivate />
     <Route
       path="/register/specialist"
       component={RegisterSpecialist}

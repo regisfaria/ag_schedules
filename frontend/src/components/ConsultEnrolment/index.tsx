@@ -192,27 +192,6 @@ const ConsultEnrolment: React.FC = () => {
         ))}
       </Select>
 
-      {/* {specialistProfile && (
-        <SpecialistInfo>
-          <div>
-            <strong>{selectedSpecialistName}</strong>
-            <p>
-              Endereço:{' '}
-              {specialistProfile.city
-                ? `${specialistProfile.state}, ${specialistProfile.city}`
-                : 'Nenhum endereço no perfil'}
-            </p>
-            <span>
-              Telefone:{' '}
-              {specialistProfile.phoneNumber
-                ? specialistProfile.phoneNumber
-                : 'Nenhum telefone no perfil'}
-            </span>
-          </div>
-          <img src={specialistProfile.imageUrl} alt="profilePicture" />
-        </SpecialistInfo>
-      )} */}
-
       <SpecialistInfo profileExists={!!specialistProfile}>
         <div>
           <strong>{selectedSpecialistName}</strong>

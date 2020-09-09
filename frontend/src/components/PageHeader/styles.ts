@@ -12,6 +12,7 @@ export const Container = styled.header`
 
   strong {
     font-size: 2rem;
+    color: var(--table-black);
   }
 
   span {
