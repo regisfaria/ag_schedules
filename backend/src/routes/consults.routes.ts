@@ -11,6 +11,7 @@ import CreateConsultService from '../services/Consults/CreateConsultService';
 import DeleteConsultService from '../services/Consults/DeleteConsultService';
 import ConvertHourToStringService from '../services/Consults/ConvertHourToStringService';
 import FormatConsultService from '../services/Consults/FormatConsultService';
+import UpdateConsultService from '../services/Consults/UpdateConsultService';
 
 const consultsRouter = Router();
 
@@ -47,26 +48,30 @@ consultsRouter.get('/:specialistId', async (request, response) => {
   return response.json(consults);
 });
 
-consultsRouter.get('/createdBy/:supervisorId', async (request, response) => {
-  const { supervisorId } = request.params;
+consultsRouter.get(
+  '/createdBy/:supervisorId/:specialistId',
+  async (request, response) => {
+    const { supervisorId, specialistId } = request.params;
 
-  const consultsRepository = getRepository(Consult);
-  const formatConsult = new FormatConsultService();
+    const consultsRepository = getRepository(Consult);
+    const formatConsult = new FormatConsultService();
 
-  const consults: Consult[] = [];
-  const unparsedConsults = await consultsRepository.find({
-    where: {
-      createdById: supervisorId,
-    },
-  });
+    const consults: Consult[] = [];
+    const unparsedConsults = await consultsRepository.find({
+      where: {
+        createdById: supervisorId,
+        specialistId,
+      },
+    });
 
-  for (const consult of unparsedConsults) {
-    const parsedConsult = await formatConsult.execute(consult);
-    consults.push(parsedConsult);
-  }
+    for (const consult of unparsedConsults) {
+      const parsedConsult = await formatConsult.execute(consult);
+      consults.push(parsedConsult);
+    }
 
-  return response.json(consults);
-});
+    return response.json(consults);
+  },
+);
 
 consultsRouter.get('/:specialistId/date', async (request, response) => {
   const { specialistId } = request.params;
@@ -101,6 +106,24 @@ consultsRouter.post('/', async (request, response) => {
     pacientId: pacient,
     date: consultDate,
     hour: consultHour,
+    payment,
+    status,
+  });
+
+  return response.json(consult);
+});
+
+consultsRouter.put('/:id', async (request, response) => {
+  const { id } = request.params;
+
+  const { consultDate, consultHour, payment, status } = request.body;
+
+  const updateConsult = new UpdateConsultService();
+
+  const consult = await updateConsult.execute({
+    id,
+    consultDate,
+    consultHour,
     payment,
     status,
   });
