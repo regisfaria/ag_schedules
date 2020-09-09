@@ -132,7 +132,7 @@ export const Container = styled.div`
     height: 100%;
   }
 
-  /* @media (max-width: 1024px) {
+  @media (max-width: 1024px) {
     main {
       #ConsultContent {
         order: 1;
@@ -142,7 +142,7 @@ export const Container = styled.div`
         order: 0;
       }
     }
-  } */
+  }
 `;
 
 export const ConsultsList = styled.div`
@@ -153,7 +153,7 @@ export const ConsultsList = styled.div`
   height: 40rem;
 
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 
   padding: 1rem 0 1rem 0;
 
@@ -163,6 +163,8 @@ export const ConsultsList = styled.div`
   @media (min-width: 1024px) {
     width: 70rem;
     height: 70rem;
+
+    justify-content: center;
   }
 `;
 
@@ -247,6 +249,12 @@ export const ConsultCard = styled.div<ConsultCardProps>`
       background-color: #f7685b;
     `}
 
+  ${props =>
+    props.status === 'Cancelada' &&
+    css`
+      background-color: #c2cfe0;
+    `}
+
   @media (min-width: 1024px) {
     width: 60rem;
   }
@@ -280,17 +288,56 @@ export const HiddenContent = styled.section`
   justify-content: space-evenly;
 
   margin: 0.8rem 0 0.8rem 1rem;
+
   div {
     display: flex;
     flex-direction: row;
 
     align-items: center;
+    justify-content: flex-start;
 
     p {
       color: var(--black);
     }
 
     button {
+      border: none;
+      background: none;
+
+      margin-left: 1rem;
+
+      svg {
+        color: var(--green);
+        transition: color 0.2s;
+      }
+
+      &:hover {
+        svg {
+          color: ${shade(0.3, '#192A3E')};
+          transform: scale(1.1);
+        }
+      }
+    }
+  }
+
+  form {
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    p {
+      color: var(--black);
+    }
+
+    div {
+      padding: 0;
+      margin: 0.5rem 0 0.5rem 0;
+      height: 2rem;
+    }
+
+    #confirmBtn {
       border: none;
       background: none;
 
@@ -305,8 +352,29 @@ export const HiddenContent = styled.section`
 
       &:hover {
         svg {
-          color: ${shade(0.3, '#192A3E')};
-          transform: scale(1.1);
+          color: ${shade(0.3, '#09644b')};
+          transform: scale(1.2);
+        }
+      }
+    }
+
+    #cancelBtn {
+      border: none;
+      background: none;
+
+      margin-left: 1rem;
+
+      svg {
+        position: relative;
+        top: 3px;
+        color: var(--red);
+        transition: color 0.2s;
+      }
+
+      &:hover {
+        svg {
+          color: ${shade(0.3, '#F7685B')};
+          transform: scale(1.2);
         }
       }
     }

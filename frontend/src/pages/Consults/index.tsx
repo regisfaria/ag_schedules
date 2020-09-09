@@ -9,18 +9,27 @@ import { Redirect } from 'react-router-dom';
 import DayPicker, { DayModifiers } from 'react-day-picker';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
+import { parseISO, format } from 'date-fns';
 
-import { FiMaximize2, FiMinimize2, FiEdit3 } from 'react-icons/fi';
+import {
+  FiMaximize2,
+  FiMinimize2,
+  FiEdit3,
+  FiCheck,
+  FiXCircle,
+} from 'react-icons/fi';
 import { GoChecklist } from 'react-icons/go';
 
-import { parseISO, format } from 'date-fns/esm';
+import { useToast } from '../../hooks/toast';
 import { useAuth } from '../../hooks/auth';
+import { useReset } from '../../hooks/reset';
 
 import api from '../../services/api';
 
 import Menu from '../../components/Menu';
 import Main from '../../components/Main';
 import Section from '../../components/Section';
+import Select from '../../components/Select';
 import PageHeader from '../../components/PageHeader';
 
 import {
@@ -30,6 +39,7 @@ import {
   HiddenContent,
   CardRightContent,
 } from './styles';
+
 import 'react-day-picker/lib/style.css';
 
 interface ConsultsResponse {
@@ -53,10 +63,18 @@ interface SpecialistResponse {
   name: string;
 }
 
-const Consults: React.FC = () => {
-  const specialistUpdateFormRef = useRef<FormHandles>(null);
+interface FormStatusData {
+  status: string;
+}
 
+interface FormPaymentData {
+  payment: string;
+}
+
+const Consults: React.FC = () => {
   const { user } = useAuth();
+  const { addToast } = useToast();
+  const { resetConsultList, resetConsultListPage } = useReset();
 
   const [consults, setConsults] = useState<ConsultsResponse[]>([]);
   const [displayableConsults, setDisplayableConsults] = useState<
@@ -66,6 +84,10 @@ const Consults: React.FC = () => {
   const [selectedSpecialistId, setSelectedSpecialistId] = useState('');
   const [selectedDay, setSelectedDay] = useState<Date>(new Date());
   const [selectedConsultId, setSelectedConsultId] = useState('');
+  const [
+    supervisorUpdateButtonClicked,
+    setSupervisorUpdateButtonClicked,
+  ] = useState(false);
 
   const handleSelectedSpecialist = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
@@ -79,14 +101,11 @@ const Consults: React.FC = () => {
     [],
   );
 
-  const handleDayClick = useCallback(
-    async (day: Date, modifiers: DayModifiers) => {
-      if (modifiers.available) {
-        setSelectedDay(day);
-      }
-    },
-    [],
-  );
+  const handleDayClick = useCallback((day: Date, modifiers: DayModifiers) => {
+    if (modifiers.available) {
+      setSelectedDay(day);
+    }
+  }, []);
 
   const handleSelectedConsult = useCallback(
     (id: string) => {
@@ -102,17 +121,25 @@ const Consults: React.FC = () => {
   );
 
   useEffect(() => {
+    if (resetConsultList) {
+      resetConsultListPage(false);
+    }
+
     if (user.type === 'specialist') {
       api.get(`consults/${user.id}`).then(response => {
         setConsults(response.data);
-        console.log(response.data);
       });
     } else {
-      api.get(`consults/createdBy/${user.id}`).then(response => {
-        setConsults(response.data);
-      });
+      if (selectedSpecialistId === '') {
+        return;
+      }
+      api
+        .get(`consults/createdBy/${user.id}/${selectedSpecialistId}`)
+        .then(response => {
+          setConsults(response.data);
+        });
     }
-  }, []);
+  }, [selectedSpecialistId, resetConsultList]);
 
   useEffect(() => {
     if (user.type === 'specialist') {
@@ -156,7 +183,10 @@ const Consults: React.FC = () => {
       <Menu />
 
       <Container>
-        <PageHeader title="Consultas" />
+        <PageHeader
+          title="Consultas"
+          subTitle="Escolha um dia para ver as consultas naquele dia"
+        />
         {user.type === 'supervisor' && (
           <div>
             <span>Escolha um especialista:&nbsp;</span>
@@ -192,31 +222,11 @@ const Consults: React.FC = () => {
                               Especialista responsavel: {consult.specialistName}
                             </p>
                             <p>
-                              Hora: de {consult.pacientName} até{' '}
+                              Hora: de {consult.formatedHour} até{' '}
                               {consult.formatedEndHour}
                             </p>
-                            <Form
-                              ref={specialistUpdateFormRef}
-                              onSubmit={() => {}}
-                            >
-                              <div>
-                                <p>Status: {consult.status}</p>
-
-                                {user.type === 'specialist' && (
-                                  <button type="button">
-                                    <FiEdit3 size={16} />
-                                  </button>
-                                )}
-                              </div>
-                              <div>
-                                <p>Pagamento: {consult.payment}</p>
-                                {user.type === 'specialist' && (
-                                  <button type="button">
-                                    <FiEdit3 size={16} />
-                                  </button>
-                                )}
-                              </div>
-                            </Form>
+                            <p>Status: {consult.status}</p>
+                            <p>Pagamento: {consult.payment}</p>
                           </>
                         ) : (
                           <>
