@@ -1,13 +1,11 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { parseISO } from 'date-fns';
+import { parseISO, getYear, getDate, getMonth } from 'date-fns';
 import DayPicker, {
   DayModifiers,
   DateUtils,
   DayPickerProps,
 } from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
-import { Form } from '@unform/web';
-import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
 
 import { Container, Modal, Legend } from './styles';
@@ -21,6 +19,7 @@ import PageHeader from '../../../../components/PageHeader';
 const Calendar: React.FC = () => {
   const { user } = useAuth();
   const formRef = useRef(null);
+  const dayPickerRef = useRef(null);
 
   const [selectDate, setSelectDate] = useState<Date[]>([]);
 
@@ -116,79 +115,101 @@ const Calendar: React.FC = () => {
     [selectDate, selectHoliday],
   );
 
-  const handleSubmit = useCallback(
-    (data: object) => {
-      try {
-        console.log(data);
-        const schema = Yup.object().shape({
-          selectDate: Yup.array().min(1),
-        });
-      } catch (err) {
-        alert('Erro');
+  const handleSubmit = useCallback(async (dates: Date[], holiday: Date[]) => {
+    try {
+      if (!dates.length && !holiday.length) {
+        throw new Error();
       }
-    },
-    [selectDate],
-  );
+
+      const schema = Yup.array().max(50).of(Yup.date());
+
+      await schema.validate(dates, {
+        abortEarly: false,
+      });
+
+      await schema.validate(holiday, {
+        abortEarly: false,
+      });
+
+      console.log(
+        dates.map(
+          date => `${getYear(date)}-${getMonth(date)}-${getDate(date)}`,
+        ),
+      );
+
+      await dates.map(date =>
+        api.post('/schedules/holiday', {
+          day: `${getYear(date)}-${getMonth(date) + 1}-${getDate(date)}`,
+        }),
+      );
+    } catch (err) {
+      alert('erro');
+    }
+  }, []);
 
   return (
     <Container>
-      <Form ref={formRef} onSubmit={handleSubmit}>
-        <PageHeader
-          title="Folgas"
-          subTitle="Marque no calendario os dias de folgas"
+      <PageHeader
+        title="Folgas"
+        subTitle="Marque no calendario os dias de folgas"
+      />
+      <Modal>
+        <DayPicker
+          weekdaysShort={['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab']}
+          fromMonth={new Date()}
+          selectedDays={[...selectDate, ...selectHoliday]}
+          onDayClick={handleDateChange}
+          modifiers={{
+            available: { daysOfWeek: specialistAvailableDays },
+            holidays: validHoliday,
+          }}
+          disabledDays={[
+            { daysOfWeek: specialistUnavailableDays },
+            { before: new Date() },
+          ]}
+          showOutsideDays
+          months={[
+            'Janeiro',
+            'Fevereiro',
+            'Março',
+            'Abril',
+            'Maio',
+            'Junho',
+            'Julho',
+            'Agosto',
+            'Setembro',
+            'Outubro',
+            'Novembro',
+            'Dezembro',
+          ]}
         />
-        <Modal>
-          <DayPicker
-            ref={formRef}
-            weekdaysShort={['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab']}
-            fromMonth={new Date()}
-            selectedDays={[...selectDate, ...selectHoliday]}
-            onDayClick={handleDateChange}
-            modifiers={{
-              available: { daysOfWeek: specialistAvailableDays },
-              holidays: validHoliday,
-            }}
-            disabledDays={[
-              { daysOfWeek: specialistUnavailableDays },
-              { before: new Date() },
-            ]}
-            showOutsideDays
-            months={[
-              'Janeiro',
-              'Fevereiro',
-              'Março',
-              'Abril',
-              'Maio',
-              'Junho',
-              'Julho',
-              'Agosto',
-              'Setembro',
-              'Outubro',
-              'Novembro',
-              'Dezembro',
-            ]}
-          />
 
-          <Legend>
-            <div id="Hoje">
-              <div />
-              <span>Hoje</span>
-            </div>
+        <Legend>
+          <div id="Hoje">
+            <div />
+            <span>Hoje</span>
+          </div>
 
-            <div id="DiaDeFolga">
-              <div />
-              <span>Dia de Folga</span>
-            </div>
+          <div id="DiaDeFolga">
+            <div />
+            <span>Dia de Folga</span>
+          </div>
 
-            <div id="DiasSelecionados">
-              <div />
-              <span>Dias Selecionados</span>
-            </div>
-          </Legend>
-        </Modal>
+          <div id="DiasSelecionados">
+            <div />
+            <span>Dias Selecionados</span>
+          </div>
+        </Legend>
+      </Modal>
 
-        <Button type="submit">Salvar</Button>
-      </Form>
+      <Button
+        type="submit"
+        onClick={() => {
+          handleSubmit(selectDate, selectHoliday);
+        }}
+      >
+        Salvar
+      </Button>
     </Container>
   );
 };

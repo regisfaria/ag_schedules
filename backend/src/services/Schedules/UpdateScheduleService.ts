@@ -25,6 +25,13 @@ export default class UpdateScheduleService {
       throw new AppError('Esse especialista nao tem agenda');
     }
 
+    if (Number(openTime) === -1 && Number(closeTime) === -1) {
+      schedule.openTime = Number(openTime);
+      schedule.closeTime = Number(closeTime);
+
+      return schedulesRepository.save(schedule);
+    }
+
     const parsedOpenTime = ConvertStringHourToInt(openTime);
     const parsedCloseTime = ConvertStringHourToInt(closeTime);
 

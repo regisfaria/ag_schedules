@@ -34,12 +34,12 @@ export default class CreateUserService {
       );
     }
 
-    if (type === 'supervisor' && currentUser?.type !== 'admin') {
+    /* if (type === 'supervisor' && currentUser?.type !== 'admin') {
       throw new AppError(
         'Apenas usuarios administradores podem criar usuarios supervisores',
         401,
       );
-    }
+    } */
 
     const emailExists = await usersRepository.findOne({
       where: {

@@ -16,6 +16,7 @@ import CreateRestTimeService from '../services/RestTimes/CreateRestTimeService';
 import FormatRestTimes from '../services/RestTimes/FormatRestTimesService';
 import UpdateRestTime from '../services/RestTimes/UpdateRestTimeService';
 import DeleteRestTime from '../services/RestTimes/DeleteRestTimeService';
+import DeleteAllRestTime from '../services/RestTimes/DeleteAllRestTimeService';
 
 import CreateHolidayService from '../services/Holidays/CreateHolidayService';
 import ListValidHolidays from '../services/Holidays/ListValidHolidays';
@@ -68,7 +69,6 @@ schedulesRouter.post('/rest', async (request, response) => {
 schedulesRouter.post('/holiday', async (request, response) => {
   const { day } = request.body;
   const specialistId = request.user.id;
-
   const createHoliday = new CreateHolidayService();
 
   const holiday = await createHoliday.execute({
@@ -165,6 +165,19 @@ schedulesRouter.delete('/rest/delete/:id', async (request, response) => {
 
   return response.json(204).send;
 });
+
+schedulesRouter.delete(
+  '/rest/deleteAll/:scheduleAvailabilityId',
+  async (request, response) => {
+    const { scheduleAvailabilityId } = request.params;
+
+    const deleteAllRestTime = new DeleteAllRestTime();
+
+    await deleteAllRestTime.execute(scheduleAvailabilityId);
+
+    return response.json(204).send;
+  },
+);
 
 schedulesRouter.get('/availableDays/:id', async (request, response) => {
   const { id } = request.params;
