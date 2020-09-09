@@ -18,7 +18,6 @@ export const Container = styled.div<ContainerProps>`
   width: 100%;
   max-width: 70rem;
 
-
   height: 5rem;
 
   border: 2px solid var(--white);
@@ -47,8 +46,8 @@ export const Container = styled.div<ContainerProps>`
     `}
 
     span {
-      font-size: 1.2rem;
-    }
+    font-size: 1.2rem;
+  }
 
   input {
     background: transparent;
@@ -58,7 +57,6 @@ export const Container = styled.div<ContainerProps>`
 
     width: 100%;
     font-size: 1.4rem;
-
 
     &::placeholder {
       color: var(--input-placeholder);
@@ -70,10 +68,9 @@ export const Container = styled.div<ContainerProps>`
   }
 
   @media (min-width: 425px) {
-
-      span {
-        font-size: 1.4rem;
-      }
+    span {
+      font-size: 1.4rem;
+    }
   }
 `;
 

@@ -194,6 +194,7 @@ const Profile: React.FC = () => {
               disabled={!editProfile}
             />
           </TextAreaContainer>
+
           <ButtonEditContainer cancel={Boolean(editProfile)}>
             <Button type="button" onClick={handleEditProfile}>
               Editar

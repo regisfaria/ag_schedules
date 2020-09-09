@@ -27,8 +27,6 @@ export const Container = styled.div<ContainerProps>`
   border: 2px solid var(--white);
   color: var(--input-placeholder);
 
-
-
   & + div {
     margin-top: 1.6rem;
   }
@@ -57,7 +55,7 @@ export const Container = styled.div<ContainerProps>`
     background: transparent;
     border: 0;
     color: var(--black);
-    font-size:14px;
+    font-size: 14px;
     resize: none;
     height: 100%;
 

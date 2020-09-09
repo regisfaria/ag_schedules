@@ -15,8 +15,6 @@ export const Container = styled.div`
 
   width: 100%;
 
-  overflow-x: hidden;
-
   form {
     display: flex;
     flex-direction: column;
@@ -27,10 +25,18 @@ export const Container = styled.div`
     width: 90%;
   }
 
+  @media (min-width: 770px) {
+    form {
+      main {
+        max-width: 68.7rem;
+      }
+    }
+  }
+
   @media (min-width: 1024px) {
     form {
       main {
-        flex-direction: row;
+        max-width: 123rem;
       }
     }
   }
@@ -45,7 +51,7 @@ export const Header = styled.div`
 
   height: 15.625rem;
 
-  width: 100vw;
+  width: 100%;
 
   img {
     margin-top: 15.625rem;
@@ -121,4 +127,12 @@ export const TextAreaContainer = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
+
+  @media (min-width: 770px) {
+    max-width: 68.7rem;
+  }
+
+  @media (min-width: 1024px) {
+    max-width: 120rem;
+  }
 `;
