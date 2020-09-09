@@ -105,7 +105,7 @@ const RegisterConsult: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (resetCreateConsult === true) {
+    if (resetCreateConsult) {
       resetCreateConsultPage(false);
       setModalStatus(false);
     }
