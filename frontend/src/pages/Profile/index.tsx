@@ -1,8 +1,18 @@
-import React, { useEffect, useState, ChangeEvent, useCallback } from 'react';
+import React, {
+  useRef,
+  useEffect,
+  useState,
+  ChangeEvent,
+  useCallback,
+} from 'react';
 import { Form } from '@unform/web';
+import { FormHandles } from '@unform/core';
+
 import { Redirect } from 'react-router-dom';
 import axios from 'axios';
+import { FiEdit3 } from 'react-icons/fi';
 
+import api from '../../services/api';
 import Menu from '../../components/Menu';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -10,9 +20,10 @@ import Select from '../../components/Select';
 import TextArea from '../../components/TextArea';
 import Main from '../../components/Main';
 import Section from '../../components/Section';
+import ReactInputMask from '../../components/ReactInputMask';
 
 import { useAuth } from '../../hooks/auth';
-/* import { useToast } from '../../hooks/toast'; */
+import { useToast } from '../../hooks/toast';
 
 import {
   Container,
@@ -20,6 +31,7 @@ import {
   ButtonEditContainer,
   TextAreaContainer,
   ButtonSaveAndCancelContainer,
+  AvatarInput,
 } from './styles';
 
 interface IBGEUFResponse {
@@ -35,17 +47,40 @@ interface StatesInfo {
   uf: string;
   name: string;
 }
-let controlEdit = true;
+
+interface ProfileData {
+  name: string;
+  email: string;
+  phone?: string;
+  cep?: string;
+  uf?: string;
+  city?: string;
+  street?: string;
+  andressNumber?: string;
+  description?: string;
+}
 
 const Profile: React.FC = () => {
-  /* const { addToast } = useToast(); */
+  const { addToast } = useToast();
   const { user } = useAuth();
-  const [editProfile, setEditProfile] = useState(!controlEdit);
+  const [editProfile, setEditProfile] = useState(false);
+  const formRef = useRef<FormHandles>(null);
 
   const [states, setStates] = useState<StatesInfo[]>([{} as StatesInfo]);
   const [cities, setCities] = useState<string[]>([]);
   const [selectedCity, setSelectedCity] = useState('0');
   const [selectedUf, setSelectedUF] = useState('0');
+  const [profileInformations, setProfileInformations] = useState<ProfileData>({
+    name: 'All Next',
+    email: 'allnext@allnext.com',
+    phone: '',
+    cep: '',
+    uf: '',
+    city: '',
+    street: '',
+    andressNumber: '',
+    description: '',
+  });
 
   useEffect(() => {
     axios
@@ -92,8 +127,39 @@ const Profile: React.FC = () => {
   }
 
   const handleEditProfile = useCallback(() => {
-    controlEdit = !controlEdit;
-    setEditProfile(!controlEdit);
+    setEditProfile(true);
+  }, []);
+
+  const handleCancelEditProfile = useCallback(() => {
+    setEditProfile(false);
+    formRef.current?.setFieldValue('phone', profileInformations.phone);
+    formRef.current?.setFieldValue('cep', profileInformations.cep);
+    formRef.current?.setFieldValue('uf', profileInformations.uf);
+    formRef.current?.setFieldValue('city', profileInformations.city);
+    formRef.current?.setFieldValue('street', profileInformations.street);
+    formRef.current?.setFieldValue(
+      'addressNumber',
+      profileInformations.andressNumber,
+    );
+    formRef.current?.setFieldValue(
+      'description',
+      profileInformations.description,
+    );
+  }, [profileInformations]);
+
+  const handleSubmit = useCallback((data: ProfileData) => {
+    setProfileInformations(element => {
+      return {
+        ...element,
+        phone: data.phone,
+        cep: data.cep,
+        uf: data.uf,
+        city: data.city,
+        street: data.street,
+        andressNumber: data.andressNumber,
+        description: data.description,
+      };
+    });
   }, []);
 
   return (
@@ -103,45 +169,57 @@ const Profile: React.FC = () => {
       <Menu />
       <Container>
         <Header>
-          <img
-            src="https://avatars1.githubusercontent.com/u/39497501?s=460&u=df068176118dc47cbf565206307bbf62012fdb8b&v=4"
-            alt="ProfileImage"
-          />
+          <AvatarInput>
+            <img
+              src="https://avatars0.githubusercontent.com/u/69481836?s=200&v=4"
+              alt="ProfileImage"
+            />
+            <button type="button">
+              <FiEdit3 />
+            </button>
+          </AvatarInput>
         </Header>
-        <Form onSubmit={() => {}}>
+        <Form ref={formRef} onSubmit={handleSubmit}>
           <Main>
             <Section>
-              <Input name="name" type="text" text="Nome:&nbsp;" disabled />
+              <Input
+                name="name"
+                type="text"
+                text="Nome:&nbsp;"
+                defaultValue={profileInformations.name}
+                disabled
+              />
 
               <Input
                 name="email"
                 type="text"
                 text="Email:&nbsp;"
                 id="InputDisable"
+                defaultValue={profileInformations.email}
                 disabled
               />
 
-              <Input
-                name="fone"
-                type="text"
+              <ReactInputMask
+                name="phone"
+                mask="+55 (99)99999-9999"
+                type="tel"
                 text="Telefone:&nbsp;"
                 disabled={!editProfile}
+                defaultValue={profileInformations.phone}
               />
 
-              <Input
+              <ReactInputMask
                 name="cep"
-                type="text"
+                mask="99.999-999"
+                type="string"
                 text="CEP:&nbsp;"
                 disabled={!editProfile}
+                defaultValue={profileInformations.cep}
               />
-            </Section>
 
-            <Section>
               <Select
-                onChange={handleSelectedUf}
-                value={selectedUf}
                 name="uf"
-                id="uf"
+                onChange={handleSelectedUf}
                 disabled={!editProfile}
               >
                 <option value="" selected hidden>
@@ -153,12 +231,12 @@ const Profile: React.FC = () => {
                   </option>
                 ))}
               </Select>
+            </Section>
 
+            <Section>
               <Select
-                onChange={handleSelectedCity}
-                value={selectedCity}
                 name="city"
-                id="city"
+                onChange={handleSelectedCity}
                 disabled={!editProfile}
               >
                 <option value="" selected hidden>
@@ -181,7 +259,14 @@ const Profile: React.FC = () => {
               <Input
                 name="addressNumber"
                 type="text"
-                text="Número/Complemento:&nbsp;"
+                text="Número:&nbsp;"
+                disabled={!editProfile}
+              />
+
+              <Input
+                name="addressComplement"
+                type="text"
+                text="Complemento:&nbsp;"
                 disabled={!editProfile}
               />
             </Section>
@@ -189,7 +274,7 @@ const Profile: React.FC = () => {
 
           <TextAreaContainer>
             <TextArea
-              name="descrição"
+              name="description"
               placeholder="Descrição:&nbsp;"
               disabled={!editProfile}
             />
@@ -202,8 +287,8 @@ const Profile: React.FC = () => {
           </ButtonEditContainer>
 
           <ButtonSaveAndCancelContainer cancel={Boolean(editProfile)}>
-            <Button>Salvar</Button>
-            <Button type="button" onClick={handleEditProfile}>
+            <Button type="submit">Salvar</Button>
+            <Button type="button" onClick={handleCancelEditProfile}>
               Cancelar
             </Button>
           </ButtonSaveAndCancelContainer>

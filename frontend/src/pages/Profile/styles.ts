@@ -37,6 +37,7 @@ export const Container = styled.div`
     form {
       main {
         max-width: 123rem;
+        align-items: flex-start;
       }
     }
   }
@@ -52,18 +53,50 @@ export const Header = styled.div`
   height: 15.625rem;
 
   width: 100%;
+`;
 
+export const AvatarInput = styled.div`
+  margin-top: 15.625rem;
+
+  position: relative;
   img {
-    margin-top: 15.625rem;
-    height: 13rem;
     border-radius: 50%;
+    height: 13rem !important;
+    width: 13rem !important;
     z-index: 1;
+  }
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    width: 4.8rem;
+    height: 4.8rem;
+
+    background-color: black;
+    border-radius: 50%;
+
+    bottom: 0;
+    right: 0;
+
+    border: 0;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      color: white;
+    }
+
+    &:hover {
+      background: ${shade(0.2, '#000')};
+    }
   }
 
   @media (min-width: 600px) {
     img {
-      height: 15rem;
-      border-radius: 50%;
+      height: 15rem !important;
+      width: 15rem !important;
     }
   }
 `;
