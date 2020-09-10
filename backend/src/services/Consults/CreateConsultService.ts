@@ -4,7 +4,6 @@ import { isBefore } from 'date-fns';
 import Consult from '../../models/Consult';
 import User from '../../models/User';
 import Pacient from '../../models/Pacient';
-import Holiday from '../../models/Holiday';
 
 import AppError from '../../errors/AppError';
 
@@ -19,6 +18,7 @@ interface Request {
   hour: string;
   payment: string;
   status: string;
+  type: string;
 }
 
 class CreateConsultService {
@@ -30,26 +30,21 @@ class CreateConsultService {
     hour,
     payment,
     status,
+    type,
   }: Request): Promise<Consult> {
     const consultsRepository = getRepository(Consult);
     const usersRepository = getRepository(User);
     const pacientsRepository = getRepository(Pacient);
-    const holidaysRepository = getRepository(Holiday);
 
     const parsedHour = ConvertStringHourToInt(hour);
 
     const pacient = await pacientsRepository.findOne(pacientId);
     const specialist = await usersRepository.findOne(specialistId);
     const currentUser = await usersRepository.findOne(userId);
-    const isHoliday = await holidaysRepository.findOne({
-      where: {
-        day: date,
-      },
-    });
 
-    if (currentUser?.type !== 'supervisor') {
+    if (currentUser?.type === 'specialist') {
       throw new AppError(
-        'Apenas usuarios do tipo supervisor podem criar consultas',
+        'Usuarios do tipo especialista nao podem criar consultas',
         401,
       );
     }
@@ -61,10 +56,6 @@ class CreateConsultService {
 
     if (!specialist) {
       throw new AppError('Especialista Invalido');
-    }
-
-    if (isHoliday) {
-      throw new AppError('Nao eh possivel marcar consultas em um dia de exce');
     }
 
     // Check if pacient and specialist are different
@@ -104,6 +95,7 @@ class CreateConsultService {
       hour: parsedHour,
       payment,
       status,
+      type,
     });
 
     await consultsRepository.save(consult);

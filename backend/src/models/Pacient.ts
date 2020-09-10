@@ -17,11 +17,11 @@ export default class Pacient {
   id: string;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'supervisorId' })
-  supervisor: User;
+  @JoinColumn({ name: 'createdById' })
+  createdBy: User;
 
   @Column()
-  supervisorId: string;
+  createdById: string;
 
   @Column()
   name: string;

@@ -62,6 +62,9 @@ export default class Consult {
   @Column()
   status: string;
 
+  @Column()
+  type: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

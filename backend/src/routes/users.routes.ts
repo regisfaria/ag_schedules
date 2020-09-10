@@ -12,6 +12,7 @@ import DeleteUserService from '../services/Users/DeleteUserService';
 import User from '../models/User';
 
 const usersRouter = Router();
+// Descomente abaixo para criar um admin, comente em seguida. - REMOVER DPS DO DEV
 usersRouter.use(ensureAuthenticated);
 
 usersRouter.get('/', async (request, response) => {
@@ -42,6 +43,20 @@ usersRouter.get('/supervisors', async (request, response) => {
   const users = await userRepository.find({
     where: {
       type: 'supervisor',
+    },
+  });
+
+  users.forEach(user => delete user.password);
+
+  return response.json(users);
+});
+
+usersRouter.get('/indicators', async (request, response) => {
+  const userRepository = getRepository(User);
+
+  const users = await userRepository.find({
+    where: {
+      type: 'indicator',
     },
   });
 

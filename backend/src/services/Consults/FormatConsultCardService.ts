@@ -5,16 +5,16 @@ import AppError from '../../errors/AppError';
 import Consult from '../../models/Consult';
 import User from '../../models/User';
 import Pacient from '../../models/Pacient';
-import SpecialistProfile from '../../models/SpecialistProfile';
+import Profile from '../../models/Profile';
 
-class FormatConsultService {
+class FormatConsultCardService {
   public async execute(consult: Consult): Promise<Consult> {
     if (!consult) {
       throw new AppError('Nenhuma consulta encontrada.');
     }
     const usersRepository = getRepository(User);
     const pacientsRepository = getRepository(Pacient);
-    const specialistProfilesRepository = getRepository(SpecialistProfile);
+    const profilesRepository = getRepository(Profile);
 
     const hourMod = consult.hour % 60;
     const endHourMod = (consult.hour + 60) % 60;
@@ -52,7 +52,7 @@ class FormatConsultService {
     });
     consult.specialistName = specialist?.name;
 
-    const specialistProfile = await specialistProfilesRepository.findOne({
+    const specialistProfile = await profilesRepository.findOne({
       where: { userId: consult.specialistId },
     });
     consult.specialistImgUrl = `http://localhost:3333/files/${specialistProfile?.image}`;
@@ -66,4 +66,4 @@ class FormatConsultService {
   }
 }
 
-export default FormatConsultService;
+export default FormatConsultCardService;

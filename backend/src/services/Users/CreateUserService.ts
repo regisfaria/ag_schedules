@@ -10,7 +10,7 @@ interface Request {
   name: string;
   email: string;
   password: string;
-  type: 'admin' | 'supervisor' | 'specialist';
+  type: 'admin' | 'supervisor' | 'specialist' | 'indicator';
   active: boolean;
 }
 

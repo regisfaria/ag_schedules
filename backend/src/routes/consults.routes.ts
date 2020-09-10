@@ -9,8 +9,8 @@ import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 
 import CreateConsultService from '../services/Consults/CreateConsultService';
 import DeleteConsultService from '../services/Consults/DeleteConsultService';
-import ConvertHourToStringService from '../services/Consults/ConvertHourToStringService';
-import FormatConsultService from '../services/Consults/FormatConsultService';
+import FormatConsultHoursToStringService from '../services/Consults/FormatConsultHoursToStringService';
+import FormatConsultCardService from '../services/Consults/FormatConsultCardService';
 import UpdateConsultService from '../services/Consults/UpdateConsultService';
 
 const consultsRouter = Router();
@@ -22,7 +22,7 @@ consultsRouter.get('/', async (request, response) => {
 
   const unparsedConsults = await consultsRepository.find();
 
-  const convertHourToString = new ConvertHourToStringService();
+  const convertHourToString = new FormatConsultHoursToStringService();
 
   const consults = convertHourToString.execute(unparsedConsults);
 
@@ -33,7 +33,7 @@ consultsRouter.get('/:specialistId', async (request, response) => {
   const specialistId = request.params;
 
   const consultsRepository = getRepository(Consult);
-  const formatConsult = new FormatConsultService();
+  const formatConsult = new FormatConsultCardService();
 
   const consults: Consult[] = [];
   const unparsedConsults = await consultsRepository.find({
@@ -49,17 +49,17 @@ consultsRouter.get('/:specialistId', async (request, response) => {
 });
 
 consultsRouter.get(
-  '/createdBy/:supervisorId/:specialistId',
+  '/createdBy/:createdById/:specialistId',
   async (request, response) => {
-    const { supervisorId, specialistId } = request.params;
+    const { createdById, specialistId } = request.params;
 
     const consultsRepository = getRepository(Consult);
-    const formatConsult = new FormatConsultService();
+    const formatConsult = new FormatConsultCardService();
 
     const consults: Consult[] = [];
     const unparsedConsults = await consultsRepository.find({
       where: {
-        createdById: supervisorId,
+        createdById,
         specialistId,
       },
     });
@@ -73,19 +73,6 @@ consultsRouter.get(
   },
 );
 
-consultsRouter.get('/:specialistId/date', async (request, response) => {
-  const { specialistId } = request.params;
-  const { date } = request.body;
-
-  const consultsRepository = getRepository(Consult);
-
-  const consults = await consultsRepository.find({
-    where: { specialistId, date },
-  });
-
-  return response.json(consults);
-});
-
 consultsRouter.post('/', async (request, response) => {
   const {
     specialist,
@@ -94,6 +81,7 @@ consultsRouter.post('/', async (request, response) => {
     consultHour,
     payment,
     status,
+    type,
   } = request.body;
 
   const userId = request.user.id;
@@ -108,6 +96,7 @@ consultsRouter.post('/', async (request, response) => {
     hour: consultHour,
     payment,
     status,
+    type,
   });
 
   return response.json(consult);

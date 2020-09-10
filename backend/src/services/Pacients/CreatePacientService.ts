@@ -5,7 +5,7 @@ import Pacient from '../../models/Pacient';
 import User from '../../models/User';
 
 interface Request {
-  supervisorId: string;
+  createdById: string;
   name: string;
   bornDate: Date | string;
   cpf: string;
@@ -21,7 +21,7 @@ interface Request {
 
 class CreatePacientService {
   public async execute({
-    supervisorId,
+    createdById,
     name,
     bornDate,
     cpf,
@@ -37,10 +37,13 @@ class CreatePacientService {
     const pacientsRepository = getRepository(Pacient);
     const usersRepository = getRepository(User);
 
-    const user = await usersRepository.findOne(supervisorId);
+    const user = await usersRepository.findOne(createdById);
 
-    if (!user || user.type !== 'supervisor') {
-      throw new AppError('Apenas supervisores podem criar um paciente', 401);
+    if (!user || user.type === 'indicator' || user.type === 'specialist') {
+      throw new AppError(
+        'Especialistas/Indicadores nao podem criar um paciente',
+        401,
+      );
     }
 
     const cpfExists = await pacientsRepository.findOne({ where: { cpf } });
@@ -50,8 +53,8 @@ class CreatePacientService {
     }
 
     const pacient = pacientsRepository.create({
-      supervisor: user,
-      supervisorId,
+      createdBy: user,
+      createdById,
       name,
       bornDate,
       cpf,

@@ -9,16 +9,16 @@ import {
   JoinColumn,
 } from 'typeorm';
 
-import SpecialistProfile from './SpecialistProfile';
+import Profile from './Profile';
 
 @Entity('certificates')
 export default class Certificate {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => SpecialistProfile)
+  @ManyToOne(() => Profile)
   @JoinColumn({ name: 'specialistProfileId' })
-  specialistProfile: SpecialistProfile;
+  specialistProfile: Profile;
 
   @Column()
   specialistProfileId: string;

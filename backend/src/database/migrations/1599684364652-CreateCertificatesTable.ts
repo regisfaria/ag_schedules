@@ -5,7 +5,7 @@ import {
   TableForeignKey,
 } from 'typeorm';
 
-export default class CreateSpecialistCertificatesTable1597673603680
+export default class CreateCertificatesTable1599684364652
   implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
@@ -53,7 +53,7 @@ export default class CreateSpecialistCertificatesTable1597673603680
         name: 'SpecialistCertificates',
         columnNames: ['specialistProfileId'],
         referencedColumnNames: ['id'],
-        referencedTableName: 'specialist_profiles',
+        referencedTableName: 'profiles',
         onUpdate: 'CASCADE',
       }),
     );
