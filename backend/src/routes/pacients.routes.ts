@@ -20,12 +20,12 @@ pacientsRouter.get('/', async (request, response) => {
   return response.json(pacient);
 });
 
-pacientsRouter.get('/supervisor', async (request, response) => {
-  const supervisorId = request.user.id;
+pacientsRouter.get('/createdBy', async (request, response) => {
+  const createdById = request.user.id;
 
   const pacientsRepository = getRepository(Pacient);
 
-  const pacients = await pacientsRepository.find({ where: { supervisorId } });
+  const pacients = await pacientsRepository.find({ where: { createdById } });
 
   return response.json(pacients);
 });
@@ -45,12 +45,12 @@ pacientsRouter.post('/', async (request, response) => {
     description,
   } = request.body;
 
-  const supervisorId = request.user.id;
+  const createdById = request.user.id;
 
   const createPacient = new CreatePacientService();
 
   const pacient = await createPacient.execute({
-    supervisorId,
+    createdById,
     name,
     bornDate,
     cpf,

@@ -24,6 +24,8 @@ export default class Consult {
   @Column()
   createdById: string;
 
+  createdBy: string | undefined;
+
   @ManyToOne(() => User)
   @JoinColumn({ name: 'specialistId' })
   specialist: User;
@@ -31,12 +33,18 @@ export default class Consult {
   @Column()
   specialistId: string;
 
+  specialistName: string | undefined;
+
+  specialistImgUrl: string;
+
   @ManyToOne(() => Pacient)
   @JoinColumn({ name: 'pacientId' })
   pacient: Pacient;
 
   @Column()
   pacientId: string;
+
+  pacientName: string | undefined;
 
   @Column('date')
   date: Date;
@@ -46,11 +54,16 @@ export default class Consult {
 
   formatedHour: string;
 
+  formatedEndHour: string;
+
   @Column()
   payment: string;
 
   @Column()
   status: string;
+
+  @Column()
+  type: string;
 
   @CreateDateColumn()
   createdAt: Date;

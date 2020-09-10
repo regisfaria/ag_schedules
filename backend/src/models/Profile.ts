@@ -11,8 +11,8 @@ import {
 
 import User from './User';
 
-@Entity('supervisor_profiles')
-export default class SupervisorProfile {
+@Entity('profiles')
+export default class SpecialistProfile {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -22,6 +22,10 @@ export default class SupervisorProfile {
 
   @Column()
   userId: string;
+
+  name: string;
+
+  email: string;
 
   @Column()
   image: string;
@@ -45,6 +49,9 @@ export default class SupervisorProfile {
 
   @Column()
   addressNumber: string;
+
+  @Column()
+  addressComplement: string;
 
   @Column()
   cep: string;

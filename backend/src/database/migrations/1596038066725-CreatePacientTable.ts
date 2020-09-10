@@ -19,7 +19,7 @@ export default class CreatePacientTable1596038066725
             default: 'uuid_generate_v4()',
           },
           {
-            name: 'supervisorId',
+            name: 'createdById',
             type: 'uuid',
           },
           {
@@ -97,8 +97,8 @@ export default class CreatePacientTable1596038066725
     await queryRunner.createForeignKey(
       'pacients',
       new TableForeignKey({
-        name: 'PacientSupervisor',
-        columnNames: ['supervisorId'],
+        name: 'PacientCreatedBy',
+        columnNames: ['createdById'],
         referencedColumnNames: ['id'],
         referencedTableName: 'users',
         onUpdate: 'CASCADE',
@@ -107,7 +107,7 @@ export default class CreatePacientTable1596038066725
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropForeignKey('pacients', 'PacientSupervisor');
+    await queryRunner.dropForeignKey('pacients', 'PacientCreatedBy');
 
     await queryRunner.dropTable('pacients');
   }

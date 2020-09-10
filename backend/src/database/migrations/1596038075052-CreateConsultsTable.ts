@@ -48,6 +48,10 @@ export default class CreateConsultsTable1596038075052
             type: 'varchar',
           },
           {
+            name: 'type',
+            type: 'varchar',
+          },
+          {
             name: 'createdAt',
             type: 'timestamp',
             default: 'now()',

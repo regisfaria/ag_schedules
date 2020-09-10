@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import Consult from '../../models/Consult';
 
-class ConvertHourToStringService {
+class FormatConsultHoursToStringService {
   public execute(consults: Consult[]): Consult[] {
     consults.forEach(consult => {
       const hourMod = consult.hour % 60;
@@ -24,4 +24,4 @@ class ConvertHourToStringService {
   }
 }
 
-export default ConvertHourToStringService;
+export default FormatConsultHoursToStringService;

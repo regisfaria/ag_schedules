@@ -5,12 +5,12 @@ import {
   TableForeignKey,
 } from 'typeorm';
 
-export default class CreateSupervisorProfileTable1597673564624
+export default class CreateProfilesTable1599681421116
   implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'supervisor_profiles',
+        name: 'profiles',
         columns: [
           {
             name: 'id',
@@ -59,6 +59,11 @@ export default class CreateSupervisorProfileTable1597673564624
             isNullable: true,
           },
           {
+            name: 'addressComplement',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
             name: 'cep',
             type: 'varchar',
             isNullable: true,
@@ -84,9 +89,9 @@ export default class CreateSupervisorProfileTable1597673564624
     );
 
     await queryRunner.createForeignKey(
-      'supervisor_profiles',
+      'profiles',
       new TableForeignKey({
-        name: 'SupervisorProfile',
+        name: 'UserProfile',
         columnNames: ['userId'],
         referencedColumnNames: ['id'],
         referencedTableName: 'users',
@@ -96,11 +101,8 @@ export default class CreateSupervisorProfileTable1597673564624
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropForeignKey(
-      'supervisor_profiles',
-      'SupervisorProfile',
-    );
+    await queryRunner.dropForeignKey('profiles', 'UserProfile');
 
-    await queryRunner.dropTable('supervisor_profiles');
+    await queryRunner.dropTable('profiles');
   }
 }

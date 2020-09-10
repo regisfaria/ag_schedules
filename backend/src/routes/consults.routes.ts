@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
 import { Router } from 'express';
 import { getRepository } from 'typeorm';
 
@@ -7,7 +9,9 @@ import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 
 import CreateConsultService from '../services/Consults/CreateConsultService';
 import DeleteConsultService from '../services/Consults/DeleteConsultService';
-import ConvertHourToStringService from '../services/Consults/ConvertHourToStringService';
+import FormatConsultHoursToStringService from '../services/Consults/FormatConsultHoursToStringService';
+import FormatConsultCardService from '../services/Consults/FormatConsultCardService';
+import UpdateConsultService from '../services/Consults/UpdateConsultService';
 
 const consultsRouter = Router();
 
@@ -18,7 +22,7 @@ consultsRouter.get('/', async (request, response) => {
 
   const unparsedConsults = await consultsRepository.find();
 
-  const convertHourToString = new ConvertHourToStringService();
+  const convertHourToString = new FormatConsultHoursToStringService();
 
   const consults = convertHourToString.execute(unparsedConsults);
 
@@ -29,40 +33,45 @@ consultsRouter.get('/:specialistId', async (request, response) => {
   const specialistId = request.params;
 
   const consultsRepository = getRepository(Consult);
+  const formatConsult = new FormatConsultCardService();
 
-  const consults = await consultsRepository.find({
+  const consults: Consult[] = [];
+  const unparsedConsults = await consultsRepository.find({
     where: specialistId,
   });
 
-  return response.json(consults);
-});
-
-consultsRouter.get('/createdBy/:supervisorId', async (request, response) => {
-  const { supervisorId } = request.params;
-
-  const consultsRepository = getRepository(Consult);
-
-  const consults = await consultsRepository.find({
-    where: {
-      createdById: supervisorId,
-    },
-  });
+  for (const consult of unparsedConsults) {
+    const parsedConsult = await formatConsult.execute(consult);
+    consults.push(parsedConsult);
+  }
 
   return response.json(consults);
 });
 
-consultsRouter.get('/:specialistId/date', async (request, response) => {
-  const { specialistId } = request.params;
-  const { date } = request.body;
+consultsRouter.get(
+  '/createdBy/:createdById/:specialistId',
+  async (request, response) => {
+    const { createdById, specialistId } = request.params;
 
-  const consultsRepository = getRepository(Consult);
+    const consultsRepository = getRepository(Consult);
+    const formatConsult = new FormatConsultCardService();
 
-  const consults = await consultsRepository.find({
-    where: { specialistId, date },
-  });
+    const consults: Consult[] = [];
+    const unparsedConsults = await consultsRepository.find({
+      where: {
+        createdById,
+        specialistId,
+      },
+    });
 
-  return response.json(consults);
-});
+    for (const consult of unparsedConsults) {
+      const parsedConsult = await formatConsult.execute(consult);
+      consults.push(parsedConsult);
+    }
+
+    return response.json(consults);
+  },
+);
 
 consultsRouter.post('/', async (request, response) => {
   const {
@@ -72,6 +81,7 @@ consultsRouter.post('/', async (request, response) => {
     consultHour,
     payment,
     status,
+    type,
   } = request.body;
 
   const userId = request.user.id;
@@ -84,6 +94,25 @@ consultsRouter.post('/', async (request, response) => {
     pacientId: pacient,
     date: consultDate,
     hour: consultHour,
+    payment,
+    status,
+    type,
+  });
+
+  return response.json(consult);
+});
+
+consultsRouter.put('/:id', async (request, response) => {
+  const { id } = request.params;
+
+  const { consultDate, consultHour, payment, status } = request.body;
+
+  const updateConsult = new UpdateConsultService();
+
+  const consult = await updateConsult.execute({
+    id,
+    consultDate,
+    consultHour,
     payment,
     status,
   });
