@@ -66,7 +66,7 @@ export const AvatarInput = styled.div`
     z-index: 1;
   }
 
-  button {
+  label {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -81,6 +81,11 @@ export const AvatarInput = styled.div`
     right: 0;
 
     border: 0;
+    cursor: pointer;
+
+    input {
+      display: none;
+    }
 
     svg {
       width: 20px;

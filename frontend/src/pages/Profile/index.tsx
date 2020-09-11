@@ -60,6 +60,10 @@ interface ProfileData {
   description?: string;
 }
 
+interface UserProfile {
+  imageUrl: string;
+}
+
 const Profile: React.FC = () => {
   const { addToast } = useToast();
   const { user } = useAuth();
@@ -70,6 +74,9 @@ const Profile: React.FC = () => {
   const [cities, setCities] = useState<string[]>([]);
   const [selectedCity, setSelectedCity] = useState('0');
   const [selectedUf, setSelectedUF] = useState('0');
+  const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile>(
+    {} as UserProfile,
+  );
   const [profileInformations, setProfileInformations] = useState<ProfileData>({
     name: 'All Next',
     email: 'allnext@allnext.com',
@@ -81,6 +88,21 @@ const Profile: React.FC = () => {
     andressNumber: '',
     description: '',
   });
+
+  useEffect(() => {
+    if (!user.id && user.type !== 'admin') {
+      return;
+    }
+    if (user.type === 'supervisor') {
+      api.get(`/profiles/supervisor/${user.id}`).then(response => {
+        setCurrentUserProfile(response.data);
+      });
+    } else {
+      api.get(`/profiles/specialist/${user.id}`).then(response => {
+        setCurrentUserProfile(response.data);
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
     axios
@@ -147,6 +169,15 @@ const Profile: React.FC = () => {
     );
   }, [profileInformations]);
 
+  const handleAvatarChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      if (event.target.files) {
+        console.log(event.target.files[0]);
+      }
+    },
+    [],
+  );
+
   const handleSubmit = useCallback((data: ProfileData) => {
     setProfileInformations(element => {
       return {
@@ -170,13 +201,12 @@ const Profile: React.FC = () => {
       <Container>
         <Header>
           <AvatarInput>
-            <img
-              src="https://avatars0.githubusercontent.com/u/69481836?s=200&v=4"
-              alt="ProfileImage"
-            />
-            <button type="button">
+            <img src={currentUserProfile.imageUrl} alt="fotoPerfil" />
+
+            <label htmlFor="avatar">
               <FiEdit3 />
-            </button>
+              <input type="file" id="avatar" onChange={handleAvatarChange} />
+            </label>
           </AvatarInput>
         </Header>
         <Form ref={formRef} onSubmit={handleSubmit}>
