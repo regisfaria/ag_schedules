@@ -54,6 +54,3 @@ $ yarn dev:server
 
 ### Production installation
 todo...
-
-
-###### developed by: Regis Faria | ALLNext 
